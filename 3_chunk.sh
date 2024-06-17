@@ -7,7 +7,7 @@ fi
 
 # This file creates a container based on the ostree repository
 # with tag $OUT_TAG
-MAX_LAYERS=${MAX_LAYERS:=80}
+MAX_LAYERS=${MAX_LAYERS:=40}
 OUT_NAME=${OUT_TAG:=bazzite-deck}
 OUT_TAG=master
 RPM_OSTREE=${RPM_OSTREE:=rpm-ostree}
