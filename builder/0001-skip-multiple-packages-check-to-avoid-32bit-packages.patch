@@ -1,0 +1,42 @@
+From c3787d4b13aed3a25aa358d98f027ddda6304f3a Mon Sep 17 00:00:00 2001
+From: antheas <git@antheas.dev>
+Date: Thu, 9 May 2024 21:56:29 +0200
+Subject: [PATCH] skip multiple packages check to avoid 32bit packages breaking
+
+---
+ src/libpriv/rpmostree-refts.cxx | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/src/libpriv/rpmostree-refts.cxx b/src/libpriv/rpmostree-refts.cxx
+index 46f63621..cf83bae2 100644
+--- a/src/libpriv/rpmostree-refts.cxx
++++ b/src/libpriv/rpmostree-refts.cxx
+@@ -165,16 +165,17 @@ RpmTs::package_meta (const rust::Str name) const
+     {
+       // TODO: Somehow we get two `libgcc-8.5.0-10.el8.x86_64` in current RHCOS, I don't
+       // understand that.
+-      if (retval != nullptr)
+-        {
+-          auto nevra = header_get_nevra (h);
+-          g_autofree char *buf
+-              = g_strdup_printf ("Multiple installed '%s' (%s, %s)", name_c.c_str (),
+-                                 retval->nevra ().c_str (), nevra.c_str ());
+-          throw std::runtime_error (buf);
+-        }
++      // if (retval != nullptr)
++      //   {
++      //     auto nevra = header_get_nevra (h);
++      //     g_autofree char *buf
++      //         = g_strdup_printf ("Multiple installed '%s' (%s, %s)", name_c.c_str (),
++      //                            retval->nevra ().c_str (), nevra.c_str ());
++      //     throw std::runtime_error (buf);
++      //   }
+ 
+       retval = std::make_unique<PackageMeta> (h);
++      break;
+     }
+   if (retval == nullptr)
+     g_assert_not_reached ();
+-- 
+2.45.0
+
