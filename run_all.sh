@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [ $(id -u) -ne 0 ]; then
+    echo "Run as superuser"
+fi
+
 # Image and tag
 IMAGE=${IMAGE:=ghcr.io/ublue-os/bazzite}
 TAG=${TAG:=40-20240616}
@@ -35,12 +39,7 @@ echo "##### Pruning $TREE"
 time ./1_prune.sh
 echo
 echo "##### Creating OSTree repo"
-# Run podman unshare to enable rootless mounts
-if [ $(id -u) -ne 0 ]; then
-    time podman unshare ./2_create.sh
-else
-    time ./2_create.sh
-fi
+time ./2_create.sh
 
 if [[ -z $SKIP_CHUNK ]]; then
     echo

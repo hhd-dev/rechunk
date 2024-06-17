@@ -1,0 +1,655 @@
+{
+    "config": {
+        "digest": "sha256:a0ca9d2397e893a9d03ad1a9cbb0c578a288f21387ca09454829b713a578d492",
+        "mediaType": "application/vnd.oci.image.config.v1+json",
+        "size": 12857
+    },
+    "layers": [
+        {
+            "digest": "sha256:ca4473e4159497de5ad8544cbb6278d755f72b18ab1d119bf19c87764c6c482f",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 11780963
+        },
+        {
+            "annotations": {
+                "ostree.components": "wine-core"
+            },
+            "digest": "sha256:40a7c059ea9dc8a144e88588e3c931a06c3b5b8777494ef319ca57b2cf5d85b9",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 206146882
+        },
+        {
+            "annotations": {
+                "ostree.components": "steam"
+            },
+            "digest": "sha256:a48c68e2abd01ea334cccce058566b781a3e37b46e3b71572f2c5a5fa1da17d6",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 373271066
+        },
+        {
+            "annotations": {
+                "ostree.components": "llvm17-static"
+            },
+            "digest": "sha256:339909533e19878c409f9a754097a09bdf4d633a3493809d6ac726b5563ac361",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 62109986
+        },
+        {
+            "annotations": {
+                "ostree.components": "qt6-qtwebengine"
+            },
+            "digest": "sha256:f2e12262981f46e471b776c401cf001a556ad2575121a71098cd31358e398ce8",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 107819177
+        },
+        {
+            "annotations": {
+                "ostree.components": "glibc-all-langpacks"
+            },
+            "digest": "sha256:6af73cef8d2663162797f64b90dbf6bf9042b3bad6def225601bcf88f8f0db67",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 69023709
+        },
+        {
+            "annotations": {
+                "ostree.components": "fluid-soundfont-gm"
+            },
+            "digest": "sha256:a324bee2d4c04360b36b2c9e1688c5737ecba2b6ca4a546bbfe8044c0de1a088",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 132846886
+        },
+        {
+            "annotations": {
+                "ostree.components": "ibus"
+            },
+            "digest": "sha256:b3fd4612aa5c168b72d76022a02753f4bd6d89c3f525ecb41e1e155542048fb0",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 17954566
+        },
+        {
+            "annotations": {
+                "ostree.components": "rpm"
+            },
+            "digest": "sha256:ee5afddcc1d05837bea142cd4736deee877e0afa35df12a60c282db82a10b341",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 49517105
+        },
+        {
+            "annotations": {
+                "ostree.components": "mesa-dri-drivers"
+            },
+            "digest": "sha256:c26b429cd5173c695b6228621d150682a6f2ab44f53f100069f41498f1b5cb52",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 39149094
+        },
+        {
+            "annotations": {
+                "ostree.components": "google-noto-sans-cjk-fonts"
+            },
+            "digest": "sha256:9cfa271b9aeb0c16f18f306dd0fdc597ba96bd4cb7a278945b1ac58dd0e756a5",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 104672380
+        },
+        {
+            "annotations": {
+                "ostree.components": "llvm17-libs"
+            },
+            "digest": "sha256:b62288d378476b54f861e3943b4168e31228d1ba4b69597010e71ade480928f0",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 38715661
+        },
+        {
+            "annotations": {
+                "ostree.components": "llvm17"
+            },
+            "digest": "sha256:685535988a6b25c83ed7dbfaf189147c5743bfd715399554937d3887fe971f2f",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 37228121
+        },
+        {
+            "annotations": {
+                "ostree.components": "llvm-libs"
+            },
+            "digest": "sha256:1980e3065bc92d019c75f3b6d766d181846bf6bc3ea337a83eaea5b570c5e58c",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 40677322
+        },
+        {
+            "annotations": {
+                "ostree.components": "cldr-emoji-annotation"
+            },
+            "digest": "sha256:a7e0ad9969f6d0dce184953088191644070211b01b5378e724374e12a4ea647f",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 10540671
+        },
+        {
+            "annotations": {
+                "ostree.components": "hhd-ui"
+            },
+            "digest": "sha256:ee33f246598a31128a4a474409c2ef9e95e89aad18690fb5a0b5656533ec435b",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 111850740
+        },
+        {
+            "annotations": {
+                "ostree.components": "plasma-workspace-wallpapers"
+            },
+            "digest": "sha256:1be3ad7f2996352e15a7e53bdcbcc4fb34d44e4dca62bba14049a8738c42e732",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 108893907
+        },
+        {
+            "annotations": {
+                "ostree.components": "gcc"
+            },
+            "digest": "sha256:585ae04f9eca42e610a1390a09a758b3e815cb0af3817080a0886296d4c9e5c4",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 49993969
+        },
+        {
+            "annotations": {
+                "ostree.components": "clang17-libs"
+            },
+            "digest": "sha256:4b9a9f0de5e33c1069cdd9f64ea7adb8803dcfb695fa25fb1623d326b7149749",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 33541273
+        },
+        {
+            "annotations": {
+                "ostree.components": "cosign"
+            },
+            "digest": "sha256:2ad4f0fbc3cbeb498b03fd060244ef2784c78a2606bf40abb98965e1ff297ed0",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 47044204
+        },
+        {
+            "annotations": {
+                "ostree.components": "mesa-vulkan-drivers"
+            },
+            "digest": "sha256:77742694f2b8d8830c84d55e6685b4dce1bf2bbcffe5f2e51e6e285079097cee",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 25241121
+        },
+        {
+            "annotations": {
+                "ostree.components": "python3-botocore"
+            },
+            "digest": "sha256:fffb62551809b052fa725a3f8c2800eb1248224efcd80e9c6c2103680f167538",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 12504945
+        },
+        {
+            "annotations": {
+                "ostree.components": "jupiter-hw-support-btrfs"
+            },
+            "digest": "sha256:f40cc9b439eae28eac9fce5000d147be8466703ba0a2390d9841896f77102fa1",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 50131212
+        },
+        {
+            "annotations": {
+                "ostree.components": "clang17-tools-extra"
+            },
+            "digest": "sha256:3b350100a32be16e852af2eaced2c939fc8b75befb4995c5c516f26e09a7bf63",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 28346486
+        },
+        {
+            "annotations": {
+                "ostree.components": "mingw64-crt"
+            },
+            "digest": "sha256:abaab4df55b905391630b7b5b2744e90d1ba5b339fc131575d99929ba1f5ea8d",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 6082483
+        },
+        {
+            "annotations": {
+                "ostree.components": "mariadb-server"
+            },
+            "digest": "sha256:b109ce7b7bcf6252983afcffd399150baad7ae1ebb342a1fffd84ef132f225a4",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 22901625
+        },
+        {
+            "annotations": {
+                "ostree.components": "mingw32-crt"
+            },
+            "digest": "sha256:f1f5ec5d195d9c80fab01700250afc92d12cac8cef0e7f32a2f61b5c2535cb85",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 5003604
+        },
+        {
+            "annotations": {
+                "ostree.components": "kernel-modules"
+            },
+            "digest": "sha256:42e823b98bfbae88e2df9bdaa18757fd18a9a2b2db055b98b94acbf806c055a6",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 64537027
+        },
+        {
+            "annotations": {
+                "ostree.components": "geolite2-city"
+            },
+            "digest": "sha256:8f7bb01407958ca91c61dfb5750243d6fb37aa47c10c4e175c393471cc2dece3",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 30423056
+        },
+        {
+            "annotations": {
+                "ostree.components": "kernel-devel"
+            },
+            "digest": "sha256:ddc293211c9406c872f56d95c8441699d6715e4c6c6f3902585fc33589c7a8e8",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 17875038
+        },
+        {
+            "annotations": {
+                "ostree.components": "webkit2gtk4.1"
+            },
+            "digest": "sha256:5179b82c8d6b00fb17e76203f49a21c8028953d316a661db26190d660b742964",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 27635565
+        },
+        {
+            "annotations": {
+                "ostree.components": "iwlwifi-mvm-firmware"
+            },
+            "digest": "sha256:b631c09bbec7c7f2f886dd7fcf8d953ed152ad52b4373f572027d4f5d45e1b52",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 58549870
+        },
+        {
+            "annotations": {
+                "ostree.components": "google-noto-serif-cjk-vf-fonts"
+            },
+            "digest": "sha256:bf79118f5ff9d7c28c991d4e04527cf54da4093808062922098331ef6793933e",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 29849715
+        },
+        {
+            "annotations": {
+                "ostree.components": "kernel-uki-virt"
+            },
+            "digest": "sha256:b9d8b2753d7605f7802fc69c3f0797cb1fc7e3374237effe572ea18666a4d3bb",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 55198244
+        },
+        {
+            "annotations": {
+                "ostree.components": "google-noto-serif-fonts"
+            },
+            "digest": "sha256:988b02738f581197a7136bbbb0aae4761de9a502ebe6b1b868b81112f17849a3",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 27704111
+        },
+        {
+            "annotations": {
+                "ostree.components": "guile30"
+            },
+            "digest": "sha256:6d6fb309d6bcee1c26c94bbb8c97b7b873da421750e5bfbd3aacbafc276da6f0",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 11836992
+        },
+        {
+            "annotations": {
+                "ostree.components": "plasma-breeze-common"
+            },
+            "digest": "sha256:f239031f628c34534998ff3ec9359a0cf242d7a0c35791f84b5256d133e1c1aa",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 50798846
+        },
+        {
+            "annotations": {
+                "ostree.components": "tailscale"
+            },
+            "digest": "sha256:9cbedd45169d47ea46ed704bcdeaeef41b76d4ee78490902d3f8a1a7f2b2385e",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 27348581
+        },
+        {
+            "annotations": {
+                "ostree.components": "breeze-icon-theme"
+            },
+            "digest": "sha256:c853c4a9e79337777f36c29532da13cd28c87f5beeb72944072a3b604e847397",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 16635438
+        },
+        {
+            "annotations": {
+                "ostree.components": "podman"
+            },
+            "digest": "sha256:d2bcdaadecb07ca615000f1b0ca0f99fc7da0604b087ef6c756af3adcf52c1c1",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 19698470
+        },
+        {
+            "annotations": {
+                "ostree.components": "google-noto-sans-fonts"
+            },
+            "digest": "sha256:5c01834b1b946d30fad25d7a8fd48876ab45d027006d09e622bd33f2dd29dd60",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 23315870
+        },
+        {
+            "annotations": {
+                "ostree.components": "kernel-modules-core"
+            },
+            "digest": "sha256:05d02bf1ae0966b1edd0f34aeec4da887afb604aa02db7ad250e7afe947868a7",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 39628415
+        },
+        {
+            "annotations": {
+                "ostree.components": "vlc-libs"
+            },
+            "digest": "sha256:4056d7f54f1b447899acd034ab74beaa9a3ebaf23260286d6ca9bf2ed9a6602e",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 14722257
+        },
+        {
+            "annotations": {
+                "ostree.components": "python3-libs"
+            },
+            "digest": "sha256:1726807bbc2de90e7d6fc3e6388ce5d9f347d0241d6ac2500628dbe64d65f219",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 16486295
+        },
+        {
+            "annotations": {
+                "ostree.components": "qt6-qtdeclarative"
+            },
+            "digest": "sha256:22559d392d7351d7870a3fb222b97cfa38e6de6280cd61dd7f9030ba7468aa61",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 14625021
+        },
+        {
+            "annotations": {
+                "ostree.components": "gcc-c++"
+            },
+            "digest": "sha256:edbeb34681354150ac98bc47a2a7c17ca0913cd354f79bffda6d9508882ddce8",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 18091579
+        },
+        {
+            "annotations": {
+                "ostree.components": "nvidia-gpu-firmware"
+            },
+            "digest": "sha256:97c8239b9eba6d49cfbf14344e18b351fa19f1e5b429a4a8eb3fd96461c636c6",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 39811781
+        },
+        {
+            "annotations": {
+                "ostree.components": "ImageMagick,NetworkManager-bluetooth,NetworkManager-config-connectivity-fedora,NetworkManager-ppp,NetworkManager-team,SDL_image,aha,akonadi-server-mysql,alsa-tools-firmware,alternatives,android-udev-rules,annobin-docs,ansible-srpm-macros,apr-util-lmdb,apr-util-openssl,audit-rules,avahi-glib,avahi-gobject,avahi-tools,avif-pixbuf-loader,ayaneo-platform,ayn-platform,b43-fwcutter,b43-openfwwf,bash-color-prompt,bind-license,bluez-cups,bmi260,boost,boost-atomic,boost-chrono,boost-container,boost-context,boost-contract,boost-coroutine,boost-date-time,boost-fiber,boost-iostreams,boost-nowide,boost-random,boost-stacktrace,boost-system,boost-timer,boost-type_erasure,breeze-gtk-gtk2,broadcom-wl,bubblewrap,bzip2,bzip2-libs,cabextract,cage,cairo-gobject,cdparanoia-libs,cifs-utils-info,cjson,clang-resource-filesystem,clevis,clevis-luks,clinfo,cmake-rpm-macros,color-filesystem,composefs,composefs-libs,compsize,container-selinux,containers-common,criu-libs,crypto-policies,cups-filters-driverless,cyrus-sasl-plain,dbus-common,dbus-tools,dbus-x11,default-fonts-am,default-fonts-ar,default-fonts-as,default-fonts-ast,default-fonts-be,default-fonts-bg,default-fonts-bn,default-fonts-bo,default-fonts-br,default-fonts-chr,default-fonts-cjk-mono,default-fonts-cjk-serif,default-fonts-core-emoji,default-fonts-core-math,default-fonts-core-mono,default-fonts-core-sans,default-fonts-core-serif,default-fonts-dv,default-fonts-dz,default-fonts-el,default-fonts-eo,default-fonts-eu,default-fonts-fa,default-fonts-gu,default-fonts-he,default-fonts-hi,default-fonts-hy,default-fonts-ia,default-fonts-iu,default-fonts-ka,default-fonts-km,default-fonts-kn,default-fonts-ku,default-fonts-lo,default-fonts-mai,default-fonts-ml,default-fonts-mni,default-fonts-mr,default-fonts-my,default-fonts-nb,default-fonts-ne,default-fonts-nn,default-fonts-nr,default-fonts-nso,default-fonts-or,default-fonts-other-mono,default-fonts-other-sans,default-fonts-other-serif,default-fonts-pa,default-fonts-ru,default-fonts-sat,default-fonts-si,default-fonts-ss,default-fonts-ta,default-fonts-te,default-fonts-th,default-fonts-tn,default-fonts-ts,default-fonts-uk,default-fonts-ur,default-fonts-ve,default-fonts-vi,default-fonts-xh,default-fonts-yi,default-fonts-zu,desktop-backgrounds-compat,device-mapper-event,device-mapper-event-libs,dlm-lib,dmraid,dmraid-events,dnf-data,dotconf,double-conversion,ds-inhibit,ebook-tools-libs,editorconfig-libs,efi-srpm-macros,efibootmgr,elfutils-debuginfod-client,elfutils-default-yama-scope,elfutils-libelf-devel,f40-backgrounds-kde,fatresize,fedora-appstream-metadata,fedora-bookmarks,fedora-chromium-config,fedora-chromium-config-kde,fedora-flathub-remote,fedora-gpg-keys,fedora-release-common,fedora-release-identity-kinoite,fedora-release-ostree-desktop,fedora-repos,fedora-repos-archive,fedora-repos-ostree,fedora-third-party,fedora-workstation-repositories,ffmpegthumbs,file,filesystem,firewalld-filesystem,flatpak-selinux,flatpak-session-helper,flatpak-spawn,fluid-soundfont-common,fluidsynth,fonts-srpm-macros,forge-srpm-macros,fpaste,fpc-srpm-macros,fprintd-pam,framework-laptop-kmod-common,fros,fros-gnome,fstrm,fuse-common,fuse-sshfs,fuse3,fwupd-plugin-flashrom,fwupd-plugin-modem-manager,fxload,galileo-mura,gamescope-session-plus,gamescope-session-steam,gcadapter_oc,gcc-plugin-annobin,gdbm-libs,gettext-envsubst,ghc-srpm-macros,ghostscript,ghostscript-tools-fonts,ghostscript-tools-printing,giflib,glibc-devel,gnat-srpm-macros,gnome-keyring-pam,gnutls-dane,go-srpm-macros,google-noto-fonts-common,google-noto-sans-armenian-vf-fonts,google-noto-sans-cherokee-vf-fonts,google-noto-sans-georgian-vf-fonts,google-noto-sans-gurmukhi-vf-fonts,google-noto-sans-hebrew-vf-fonts,google-noto-sans-khmer-vf-fonts,google-noto-sans-lao-vf-fonts,google-noto-sans-meeteimayek-vf-fonts,google-noto-sans-ol-chiki-vf-fonts,google-noto-sans-sundanese-fonts,google-noto-sans-tamil-vf-fonts,google-noto-sans-thaana-vf-fonts,google-noto-sans-thai-vf-fonts,google-noto-serif-armenian-vf-fonts,google-noto-serif-georgian-vf-fonts,google-noto-serif-gurmukhi-vf-fonts,google-noto-serif-hebrew-vf-fonts,google-noto-serif-lao-vf-fonts,google-noto-serif-thai-vf-fonts,gpm-libs,grub2-efi-ia32,grub2-efi-x64,grub2-pc,gsm,gssdp,gtk-update-icon-cache,gupnp-igd,harfbuzz-icu,hddtemp,heif-pixbuf-loader,hicolor-icon-theme,hidapi,hipcc,hostname,hyperv-daemons-license,hypervfcopyd,hypervkvpd,hypervvssd,hyphen,ibus-gtk2,ibus-gtk3,ibus-gtk4,ibus-table-chinese,iceauth,iio-sensor-proxy,ilbc,ima-evm-utils,inih,initscripts-service,ipcalc,ipset,iptstate,iwlegacy-firmware,jansson,jbigkit-libs,jose,joycond,joystickwake,json-c,jupiter-fan-control,kasumi-common,kate-krunner-plugin,kde-filesystem,kde-settings,kde-settings-plasma,kde-settings-sddm,kdeconnectd,kdegraphics-mobipocket,keditbookmarks-libs,kernel-srpm-macros,kernel-tools-libs,keyutils-libs,kf5-frameworkintegration-libs,kf5-kcrash,kf5-kglobalaccel,kf5-kglobalaccel-libs,kf5-kio-ntlm,kf5-kwallet-libs,kf6-filesystem,kf6-frameworkintegration-libs,kf6-kcrash,kf6-kded,kf6-sonnet-hunspell,kmod-ayaneo-platform-6.9.4-201.fsync.fc40.x86_64,kmod-ayn-platform-6.9.4-201.fsync.fc40.x86_64,kmod-bmi260-6.9.4-201.fsync.fc40.x86_64,kmod-evdi-6.9.4-201.fsync.fc40.x86_64,kmod-framework-laptop-6.9.4-201.fsync.fc40.x86_64,kmod-gcadapter_oc-6.9.4-201.fsync.fc40.x86_64,kmod-kvmfr-6.9.4-201.fsync.fc40.x86_64,kmod-libs,kmod-nct6687d-6.9.4-201.fsync.fc40.x86_64,kmod-openrazer-6.9.4-201.fsync.fc40.x86_64,kmod-ryzen-smu-6.9.4-201.fsync.fc40.x86_64,kmod-v4l2loopback-6.9.4-201.fsync.fc40.x86_64,kmod-vhba-6.9.4-201.fsync.fc40.x86_64,kmod-xone-6.9.4-201.fsync.fc40.x86_64,kmod-zenergy-6.9.4-201.fsync.fc40.x86_64,kpartx,ksshaskpass,kvmfr,kwin,kwrited,langpacks-core-en,langpacks-en,langpacks-fonts-en,lasi,latencyflex-vulkan-layer,layer-shell-qt,libSM,libX11-xcb,libXScrnSaver,libXau,libXcomposite,libXcursor,libXdamage,libXdmcp,libXext,libXfixes,libXi,libXinerama,libXrandr,libXrender,libXres,libXtst,libXv,libXxf86dga,libXxf86vm,liba52,libacl,libaio,libao,libappindicator-gtk3,libassuan,libasyncns,libatasmart,libatomic,libattr,libb2,libbasicobjects,libbdplus,libblockdev-btrfs,libblockdev-crypto,libblockdev-fs,libblockdev-loop,libblockdev-lvm,libblockdev-mdraid,libblockdev-nvme,libblockdev-part,libblockdev-swap,libblockdev-utils,libbs2b,libbytesize,libcanberra-gtk2,libcanberra-gtk3,libcap-ng,libcap-ng-python3,libcbor,libchromaprint,libcloudproviders,libcollection,libcom_err,libdaemon,libdatrie,libdbusmenu-gtk3,libdhash,libdmtx,libdvdnav,libeconf,libedit-devel,libei,libeis,liberation-fonts-common,libev,libevdev,libevdev-devel,libevdi,libfakekey,libffi,libfontenc,libfreeaptx,libfsverity,libftdi,libglibutil,libglvnd-egl,libglvnd-gles,libgudev,libheif-freeworld,libi2c,libiec61883,libieee1284,libijs,libimobiledevice-glue,libini_config,libipt,libkate,libkcapi,libkcapi-hmaccalc,libkdcraw,libldac,libliftoff,liblouisutdml-utils,liblqr-1,libluksmeta,libmaxminddb,libmd,libmicrodns,libmnl,libmpcdec,libmspack,libmysofa,libndp,libnetfilter_conntrack,libnfnetlink,libnotify,libnsl,libnsl2,libobjc,libobs_glcapture,libobs_vkcapture,liboeffis,libogg,libopusenc,libpaper,libpasswdqc,libpath_utils,libpciaccess,libpipeline,libpkgconf,libportal-gtk4,libproxy,libproxy-bin,libpskc,libpsl,libqrcodegencpp,libqrtr-glib,librabbitmq,libraqm,libref_array,libreport-plugin-reportuploader,libreport-web,libsbc,libseat,libsigc++20,libsrtp,libss,libssh-config,libsss_certmap,libsss_idmap,libsss_nss_idmap,libsss_sudo,libtalloc,libtasn1,libtdb,libteam,libtevent,libtiger,libtool-ltdl,libudfread,libunity-gtk3-parser,liburing,libusb-compat-0.1,libusbmuxd,libutempter,libuuid,libvdpau,libverto,libverto-libev,libwacom,libwayland-client,libwayland-cursor,libwayland-egl,libwayland-server,libwbclient,libxcrypt-devel,libxcvt,libxdo,libxkbcommon-x11,libxshmfence,libyaml,libyubikey,libzip,lilv-libs,linux-atm-libs,lld17,lm_sensors-libs,lmdb-libs,lockdev,low-memory-monitor,lsb_release,lua-srpm-macros,luksmeta,lxc-templates,lz4-libs,mailcap,malcontent-libs,mariadb-connector-c-config,mariadb-cracklib-password-check,mariadb-gssapi-server,memstrack,mesa-filesystem,mesa-libgbm,mingw-filesystem-base,mingw32-filesystem,mingw32-win-iconv,mingw64-filesystem,mingw64-win-iconv,mkpasswd,mokutil,mpage,mtdev,mysql-selinux,nano-default-editor,nct6687d,noopenh264,npth,nss-altfiles,nss-mdns,nss-sysinit,ntfs-3g-system-compression,numactl-libs,obs-vkcapture,obs-vkcapture-common,ocaml-srpm-macros,openblas,openblas-srpm-macros,openrazer-kmod-common,openssh-askpass,opusfile,os-prober,ostree-grub2,oversteer-udev,package-notes-srpm-macros,pakchois,pam-kwallet,pam-libs,pam_afs_session,pam_passwdqc,pamu2fcfg,passim-libs,passwdqc-utils,pcaudiolib,pciutils-libs,pcsc-lite-libs,perl-AutoLoader,perl-Carp,perl-Class-Struct,perl-Clone,perl-Compress-Raw-Bzip2,perl-Data-Dump,perl-Data-Dumper,perl-Digest,perl-Digest-HMAC,perl-Digest-MD5,perl-Digest-SHA,perl-DynaLoader,perl-Encode-Locale,perl-Errno,perl-Exporter,perl-Fcntl,perl-File-Basename,perl-File-Copy,perl-File-Find,perl-File-Listing,perl-File-Path,perl-File-Slurper,perl-File-stat,perl-FileHandle,perl-Getopt-Std,perl-HTML-Tagset,perl-HTTP-Cookies,perl-HTTP-Date,perl-HTTP-Negotiate,perl-I18N-Langinfo,perl-IO-Compress-Brotli,perl-IO-HTML,perl-IO-Socket-IP,perl-IPC-Open3,perl-LWP-MediaTypes,perl-MIME-Base64,perl-Math-Complex,perl-Module-Load,perl-Mozilla-CA,perl-NDBM_File,perl-NTLM,perl-Net-HTTP,perl-PerlIO-utf8_strict,perl-Pod-Escapes,perl-Pod-Usage,perl-SelectSaver,perl-Socket,perl-Symbol,perl-Sys-Hostname,perl-Term-ANSIColor,perl-Term-Cap,perl-Term-ReadLine,perl-Text-ParseWords,perl-Text-Tabs+Wrap,perl-Time-HiRes,perl-Time-Local,perl-TimeDate,perl-Try-Tiny,perl-WWW-RobotRules,perl-XML-Dumper,perl-base,perl-constant,perl-if,perl-interpreter,perl-lib,perl-locale,perl-mro,perl-overload,perl-overloading,perl-parent,perl-srpm-macros,perl-subs,perl-vars,phonon-backend-vlc-common,pipewire-alsa,pipewire-codec-aptx,pipewire-gstreamer,pipewire-jack-audio-connection-kit,pipewire-module-filter-chain-lv2,pkgconf,pkgconf-m4,pkgconf-pkg-config,plasma-workspace-geolocation,plasma-workspace-geolocation-libs,platform,plymouth-plugin-label,plymouth-plugin-two-step,plymouth-scripts,policycoreutils-python-utils,polkit-pkla-compat,poppler-cpp,powerbuttond,powerstat,protobuf-c,publicsuffix-list-dafsa,pulseaudio-libs-glib2,pyproject-srpm-macros,python-pyqt6-rpm-macros,python-srpm-macros,python-unversioned-command,python3,python3-annotated-types,python3-certifi,python3-crcmod,python3-file-magic,python3-filelock,python3-gobject,python3-hid,python3-icoextract,python3-louis,python3-mdurl,python3-nftables,python3-pidfile,python3-ptyprocess,python3-pyclip,python3-pydantic+email,python3-pydbus,python3-pypresence,python3-pysocks,python3-requests-file,python3-setproctitle,python3-six,python3-urllib3+socks,python3-vdf,python3-xapps-overrides,qemu-user-static,qt-settings,qt5-qtbase-common,qt5-qtfeedback,qt5-qtspeech,qt5-qtspeech-speechd,qt5-qtx11extras,qt5-srpm-macros,qt6-qtbase-common,qt6-qtbase-mysql,qt6-qtserialport,qt6-qtspeech-flite,qt6-qtspeech-speechd,qt6-srpm-macros,rocm-clinfo,rocminfo,rom-properties-thumbnailer-dbus,rom-properties-utils,rpcbind,rpm-ostree-libs,rpm-plugin-audit,rpm-plugin-selinux,rpm-plugin-systemd-inhibit,rpm-sign-libs,rpmfusion-free-release,rpmfusion-nonfree-release,rsvg-pixbuf-loader,rtkit,rust-srpm-macros,ryzen-smu,ryzenadj,sane-backends-drivers-scanners,sane-backends-libs,sddm-wayland-plasma,sdgyrodsu,selinux-policy,serd,setools-console,setools-console-analyses,setxkbmap,sgml-common,sgpio,shadow-utils-subid,shim-ia32,signon-kwallet-extension,slirp4netns,smartmontools-selinux,snappy,solaar-udev,sord,speech-dispatcher-espeak-ng,speech-dispatcher-libs,speex,spice-webdavd,sratom,sssd-nfs-idmap,startup-notification,steam-devices,steam_notif_daemon,stoken-libs,sudo-python-plugin,switcheroo-control,symlinks,system-config-printer-udev,systemd-oomd-defaults,tesseract-tessdata-doc,time,tinyxml2,traceroute,tree,ublue-os-akmods-addons,ublue-os-just,ublue-os-luks,ublue-os-signing,ublue-os-udev-rules,ublue-update,unbound-anchor,unity-gtk-module-common,unity-gtk3-module,uresourced,urw-base35-d050000l-fonts,urw-base35-fonts,urw-base35-fonts-common,urw-base35-standard-symbols-ps-fonts,usb_modeswitch-data,usbmuxd,v4l2loopback,vhba,vid.stab,vim-data,vim-filesystem,vlc-plugin-gstreamer,vlc-plugin-pipewire,vpnc-script,vte-profile,wayland-utils,webp-pixbuf-loader,wget2-wget,which,whois-nls,wine-common,wireless-regdb,wl-clipboard,wlr-randr,wmctrl,wsdd,xcb-util,xcb-util-cursor,xcb-util-errors,xcb-util-image,xcb-util-keysyms,xcb-util-renderutil,xcb-util-wm,xdg-dbus-proxy,xdotool,xdpyinfo,xdriinfo,xhost,xmessage,xml-common,xmlrpc-c-client,xmodmap,xone-kmod-common,xorg-x11-drv-libinput,xorg-x11-server-common,xorg-x11-xauth,xprop,xrandr,xrdb,xset,xsettingsd,xwininfo,xxd,xxhash-libs,yajl,ykclient,zchunk-libs,zenergy,zig-srpm-macros,zlib-ng-compat-devel,zram-generator-defaults"
+            },
+            "digest": "sha256:87a74b8bc2f7a78ab9980e7fc0db69dc62f4b1c5edbee5eebed736ddc8d3c0f7",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 18089460
+        },
+        {
+            "annotations": {
+                "ostree.components": "binutils,gdb-headless,gtk4,kernel-core,plasma-workspace,systemd,systemd-udev,vim-common"
+            },
+            "digest": "sha256:1231ed5b3b6e242e4aedf7058c6b31d6813422d4a65b54fed9f8aa457981b4fb",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 88023684
+        },
+        {
+            "annotations": {
+                "ostree.components": "annobin-plugin-gcc,binutils-gold,gdb,glibc-common,glibc-headers-x86,kernel-modules-extra,kwin-wayland,libkworkspace6,pipewire,pipewire-jack-audio-connection-kit-libs,pipewire-pulseaudio,pipewire-utils,plasma-lookandfeel-fedora,plasma-workspace-wayland,python3-boto3,sddm-breeze,systemd-container,systemd-devel,systemd-libs,systemd-networkd,systemd-pam,systemd-resolved,vim-enhanced,vim-minimal"
+            },
+            "digest": "sha256:d8c4b011fe4a2a014e504b53637223bcee6d74d1b86cc19cd4795cc39285b9b9",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 16841592
+        },
+        {
+            "annotations": {
+                "ostree.components": "glibc,glibc-gconv-extra,kernel-headers,kwin-common,kwin-libs,pipewire-libs,plasma-workspace-libs,selinux-policy-targeted"
+            },
+            "digest": "sha256:8fea19864f5faffe057de938bcad6d803624fe1590cb6b904aa7a03b3e4d9349",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 27200415
+        },
+        {
+            "annotations": {
+                "ostree.components": "amd-gpu-firmware,appstream-data,atheros-firmware,breeze-cursor-theme,buildah,clang17-devel,compiler-rt17,cpp,ffmpeg-libs,fish,git-core,git-core-doc,glib2,google-noto-sans-mono-fonts,graphviz,gtk3,hplip,intel-media-driver,javascriptcoregtk4.1,kate,kf5-ki18n,kf5-kio-doc,libgs,libicu,libstdc++-devel,linux-firmware,llvm17-devel,mariadb,mariadb-backup,mesa-va-drivers-freeworld,mesa-vdpau-drivers-freeworld,openblas-serial,orca,plasma-desktop,python3-networkx,python3-pip,python3-pyqt6-base,qemu-user-static-mips,qemu-user-static-ppc,qt5-qtbase-gui,qt5-qtdeclarative,qt5-qttranslations,qt6-qtbase-gui,rocm-hip,rpm-ostree,samba-client-libs,skopeo,wxGTK"
+            },
+            "digest": "sha256:caa45859be4ec470fb4615c22153ef6457f7c612eef1c2a30f3dd86f0306de6e",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 469444739
+        },
+        {
+            "annotations": {
+                "ostree.components": "SDL2,authselect-libs,checkpolicy,chrony,clevis-pin-tpm2,freetype,gcr-libs,gnome-keyring,highway,ibus-table,iproute,iputils,kbd,kbd-misc,krb5-libs,libarchive,libchewing,libdav1d,libical,libopenmpt,libtiff,libudisks2,libva-utils,libwacom-data,luajit,mingw32-vkd3d,mingw64-vkd3d,mpfr,openldap,openvpn,perl-DBI,procps-ng,python3-gobject-base,python3-langtable,python3-pyyaml,python3-regex,qt5-qtxmlpatterns,rav1e-libs,rit-rachana-fonts,rpm-sequoia,rubberband,tpm2-tss,tpm2-tss-fapi,udisks2,udisks2-iscsi,udisks2-lvm2,virtualbox-guest-additions,xfsprogs"
+            },
+            "digest": "sha256:2fd149c290a6ada71fa43290cd6fc50b5ce4014f89fd02b6b526faca0f3b3414",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 40111077
+        },
+        {
+            "annotations": {
+                "ostree.components": "LibRaw,PackageKit-glib,aardvark-dns,acl,apr,authselect,c-ares,colord,cups-browsed,gettext-libs,gnupg2-smime,gtk-layer-shell,ibus-libpinyin,jasper-libs,kbd-legacy,kdsoap,kdsoap6,langtable,libdecor,libdovi,libimobiledevice,libjose,liblc3,libplist,libsodium,libunwind,libv4l,libvpl,libvpx,open-vm-tools,pciutils,perl-Getopt-Long,perl-HTTP-Tiny,pinentry,pinentry-qt,poppler,pulseaudio-qt-qt6,python3-charset-normalizer,python3-packaging,python3-requests,python3-soupsieve,qt5-qtgraphicaleffects,qt5-qtmultimedia,qt5-qtsvg,udisks2-btrfs,unrar,whois,xdg-desktop-portal-gtk"
+            },
+            "digest": "sha256:ec18da385d2daacd81b869f85ac4a5dbc1987b6d3dbc5430c8f6a4361507cb51",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 15609931
+        },
+        {
+            "annotations": {
+                "ostree.components": "bolt,colord-libs,ethtool,flatpak-libs,fmt,fuse3-libs,gettext-runtime,gobject-introspection,iscsi-initiator-utils,iscsi-initiator-utils-iscsiuio,jxl-pixbuf-loader,kf5-knewstuff,kf5-kxmlgui,libX11,libX11-common,libcomps,libheif,libheif-tools,libinput,libmodulemd,libppd,librepo,libselinux,libselinux-utils,libwebp,libxcb,mbedtls,ncurses,ncurses-base,ncurses-c++-libs,ncurses-devel,ncurses-libs,open-vm-tools-desktop,perl-IO-Compress,perl-libwww-perl,polkit,polkit-libs,poppler-glib,poppler-qt6,poppler-utils,python3-libcomps,python3-libdnf,python3-libselinux,python3-pillow,python3-typing-extensions,rocm-device-libs,sos,teamd"
+            },
+            "digest": "sha256:9400cf4fe9283b64e5ad45173a6c1abe97ca792d5eca56a45a1269aa7ff6cd1f",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 18497750
+        },
+        {
+            "annotations": {
+                "ostree.components": "cryptsetup,cryptsetup-libs,cups-filters,cyrus-sasl-lib,device-mapper-multipath-libs,fontconfig,iptables-libs,iptables-nft,jq,kf5-attica,kf5-karchive,kf5-kbookmarks,kf5-kcodecs,kf5-kconfig-core,kf5-kconfigwidgets,kf5-kcoreaddons,kf5-kdoctools,kf5-kiconthemes,kf5-kinit,kf5-kjobwidgets,kf5-knotifications,kf5-kpackage,kf5-kservice,kf5-ktextwidgets,kf5-sonnet-core,kf5-sonnet-ui,kf5-syndication,kf5-syntax-highlighting,libcupsfilters,libdnf,libplacebo,libreport,man-db,net-snmp-libs,p11-kit,p11-kit-server,p11-kit-trust,perl-B,policycoreutils,python3-dns,python3-libreport,python3-setools,python3-urllib3,qsynth,setools-gui,tbb,tesseract,vulkan-tools"
+            },
+            "digest": "sha256:cca31449883f7ded8c5db780dae30e0a11a5ee7563f85a7732da49327392468e",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 25711812
+        },
+        {
+            "annotations": {
+                "ostree.components": "appstream,appstream-qt,audiocd-kio,audiocd-kio-doc,device-mapper-multipath,glib-networking,gpgme,gpgmepp,gstreamer1-plugin-libav,hsakmt,input-remapper,inxi,ipset-libs,kf5-kactivities,kf5-kactivities-stats,kf5-kauth,kf5-kcompletion,kf5-kconfig-gui,kf5-kdbusaddons,kf5-kdnssd,kf5-kirigami2,kf5-kitemviews,kf5-kwindowsystem,libavif,libcap,libkcddb,libkcddb-doc,libkexiv2-qt5,libkexiv2-qt6,libnvme,libreport-gtk,libsecret,libsolv,openrgb-udev-rules,perl-Compress-Raw-Zlib,perl-IO,perl-POSIX,perl-URI,power-profiles-daemon,python3-hawkey,python3-rich,qt5-qtimageformats,realmd,vulkan-loader,wget2,wget2-libs,xz,xz-libs"
+            },
+            "digest": "sha256:7ab57fbbd5246c8a03b97622910a2bb8c6f961c008069cebc6624f9e9625209a",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 12653720
+        },
+        {
+            "annotations": {
+                "ostree.components": "NetworkManager-wifi,NetworkManager-wwan,apr-util,at-spi2-atk,at-spi2-core,dbus-broker,device-mapper-persistent-data,google-noto-naskh-arabic-vf-fonts,google-noto-sans-arabic-vf-fonts,google-noto-sans-balinese-fonts,google-noto-sans-bengali-vf-fonts,google-noto-sans-devanagari-vf-fonts,google-noto-sans-ethiopic-vf-fonts,google-noto-sans-javanese-fonts,google-noto-sans-math-fonts,google-noto-sans-mono-vf-fonts,google-noto-sans-sinhala-vf-fonts,google-noto-sans-symbols-vf-fonts,google-noto-sans-symbols2-fonts,google-noto-sans-vf-fonts,google-noto-serif-bengali-vf-fonts,google-noto-serif-devanagari-vf-fonts,google-noto-serif-ethiopic-vf-fonts,google-noto-serif-kannada-vf-fonts,google-noto-serif-sinhala-vf-fonts,google-noto-serif-telugu-vf-fonts,google-noto-serif-vf-fonts,gstreamer1-plugins-ugly-free,ibus-m17n,kernel-tools,kf5-qqc2-desktop-style,kf5-solid,libblockdev,libkcompactdisc,libva,mingw32-libxml2,mingw64-libxml2,nfs-utils,protontricks,python-pip-wheel,python3-s3transfer,qcoro-qt6,qpdf-libs,qt6-qtquicktimeline,rocm-runtime,tzdata,wxBase,wxGTK-i18n"
+            },
+            "digest": "sha256:5ead974be0960fc5702b0b713059041a0fc0a5292f3be8e5a064551581f18148",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 18612672
+        },
+        {
+            "annotations": {
+                "ostree.components": "adwaita-icon-theme,atk,audit,audit-libs,bind-libs,bind-utils,boost-graph,boost-json,boost-locale,boost-log,boost-math,boost-program-options,boost-python3,boost-regex,boost-serialization,boost-test,boost-wave,cldr-emoji-annotation-dtd,crypto-policies-scripts,google-noto-sans-canadian-aboriginal-vf-fonts,google-noto-sans-gujarati-vf-fonts,google-noto-sans-kannada-vf-fonts,google-noto-sans-oriya-vf-fonts,google-noto-sans-telugu-vf-fonts,google-noto-serif-gujarati-vf-fonts,google-noto-serif-khmer-vf-fonts,google-noto-serif-oriya-vf-fonts,google-noto-serif-tamil-vf-fonts,kf5-kwallet,kf6-kquickcharts,libnfsidmap,libxmlb,man-pages,openssl,qt6-qtconnectivity,qt6-qtimageformats,qt6-qtpositioning,qt6-qtremoteobjects,qt6-qtsensors,qt6-qttools,qt6-qttools-libs-help,qt6-qtwebchannel,qt6-qtwebview,wine-alsa,xorg-x11-server-Xephyr,xorg-x11-server-Xorg,xorg-x11-server-Xvfb,xwaylandvideobridge"
+            },
+            "digest": "sha256:113f28baa5b5cedcfbfe4d4fe98cce08ef9db04e27319fc7b4d4f28410d74e9f",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 18716557
+        },
+        {
+            "annotations": {
+                "ostree.components": "boost-filesystem,boost-thread,colord-kde,elfutils-libelf,elfutils-libs,firewall-config,firewalld,gnome-desktop3,ibus-anthy-python,intel-gmmlib,just,kf5-kguiaddons,kf6-attica,kf6-bluez-qt,kf6-frameworkintegration,kf6-kbookmarks,kf6-kcalendarcore,kf6-kcodecs,kf6-kcontacts,kf6-kholidays,kf6-kirigami-addons,kf6-kitemmodels,kf6-knotifications,kf6-kpackage,kf6-kparts,kf6-kpeople,kf6-kservice,kf6-ksvg,kf6-ktexttemplate,kf6-networkmanager-qt,kf6-syndication,kio-admin,libnghttp2,libxml2,ocean-sound-theme,openssh,openssh-clients,openssh-server,pam,passim,python3-audit,python3-firewall,python3-libxml2,qt6-qtspeech,qt6-qtwebsockets,vte291,vte291-gtk4,wine-pulseaudio"
+            },
+            "digest": "sha256:3a2e8587121d0a736b96e87a203488d846b97fe58a53c94e65b6633ffba1398c",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 19237024
+        },
+        {
+            "annotations": {
+                "ostree.components": "curl,gnutls,kde-inotify-survey,kdegraphics-thumbnailers,kdnssd,kf5-frameworkintegration,kf5-kio-core,kf5-kio-core-libs,kf5-kio-file-widgets,kf5-kio-gui,kf5-kio-widgets,kf5-kio-widgets-libs,kf5-kwayland,kf6-karchive,kf6-kauth,kf6-kcolorscheme,kf6-kcompletion,kf6-kconfig,kf6-kcoreaddons,kf6-kdeclarative,kf6-kdesu,kf6-kdnssd,kf6-knotifyconfig,kf6-kpty,kf6-ktextwidgets,kf6-kwallet,kf6-kwallet-libs,kf6-prison,kf6-purpose,kf6-sonnet,kf6-syntax-highlighting,konsole-part,libcurl,libcurl-minimal,libtracker-sparql,nspr,nss,nss-softokn,nss-softokn-freebl,nss-util,plasma-activities-stats,qt6-qtsvg,rocm-opencl,sddm,wireplumber,wireplumber-libs,xorg-x11-server-Xwayland,zlib-ng-compat"
+            },
+            "digest": "sha256:2103196396220bd8a5c59b9deb7c38b692c10e572227606ec9e94e1a378f2e85",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 25454676
+        },
+        {
+            "annotations": {
+                "ostree.components": "ark,ark-libs,baloo-widgets,distribution-gpg-keys,dolphin-plugins,dracut,filelight,harfbuzz,hplip-common,hplip-libs,intel-audio-firmware,iwlwifi-dvm-firmware,kamera,kcharselect,kcron,kdebugsettings,kdialog,keditbookmarks,kf6-baloo,kf6-kconfigwidgets,kf6-kdoctools,kf6-kfilemetadata,kf6-kglobalaccel,kf6-ki18n,kf6-kitemviews,kf6-knewstuff,kf6-krunner,kf6-solid,kfind,kio-gdrive,kpmcore,kwalletmanager5,libertas-firmware,libkgapi,libsane-hpaio,plasma-activities,python3-dnf,python3-email-validator,python3-sentry-sdk,qt6-qt5compat,qt6-qtmultimedia,realtek-firmware,sqlite,sqlite-libs,sssd-client,sssd-kcm,util-linux,util-linux-core"
+            },
+            "digest": "sha256:35da8a58dabd2cfd83fb11b5186c1c2eace62d6e818e5995f779142d4fa9b9d2",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 38449950
+        },
+        {
+            "annotations": {
+                "ostree.components": "amd-ucode-firmware,bluedevil,cirrus-audio-firmware,enchant2,flatpak-kcm,gstreamer1-plugins-bad-free-libs,gstreamer1-plugins-good-qt,gstreamer1-plugins-good-qt6,gvfs,kaccounts-providers,kate-libs,kdecoration,kf6-baloo-file,kf6-baloo-libs,kf6-kcmutils,kf6-kimageformats,kf6-kstatusnotifieritem,kf6-kuserfeedback,kf6-qqc2-desktop-style,kinfocenter,kmenuedit,kmousetool,ksystemstats,kwayland-integration,kwrite,libblkid,libfdisk,libmount,libsmartcols,libuv,linux-firmware-whence,mariadb-errmsg,mariadb-server-utils,nxpwireless-firmware,opencv-core,perl-Math-BigInt,plasma-milou,plasma-print-manager,plasma-print-manager-libs,plasma-systemsettings,plasma-thunderbolt,plasma-vault,python3-tkinter,qqc2-breeze-style,sddm-kcm,unbound-libs,xdg-desktop-portal,zeromq"
+            },
+            "digest": "sha256:90a3b7e1166e548aa552b120106897454e2bb3998f87c380b832e9a86211c5f8",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 23264334
+        },
+        {
+            "annotations": {
+                "ostree.components": "bluez,bluez-libs,bluez-obexd,breeze-gtk-common,breeze-gtk-gtk3,breeze-gtk-gtk4,brlapi,cockpit-podman,dolphin-libs,ffmpeg,kactivitymanagerd,kde-cli-tools,kde-connect-libs,kde-gtk-config,kdesu,kf6-kdbusaddons,kf6-kguiaddons,kf6-kiconthemes,kf6-kidletime,kf6-kjobwidgets,kf6-kwindowsystem,kf6-kxmlgui,kglobalacceld,krfb,krfb-libs,kscreen,kscreenlocker,kwayland,libadwaita,libavdevice,mariadb-common,plasma-breeze,plasma-breeze-qt5,plasma-breeze-qt6,plasma-browser-integration,plasma-disks,plasma-nm-openconnect,plasma-nm-openvpn,plasma-nm-vpnc,plasma-pa,plasma-systemmonitor,polkit-kde,python3-brlapi,python3-rpm,python3-unbound,qemu-user-static-s390x,rpm-build-libs,rpm-libs"
+            },
+            "digest": "sha256:f03b21d2b23f432a5621984eb901c6f92a2ee755250650e9a2516ba0be63dd63",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 21530732
+        },
+        {
+            "annotations": {
+                "ostree.components": "clang17,crun,cups-client,cups-libs,distrobox,fwupd-plugin-uefi-capsule-data,grub2-pc-modules,grub2-tools-minimal,kaccounts-integration-qt6,kf6-kio-core,kf6-kio-core-libs,kf6-kio-file-widgets,kf6-kio-gui,kf6-kio-widgets,kf6-kio-widgets-libs,kf6-modemmanager-qt,kpipewire,libgcc,libgfortran,libgomp,libkscreen,libksysguard,libksysguard-common,libstdc++,llvm17-googletest,llvm17-test,passt,passt-selinux,plasma-discover,plasma-discover-flatpak,plasma-discover-libs,plasma-drkonqi,plasma-integration,plasma-integration-qt5,plasma5support,plymouth,plymouth-core-libs,plymouth-graphics-libs,plymouth-theme-spinner,powerdevil,qemu-guest-agent,qemu-user-static-alpha,qemu-user-static-cris,qemu-user-static-hppa,qemu-user-static-m68k,qemu-user-static-nios2,qemu-user-static-or1k,xdg-desktop-portal-kde"
+            },
+            "digest": "sha256:3908d0512ae8504216d0abe3fd67dda0034cccf368829ded76f78167cb28f14f",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 31842305
+        },
+        {
+            "annotations": {
+                "ostree.components": "cockpit-bridge,cockpit-networkmanager,cockpit-selinux,cockpit-storaged,cockpit-system,fastfetch,ibus-libs,ibus-panel,ibus-setup,libsmbclient,plasma-discover-notifier,redhat-rpm-config,samba-client,samba-common,samba-common-libs"
+            },
+            "digest": "sha256:b1b756bd489d13be091f345ec063dffeff06916e58aaacba32dccb831b41a4f6",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 9467920
+        },
+        {
+            "annotations": {
+                "ostree.components": "ImageMagick-libs,NetworkManager,NetworkManager-libnm,adwaita-cursor-theme,alsa-sof-firmware,bash,btrfs-progs,ca-certificates,coreutils,coreutils-common,flatpak,gnupg2,gstreamer1,gstreamer1-plugins-base,gvisor-tap-vsock,gvisor-tap-vsock-gvforwarder,hwdata,ipp-usb,kf5-kwidgetsaddons,libjxl,libqalculate,libva-intel-media-driver,lutris,nvme-cli,oneVPL-intel-gpu,openexr-libs,openssl-libs,perl-Encode,perl-libs,python3-lxml,python3-netaddr,python3-policycoreutils,python3-pydantic-core,python3-setuptools,qt5-qtquickcontrols,qt5-qtquickcontrols2,qt5-qttools-libs-designer,qt5-qtwayland,qt6-qtbase,qt6-qtquick3d,qt6-qttools-libs-designer,qt6-qttranslations,rocm-comgr,shadow-utils,spirv-tools-libs,unar,wine-filesystem,zenity"
+            },
+            "digest": "sha256:b0b1e5bf74d04d65f4bf536f6d6c77aae0ff98053cc3c836f0d4e7af90dc33e3",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 140472693
+        },
+        {
+            "annotations": {
+                "ostree.components": "akonadi-server,brcmfmac-firmware,brltty,cups,dolphin,gsettings-desktop-schemas,gstreamer1-plugins-bad-free,gstreamer1-plugins-good,gvfs-client,ibus-anthy,intel-gpu-firmware,kate-plugins,kde-connect,kde-partitionmanager,kdeplasma-addons,kf6-ktexteditor,kf6-kunitconversion,kf6-kwidgetsaddons,khelpcenter,kio-extras,kio-extras-kf5,konsole,libaom,libplasma,librsvg2,lld17-libs,mt7xxx-firmware,netavark,opencv-imgproc,openssl-devel,plasma-nm,python3-pydantic,python3-pyqt6,qemu-user-static-aarch64,qemu-user-static-arm,qemu-user-static-riscv,qemu-user-static-sparc,qemu-user-static-x86,qemu-user-static-xtensa,qt6-qtpdf,qt6-qtshadertools,qt6-qtvirtualkeyboard,qt6-qtwayland,spectacle,sssd-common,tiwilink-firmware,toolbox,vlc-plugins-base"
+            },
+            "digest": "sha256:63c1807cd39ab731f696ac6848e2af957a66cfbdd765695a832db5935cf9e7ca",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 168954346
+        },
+        {
+            "annotations": {
+                "ostree.components": "cups-ipptool,fwupd,grub2-common,grub2-tools,grub2-tools-extra,ibus-typing-booster,kf6-kio-doc,kf6-kirigami,obs-studio-libs,plasma-desktop-doc,qemu-user-static-hexagon,qemu-user-static-loongarch64,qemu-user-static-microblaze,qemu-user-static-sh4,qt5-qtbase"
+            },
+            "digest": "sha256:dd5752c67c1472f2f65116c0db95458fe4de21148995bb720c3a19f48ee808da",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 44900333
+        },
+        {
+            "annotations": {
+                "ostree.components": "adobe-mappings-cmap,anthy-unicode,displaylink,docbook-style-xsl,f40-backgrounds-base,flite,glow,google-noto-sans-mono-cjk-vf-fonts,gum,gutenprint,ibus-libzhuyin,intel-mediasdk,iso-codes,libpinyin-data,lpcnetfreedv,lxc,mingw32-libstdc++,mingw64-libstdc++,qt,qt-x11,speech-dispatcher,steamdeck-kde-presets,unicode-ucd,x265-libs"
+            },
+            "digest": "sha256:9aacb969a924f1d3520cf8e039ac6377c3190a732808d9ad3042ec265f5041a5",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 238013359
+        },
+        {
+            "annotations": {
+                "ostree.components": "adjustor,adwaita-icon-theme-legacy,discover-overlay,duperemove,e2fsprogs-libs,extest,gamescope,gamescope-libs,gamescope-shaders,gtksourceview3,hfsutils,hhd,libaccounts-glib,libratbag-ratbagd,libtirpc,libvmaf,mesa-libEGL,mesa-libGL,mesa-libglapi,ostree,ostree-libs,pam_yubico,ptyxis,python3-click,rom-properties,rom-properties-common,rom-properties-kf6,schroedinger,slang,steamdeck-dsp,stix-fonts,taglib,tesseract-langpack-eng,twitter-twemoji-fonts,upower,upower-libs,usermode,usrsctp,vamp-plugin-sdk,vmaf-models,voikko-fi,volume_key-libs,vpower,winetricks,wlroots0.16,xvidcore,xwiimote-ng,zvbi"
+            },
+            "digest": "sha256:a46eb7b24200698d65c00ddf1443b1a25d415b5b0b81c5a73940ba9641afc761",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 25590959
+        },
+        {
+            "annotations": {
+                "ostree.components": "ModemManager,adobe-mappings-pdf,alsa-firmware,aspell-en,cracklib-dicts,docbook-dtds,e2fsprogs,espeak-ng,exiv2,fedora-workstation-backgrounds,file-libs,freeipmi,gnustep-base-libs,google-droid-sans-fonts,google-noto-color-emoji-fonts,gtk2,gtkmm3.0,ibus-table-chinese-cangjie,ipmitool,ladspa-noise-suppression-for-voice,lato-fonts,libgphoto2,libhangul,liblouis-tables,libqmi,libva-intel-driver,lxc-libs,maliit-keyboard,mangohud,mesa-libOSMesa,mesa-libxatracker,microcode_ctl,mingw-binutils-generic,mingw32-SDL2,nerd-fonts,poppler-data,python3-pygments,sane-backends-drivers-cameras,shared-mime-info,svt-av1-libs,system-config-printer-libs,system76-scheduler,tcl,webapp-manager,words,wpa_supplicant,xapps,xkeyboard-config"
+            },
+            "digest": "sha256:bea35a57379445806bacce184bc4f7eabf2e14a7658b34023400d02036bb1900",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 150926073
+        },
+        {
+            "annotations": {
+                "ostree.components": "antiword,augeas-libs,avahi,bison,catdoc,ctags,duktape,exiv2-libs,fdk-aac-free,fluid-soundfont-gs,gcr3,gcr3-base,gdouros-symbola-fonts,geolite2-country,gtk2-engines,gts,highcontrast-icon-theme,hunspell,ibus-table-chinese-quick,jemalloc,jfsutils,jomolhari-fonts,kyotocabinet-libs,lame-libs,libGLEW,libaacs,libexif,liblerc,libmatroska,libstemmer,libthai,libunistring1.0,libvncserver,libvorbis,live555,lzo,maliit-framework-qt5,mdadm,mingw32-lcms2,mingw32-libtiff,mingw64-lcms2,mingw64-libtiff,mpg123-libs,net-tools,ntfsprogs,open-sans-fonts,p7zip,p7zip-plugins,parted,protobuf,protobuf-lite,psmisc,pulseaudio-libs,python3-protobuf,python3-pyroute2,python3-simpleaudio,python3-xlib,pyzy-db-android,quota,redhat-menus,sbsigntools,sed,setroubleshoot-plugins,sil-mingzat-fonts,sil-nuosu-fonts,sil-padauk-fonts,sni-qt,sound-theme-freedesktop,soundtouch,soxr,speexdsp,tslib,twolame-libs,udftools,unzip,urw-base35-bookman-fonts,urw-base35-c059-fonts,urw-base35-gothic-fonts,urw-base35-nimbus-mono-ps-fonts,urw-base35-nimbus-roman-fonts,urw-base35-nimbus-sans-fonts,urw-base35-p052-fonts,userspace-rcu,vazirmatn-vf-fonts,vkBasalt,vo-amrwbenc,vpnc,webrtc-audio-processing,wireguard-tools,woff2,xapian-core-libs,xdg-user-dirs,yad,ykpers,zimg,zip"
+            },
+            "digest": "sha256:4614612f249119ac4cf57aa095327c5d09f5bc45d4892fc5e8447c38f845a375",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 60271904
+        },
+        {
+            "annotations": {
+                "ostree.components": "NetworkManager-openconnect,abattis-cantarell-fonts,abattis-cantarell-vf-fonts,accountsservice,adwaita-gtk2-theme,aspell,avahi-libs,bcache-tools,braille-printer-app,chafa,chafa-libs,cifs-utils,cockpit-navigator,daala-libs,dbus-glib,dbusmenu-qt,dbusmenu-qt5,f2fs-tools,f3,fribidi,game-music-emu,gc,gdbm,glibmm2.4,graphene,gtksourceview4,hfsplus-tools,ibus-hangul,isns-utils-libs,iw,ladspa-caps-plugins,lame,libass,libavc1394,libbabeltrace,libbluray,libcdio,libdca,libdisplay-info,libdvbpsi,libdvdread,libgnomekbd,libmng,libmodplug,libmpc,libmpeg2,libmtp,libmusicbrainz5,libpcap,libpng12,libraw1394,librist,libslirp,libssh2,libtheora,libvisual,libvoikko,libxklavier,lirc-libs,logrotate,lv2,lz4,madan-fonts,maliit-framework,media-player-info,mpdecimal,mtools,nano,nilfs-utils,ntfs-3g,ntfs-3g-libs,openconnect,opencore-amr,openpgm,opus-tools,pcre,pinfo,pulseaudio-utils,python3-dasbus,python3-dbus,python3-jmespath,python3-progressbar2,python3-pygdbmi,python3-pyxdg,python3-websocket-client,pyzy,qrencode-libs,quota-nls,sdl12-compat,signon-plugin-oauth2,signon-ui,spice-vdagent,tar,tk,urw-base35-z003-fonts,wavpack"
+            },
+            "digest": "sha256:a7eeeb594a99ee2764308fa643a9b92300cc33004ca71430b43629eeda8c4f9f",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 23887574
+        },
+        {
+            "annotations": {
+                "ostree.components": "NetworkManager-openvpn,NetworkManager-vpnc,accounts-qml-module-qt6,adobe-mappings-cmap-deprecated,atkmm,bash-completion,cairo,dbus-daemon,dbus-libs,dconf,dmraid-libs,dwz,efivar-libs,fedora-logos,findutils,fira-code-fonts,flac-libs,flex,fprintd,freeglut,fuse-encfs,gawk,gawk-all-langpacks,geoclue2,glfw,gmp,gssproxy,hspell,ibus-pinyin,json-glib,libbpf,libbrotli,libcec,libdc1394,libepoxy,libevent,libfprint,libgcrypt,libimagequant,libinstpatch,liblouisutdml,libnfs,libnice,libpinyin,libpng,libpwquality,libsamplerate,libunistring,libwnck3,libxkbcommon,libzhuyin,libzstd,lua-libs,m4,mariadb-connector-c,mingw32-libjpeg-turbo,mingw32-libpng,mingw32-libxslt,mingw32-winpthreads,mingw64-libjpeg-turbo,mingw64-libpng,mingw64-libxslt,mingw64-winpthreads,mobile-broadband-provider-info,nettle,ocfs2-tools,oniguruma,openal-soft,paktype-naskh-basic-fonts,pcre2,pcre2-syntax,pcre2-utf16,pcre2-utf32,perl-Pod-Simple,perl-Storable,perl-podlators,plocate,python3-enchant,python3-inotify,python3-moddb,python3-olefile,python3-pefile,python3-pyatspi,python3-pyudev,satyr,setup,spdlog,udica,usbutils,waydroid,xmlrpc-c,xmlsec1,xmlsec1-openssl,yyjson,zstd,zxing-cpp"
+            },
+            "digest": "sha256:686381d945d8b95bee5d5f62d2262dfd9fd7e04fb6a384a761dc45fc7d9b6558",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 31876823
+        },
+        {
+            "annotations": {
+                "ostree.components": "ModemManager-glib,alsa-utils,bc,catatonit,codec2,corosynclib,ddcutil,desktop-file-utils,dhcp-client,diffutils,dnsmasq,fftw-libs-double,flashrom,gdk-pixbuf2,graphite2,gutenprint-cups,hunspell-en,hunspell-en-GB,hunspell-en-US,i2c-tools,ibus-qt,icoutils,jbig2dec-libs,kasumi-unicode,kmod-wl-6.9.4-201.fsync.fc40.x86_64,libXaw,libXft,libcanberra,libcdio-paranoia,libddcutil,libde265,libebml,liberation-mono-fonts,liberation-sans-fonts,liberation-serif-fonts,libgbinder,libglvnd,libglvnd-glx,libgpg-error,libjcat,libjpeg-turbo,libldb,libmanette,libmbim,libqmi-utils,libseccomp,libshout,libsndfile,libspatialaudio,libuser,libwmf-lite,libzstd-devel,lshw,lsof,lvm2,lvm2-libs,lxcfs,make,mcelog,mingw32-FAudio,mingw64-SDL2,mtr,netpbm,newt,nftables,ocl-icd,opensc,orc,pam-u2f,perl-IO-Socket-SSL,perl-PathTools,pkcs11-helper,popt,powertop,python3-distro,python3-evdev,python3-pexpect,python3-utils,qca-qt6,readline,rsync,sane-backends,setroubleshoot-server,socat,source-highlight,srt-libs,thermald,tpm2-tools,unixODBC,usb_modeswitch,vapoursynth-libs,waydroid-selinux,xkbcomp,xorg-x11-xinit,zoxide,zram-generator"
+            },
+            "digest": "sha256:268245665ae7707c63e4e7f658c3afc77a56b43768cde2cfe25fb6882cd7ad77",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 38286702
+        },
+        {
+            "annotations": {
+                "ostree.components": "adobe-source-code-pro-fonts,alsa-lib,attr,bcc,bcc-tools,btop,cairomm,cpio,cracklib,criu,cryfs,device-mapper,device-mapper-libs,dhcp-common,dosfstools,egl-utils,exfatprogs,fuse,fuse-libs,fwupd-efi,fzf,gd,gdk-pixbuf2-modules,glx-utils,gpsd-libs,groff-base,gupnp,gutenprint-libs,gzip,hwloc-libs,kdsoap-ws-discovery-client,keyutils,kmod,ladspa,lcms2,leptonica,less,libFAudio,libICE,libXfont2,libXpm,libXt,libaccounts-qt6,libcddb,libdatachannel,libfido2,libglvnd-opengl,libibverbs,libmbim-utils,libnet,libnftnl,libportal,libqb,libsane-airscan,libshaderc,libsoup3,libupnp,libxcrypt,libxcrypt-compat,lm_sensors,lrzsz,m17n-db,mesa-libGLU,mingw32-libgcc,mingw32-zlib,mingw64-FAudio,mingw64-libgcc,mingw64-zlib,neon,pangomm,pcsc-lite-ccid,perl-File-Temp,perl-HTML-Parser,perl-HTTP-Message,perl-Net-SSLeay,perl-Pod-Perldoc,perl-Scalar-List-Utils,perl-libnet,phonon-qt5-backend-vlc,phonon-qt6-backend-vlc,pkcs11-provider,polkit-qt5-1,polkit-qt6-1,python3-beautifulsoup4,python3-configobj,python3-psutil,python3-systemd,python3-tldextract,qaccessibilityclient-qt6,qca-qt6-ossl,sane-airscan,setroubleshoot,smartmontools,tcpdump,tmux,x264-libs"
+            },
+            "digest": "sha256:e365c3c5ac572d53b2c1ce02e505565ec447892602ef94c0dcca8ab7fd159ffb",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 31992425
+        },
+        {
+            "annotations": {
+                "ostree.components": "PackageKit-Qt6,alsa-ucm,conmon,dmidecode,expat,fluidsynth-libs,grep,gspell,imath,kio-fuse,libXmu,libbsd,libcaca,libdbusmenu,libdrm,libedit,libgusb,libidn2,libksba,liblouis,libmad,libnl3,libnl3-cli,libsemanage,libsepol,libssh,libusb1,libxkbfile,libxslt,lzip,m17n-lib,nvtop,openjpeg2,opus,pango,paps,pcsc-lite,perl-Cpanel-JSON-XS,perl-DBD-MariaDB,perl-XML-Parser,phonon-common,phonon-qt5,phonon-qt6,pigz,pixman,ppp,python3-bcc,python3-cairo,python3-cups,python3-dateutil,python3-gbinder,python3-idna,python3-libsemanage,python3-markdown-it-py,python3-pyqt6-sip,python3-speechd,rit-meera-new-fonts,signon,signon-qt6,xdg-utils"
+            },
+            "digest": "sha256:e8d64d6e4b3c5a54c4d81ded6b7a652568328ff7e963c7f5fbc06a89b3679eac",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 11356902
+        },
+        {
+            "annotations": {
+                "ostree.components": "sudo"
+            },
+            "digest": "sha256:30e5dbd8abbf533bc70f993bae5bbb4a09b9ff4a45301bf7f549290f699dc08b",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 2039443
+        },
+        {
+            "annotations": {
+                "ostree.components": "initramfs,rpmostree-unpackaged-content"
+            },
+            "digest": "sha256:ce82b44f7ec409045200aa373fad20f61bf61c664296d4fe204da584df6251a3",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 804541097
+        },
+        {
+            "annotations": {
+                "ostree.components": ""
+            },
+            "digest": "sha256:9dad063a624b62064bf25dbbc2e802e472d636056f661f2a0be73efd8a4da98b",
+            "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+            "size": 2341
+        }
+    ],
+    "schemaVersion": 2
+}

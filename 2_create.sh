@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+if [ $(id -u) -ne 0 ]; then
+    echo "Run as superuser"
+    exit 1
+fi
+
 # this script creates the ostree from ./tree
 # NEEDS TO RUN AS ROOT OR WITH `podman unshare`
 TREE=${TREE:=./tree}
@@ -18,9 +24,9 @@ ostree --repo=./repo init
 ostree --repo=./repo commit \
     -b $OUT_TAG \
     --tree=dir=$TREE \
-    --consume \
     --bootable \
     --selinux-policy="${MOUNT}"
+# --consume \ # eats the previous dir, makes hard to rerun
 # --tar-autocreate-parents \ Use this setting if ingesting from tar to avoid error
         
 # Cleanup
