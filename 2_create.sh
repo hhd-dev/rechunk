@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
-# this script creates the ostree from
-TREE=./tree
-IMAGE=ghcr.io/ublue-os/bazzite-deck
-TAG=40-20240616
-
-# e.g., bazzite-deck
-IMAGE_NAME=$(echo $IMAGE | rev | cut -d'/' -f1 | rev)
-OUT_TAG=${IMAGE_NAME}_${TAG}
+# this script creates the ostree from ./tree
+# NEEDS TO RUN AS ROOT OR WITH `podman unshare`
+TREE=${TREE:=./tree}
+IMAGE_REF=${IMAGE_REF:=ghcr.io/ublue-os/bazzite-deck:40-20240616}
+OUT_TAG=master
 
 # Create a temporary container to pull the
 # so we can mount for SELinux
-CREF=$(podman create $IMAGE_NAME:$TAG)
+CREF=$(podman create $IMAGE_REF)
 MOUNT=$(podman mount $CREF)
 
 # Create a fresh ostree repo
