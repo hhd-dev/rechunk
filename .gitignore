@@ -2,3 +2,5 @@ venv
 repo
 cache
 tree
+*.tar
+*.oci-archive
