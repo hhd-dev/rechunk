@@ -12,7 +12,13 @@ TIMESTAMP=${TIMESTAMP:=202001010100}
 # Main OSTree dir, is not used by consuming scripts, only checked as a sanity check
 echo Pruning files in $TREE
 rm -rf $TREE/sysroot
-rm -r $TREE/ostree
+rm -rf $TREE/ostree
+
+# Remove extra etc dir, not needed
+# Causes errors with both loading on podman and
+# when deploying
+rm -rf $TREE/etc
+# ln -s usr/etc $TREE/etc # TODO: Check it works for container UX
 
 # Remove duplicate files
 # rm -rf $TREE/etc/containers/policy.json
