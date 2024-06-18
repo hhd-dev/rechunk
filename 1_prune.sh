@@ -23,8 +23,8 @@ rm -rf $TREE/ostree
 # OSTree will error out if both dirs exist
 # And rpm-ostree will be confused and use only one of them
 cp -r --preserve=links --remove-destination \
-    $TREE/usr/etc/* $TREE/etc/ 
-rm -r $TREE/usr/etc
+    $TREE/etc/* $TREE/usr/etc/
+rm -r $TREE/etc
 
 # Touch files for reproducibility
 # TODO: Check / may not be needed
