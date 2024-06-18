@@ -22,8 +22,7 @@ rm -rf $TREE/ostree
 # Merge /usr/etc to /etc
 # OSTree will error out if both dirs exist
 # And rpm-ostree will be confused and use only one of them
-cp -r --preserve=links --remove-destination \
-    $TREE/etc/* $TREE/usr/etc/
+rsync -a $TREE/etc/ $TREE/usr/etc/
 rm -r $TREE/etc
 
 # Make basic dirs
