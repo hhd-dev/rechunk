@@ -29,8 +29,9 @@ rm -r $TREE/etc
 # Make basic dirs
 # that OSTree expects and will panic without
 # (initramfs script will fail)
-# 
-mkdir -p $TREE/sysroot/ostree
+# https://github.com/M1cha/archlinux-ostree/
+
+mkdir -p $TREE/sysroot
 ln -s sysroot/ostree $TREE/ostree
 
 # Deal with /boot?
