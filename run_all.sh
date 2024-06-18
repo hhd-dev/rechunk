@@ -27,10 +27,10 @@ echo Image ref is: $IMAGE_REF
 echo "Will save as $OUT_NAME.oci-archive"
 
 echo
-echo "##### Unpacking image to $TREE"
+echo "##### Unpacking image"
 time ./0_unpack.sh
 echo
-echo "##### Pruning $TREE"
+echo "##### Pruning Tree"
 time ./1_prune.sh
 echo
 echo "##### Creating OSTree repo"

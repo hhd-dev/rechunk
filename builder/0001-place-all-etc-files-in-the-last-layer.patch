@@ -1,0 +1,27 @@
+From a2caa7bccbb1dfa43d10cdb08389e8d247264861 Mon Sep 17 00:00:00 2001
+From: antheas <git@antheas.dev>
+Date: Tue, 18 Jun 2024 14:57:30 +0200
+Subject: [PATCH] place all /etc files in the last layer
+
+---
+ rust/src/container.rs | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/rust/src/container.rs b/rust/src/container.rs
+index 5a14c7b0..8ef77d66 100644
+--- a/rust/src/container.rs
++++ b/rust/src/container.rs
+@@ -391,6 +391,10 @@ pub fn container_encapsulate(args: Vec<String>) -> CxxResult<()> {
+         for (nevra, pkgmeta) in package_meta.iter() {
+             for path in pkgmeta.provided_paths()? {
+                 let path = Utf8PathBuf::from(path);
++                if path.starts_with("/etc") || path.starts_with("/usr/etc") {
++                    // Place all /etc files to the last layer
++                    continue;
++                }
+ 
+                 // Resolve the path to its ostree file
+                 if let Some(ostree_paths) = fsutil::resolve_ostree_paths(
+-- 
+2.45.2
+

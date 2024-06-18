@@ -62,9 +62,15 @@ RUN git submodule update --init; \
     ./autogen.sh --prefix=/usr --libdir=/usr/lib64 --sysconfdir=/etc
 RUN cargo fetch
 
+# Make once to cache most of the build process
+# TODO: Remove for production
+RUN make
+
 # Apply patches
 COPY 0001-skip-multiple-packages-check-to-avoid-32bit-packages.patch /tmp/patch.patch
-RUN patch -Np1 < "/tmp/patch.patch"
+COPY 0001-place-all-etc-files-in-the-last-layer.patch /tmp/patch2.patch
+RUN patch -Np1 < "/tmp/patch.patch"; \
+    patch -Np1 < "/tmp/patch2.patch"
 
 # Make
 RUN make

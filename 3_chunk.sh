@@ -21,6 +21,7 @@ ${RPM_OSTREE} compose \
     container-encapsulate \
     --repo=repo ${OUT_TAG} \
     --max-layers ${MAX_LAYERS} \
+    --write-contentmeta-json ${OUT_NAME}.contentmeta.json \
     oci-archive:${OUT_NAME}.oci-archive
 
 echo Created archive with name $OUT_NAME.oci-archive

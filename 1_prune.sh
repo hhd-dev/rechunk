@@ -24,6 +24,7 @@ rm -rf $TREE/ostree
 # And rpm-ostree will be confused and use only one of them
 cp -r --preserve=links --remove-destination \
     $TREE/usr/etc/* $TREE/etc/ 
+rm -r $TREE/usr/etc
 
 # Touch files for reproducibility
 # TODO: Check / may not be needed
