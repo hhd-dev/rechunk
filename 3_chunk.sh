@@ -29,7 +29,7 @@ MAX_LAYERS=${MAX_LAYERS:=40}
 OUT_TAG=${OUT_TAG:=master}
 RPM_OSTREE=${RPM_OSTREE:=rpm-ostree}
 
-echo Creating archive with name $OUT_NAME.oci-archive
+echo Creating archive with ref ${OUT_REF}
 ${RPM_OSTREE} compose \
     container-encapsulate \
     --repo=repo ${OUT_TAG} \
