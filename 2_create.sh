@@ -5,11 +5,15 @@ if [ $(id -u) -ne 0 ]; then
     exit 1
 fi
 
+if [ -z "$IMAGE_REF" ]; then
+    echo "IMAGE_REF is empty"
+    exit 1
+fi
+
 # this script creates the ostree from ./tree
 # NEEDS TO RUN AS ROOT OR WITH `podman unshare`
 TREE=${TREE:=./tree}
-IMAGE_REF=${IMAGE_REF:=ghcr.io/ublue-os/bazzite-deck:40-20240616}
-OUT_TAG=master
+OUT_TAG=${OUT_TAG:=master}
 
 # Create a temporary container to pull the
 # so we can mount for SELinux

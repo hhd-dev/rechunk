@@ -4,31 +4,26 @@ if [ $(id -u) -ne 0 ]; then
     echo "Run as superuser"
 fi
 
-# Image and tag
-IMAGE=${IMAGE:=ghcr.io/ublue-os/bazzite}
-TAG=${TAG:=40-20240616}
-IMAGE_NAME=$(echo $IMAGE | rev | cut -d'/' -f1 | rev)
+# Use env file if it exists
+if [ -f .env ]; then
+    echo "Sourcing .env"
+    . .env
+fi
 
-# Use this as an intermediary dir for cleanup
-TREE=${TREE:=./tree}
+if [ -z "$IMAGE_REF" ] || [ -z "$OUT_NAME" ]; then
+    echo "IMAGE_REF or OUT_NAME is empty"
+    exit 1
+fi
 
-# Use this timestamp for reproducibility
-TIMESTAMP=${TIMESTAMP:=202001010100}
-
-# # Run podman unshare to enable rootless mounts
-# if [ $(id -u) -ne 0 ]; then
-#     podman unshare
-# fi
-
+# Pin image ref to make sure the SELinux mount
+# and extracted ./tree are the same
 echo
-echo Pulling ${IMAGE}:${TAG}
-IMAGE_REF=$(podman pull ${IMAGE}:${TAG})
+echo Pulling $IMAGE_REF
+export IMAGE_REF=$(podman pull $IMAGE_REF)
+export OUT_NAME=${OUT_NAME}
 
 echo
 echo Image ref is: $IMAGE_REF
-
-OUT_NAME_REF=${IMAGE_NAME}_${TAG}_${IMAGE_REF::5}
-OUT_NAME=${OUT_NAME:=$OUT_NAME_REF}
 echo "Will save as $OUT_NAME.oci-archive"
 
 echo

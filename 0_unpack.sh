@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
+# run this script outside docker to use your local image cache if 
+# applicable, extracts provided image to ./tree
 
 if [ $(id -u) -ne 0 ]; then
     echo "Run as superuser"
     exit 1
 fi
 
-# run this script outside docker to use your local image cache if 
-# applicable, extracts provided image to ./tree
+if [ -z "$IMAGE_REF" ]; then
+    echo "IMAGE_REF is empty"
+    exit 1
+fi
+
 TREE=${TREE:=./tree}
-IMAGE_REF=${IMAGE_REF:=ghcr.io/ublue-os/bazzite-deck:40-20240616}
+# Prevent heavy tears by forcing relative path
+TREE=./$TREE
 
 # Dump container image to local dir for modifications
 rm -rf $TREE

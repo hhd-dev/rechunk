@@ -6,3 +6,4 @@ tree
 *.oci-archive
 *.json
 tmp
+.env

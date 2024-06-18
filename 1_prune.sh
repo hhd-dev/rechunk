@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
+# Prune files in tree that are extraneous
 
 if [ $(id -u) -ne 0 ]; then
     echo "Run as superuser"
     exit 1
 fi
 
-# Prune files in tree that are extraneous
 TREE=${TREE:=./tree}
 TIMESTAMP=${TIMESTAMP:=202001010100}
 
-# Main OSTree dir, is not used by consuming scripts, only checked as a sanity check
+# Prevent heavy tears by forcing relative path
+TREE=./$TREE
+
+# Main OSTree dir, is remade in the end
+# If it contains kinoite files that were removed by bazzite,
+# they will be retained, bloating the final image
 echo Pruning files in $TREE
 rm -rf $TREE/sysroot
 rm -rf $TREE/ostree
 
-# Remove extra etc dir, not needed
-# Causes errors with both loading on podman and
-# when deploying
-rm -rf $TREE/etc
-# ln -s usr/etc $TREE/etc # TODO: Check it works for container UX
-
-# Remove duplicate files
-# rm -rf $TREE/etc/containers/policy.json
-# rm -rf $TREE/etc/yafti.yml
+# Merge /usr/etc to /etc
+# OSTree will error out if both dirs exist
+# And rpm-ostree will be confused and use only one of them
+cp -r --preserve=links --remove-destination \
+    $TREE/usr/etc/* $TREE/etc/ 
 
 # Touch files for reproducibility
 # TODO: Check / may not be needed
