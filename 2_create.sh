@@ -34,6 +34,7 @@ ostree --repo=./repo commit \
 # --tar-autocreate-parents \ Use this setting if ingesting from tar to avoid error
         
 # Cleanup
+echo Creating repo with ref "$OUT_TAG"
 podman unmount $CREF > /dev/null
 podman rm $CREF > /dev/null
 
