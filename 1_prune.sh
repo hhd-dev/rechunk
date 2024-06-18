@@ -26,6 +26,15 @@ cp -r --preserve=links --remove-destination \
     $TREE/etc/* $TREE/usr/etc/
 rm -r $TREE/etc
 
+# Make basic dirs
+# that OSTree expects and will panic without
+# (initramfs script will fail)
+# 
+mkdir -p $TREE/sysroot/ostree
+ln -s sysroot/ostree $TREE/ostree
+
+# Deal with /boot?
+
 # Touch files for reproducibility
 # TODO: Check / may not be needed
 echo Touching files with timestamp $TIMESTAMP for reproducibility
