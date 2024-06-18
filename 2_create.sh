@@ -17,8 +17,11 @@ OUT_TAG=${OUT_TAG:=master}
 
 # Create a temporary container to pull the
 # so we can mount for SELinux
+echo Mounting image with ref "$IMAGE_REF"
 CREF=$(podman create $IMAGE_REF)
 MOUNT=$(podman mount $CREF)
+
+echo Creating repo with ref "$OUT_TAG"
 
 # Create a fresh ostree repo
 rm -rf ./repo
@@ -34,7 +37,7 @@ ostree --repo=./repo commit \
 # --tar-autocreate-parents \ Use this setting if ingesting from tar to avoid error
         
 # Cleanup
-echo Creating repo with ref "$OUT_TAG"
+echo Created repo with ref "$OUT_TAG"
 podman unmount $CREF > /dev/null
 podman rm $CREF > /dev/null
 

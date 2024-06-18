@@ -10,6 +10,11 @@ if [ -z "$OUT_NAME" ]; then
     exit 1
 fi
 
+if [ -z "$OUT_REF" ]; then
+    echo "OUT_REF is empty"
+    exit 1
+fi
+
 PREV_ARG=""
 if [ -z "$PREV_NAME" ]; then
     echo "Warning: PREV_NAME is empty. Will not use previous build to avoid layer shifts."
@@ -31,9 +36,9 @@ ${RPM_OSTREE} compose \
     --max-layers ${MAX_LAYERS} \
     --write-contentmeta-json ${OUT_NAME}.contentmeta.json \
     ${PREV_ARG} \
-    oci-archive:${OUT_NAME}.oci-archive
+    ${OUT_REF}
 
-echo Created archive with name $OUT_NAME.oci-archive
+echo Created archive with ref ${OUT_REF}
 echo Writing manifests to $OUT_NAME.manifest.json, $OUT_NAME.manifest.raw.json
-skopeo inspect oci-archive:${OUT_NAME}.oci-archive > ${OUT_NAME}.manifest.json
-skopeo inspect --raw oci-archive:${OUT_NAME}.oci-archive > ${OUT_NAME}.manifest.raw.json
+skopeo inspect ${OUT_REF} > ${OUT_NAME}.manifest.json
+skopeo inspect --raw ${OUT_REF} > ${OUT_NAME}.manifest.raw.json
