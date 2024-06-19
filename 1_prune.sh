@@ -47,8 +47,14 @@ rm -rf $TREE/etc/group*
 # Merge /usr/etc to /etc
 # OSTree will error out if both dirs exist
 # And rpm-ostree will be confused and use only one of them
-rsync -a $TREE/etc/ $TREE/usr/etc/
-rm -r $TREE/etc
+# rsync -a $TREE/usr/etc/ $TREE/etc/
+# rm -rf $TREE/usr/etc
+rm -r $TREE/usr/etc
+mv $TREE/etc $TREE/usr/etc 
+
+# Extra files leftover from container stuff
+rm -r $TREE/run/*
+rm -r $TREE/var/*
 
 # Make basic dirs
 # that OSTree expects and will panic without

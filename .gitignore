@@ -9,3 +9,4 @@ tmp
 .env
 *_oci
 auth.json
+comp

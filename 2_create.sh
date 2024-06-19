@@ -30,10 +30,11 @@ ostree --repo=./repo init --mode=bare-user
 # Set option to reduce fsync for transient builds
 ostree --repo=repo config set 'core.fsync' 'false'
 
-# Ingest previous tree dir, using mount for SELinux
+# Ingest previous tree dir
 ostree --repo=./repo commit \
     -b $OUT_TAG \
     --tree=dir=$TREE \
+    --selinux-policy-from-base \
     --bootable \
 # --selinux-policy="${MOUNT}" # tree now has correct selinux policy
 # --consume \ # eats the previous dir, makes hard to rerun

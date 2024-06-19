@@ -32,7 +32,6 @@ ln -s $MOUNT $TREE
 
 echo
 echo Image ref is: $IMAGE_REF
-echo "Will save as $OUT_NAME.oci-archive"
 
 echo "##### Pruning Tree"
 time ./1_prune.sh
