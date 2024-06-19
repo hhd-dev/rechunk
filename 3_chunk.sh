@@ -14,6 +14,7 @@ if [ -z "$OUT_REF" ]; then
     echo "OUT_REF is empty"
     exit 1
 fi
+set -e
 
 PREV_ARG=""
 if [ -z "$PREV_NAME" ]; then
@@ -28,6 +29,16 @@ fi
 MAX_LAYERS=${MAX_LAYERS:=40}
 OUT_TAG=${OUT_TAG:=master}
 RPM_OSTREE=${RPM_OSTREE:=rpm-ostree}
+
+# Login for uploading
+if [[ $OUT_REF == registry* && -f auth.json ]]; then
+    base_url=$(echo $OUT_REF | cut -d':' -f2 | cut -d'/' -f1)
+    echo Logging in to $base_url
+    if ! skopeo login --authfile auth.json ${base_url}; then
+        echo "Failed to authenticate with skopeo"
+        exit 1
+    fi
+fi
 
 echo Creating archive with ref ${OUT_REF}
 ${RPM_OSTREE} compose \
