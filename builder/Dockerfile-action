@@ -9,27 +9,10 @@ FROM quay.io/coreos-assembler/fcos-buildroot:testing-devel as build
 RUN dnf install -y skopeo buildah just git jq fuse-overlayfs \
     make bubblewrap fedpkg selinux-policy-targeted
 
-# # Used for ci-test
-# RUN dnf install -y python3 python3-pip python3-devel
-# COPY ./requirements.txt /tmp/requirements.txt
-# RUN pip install -r /tmp/requirements.txt
-
-# Allow for user access to files through container
-# and for use of sudo for escalation
-ARG UID=1000
-ARG GID=1000
-
-RUN groupadd admin -g $GID && \
-    useradd admin -u $UID -g admin -ms /bin/bash && \
-    passwd -d admin && \
-    echo "admin ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/user && \
-    chmod 0440 /etc/sudoers.d/user
-
 #
 # Build rpm-ostree
 #
-# Is a package, but handling lib32 steam deps
-# requires a couple patches. 
+
 ARG RPM_OSTREE_TAG="v2024.6"
 RUN mkdir -p /sources; \
     cd /sources; \
@@ -42,10 +25,6 @@ WORKDIR /sources/rpm-ostree
 RUN git submodule update --init; \
     ./autogen.sh --prefix=/usr --libdir=/usr/lib64 --sysconfdir=/etc
 RUN cargo fetch
-
-# Make once to cache most of the build process
-# TODO: Remove for production
-RUN make
 
 # Apply patches
 COPY 0001-skip-multiple-packages-check-to-avoid-32bit-packages.patch /tmp/patch.patch

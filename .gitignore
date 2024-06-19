@@ -8,3 +8,4 @@ tree
 tmp
 .env
 *_oci
+auth.json
