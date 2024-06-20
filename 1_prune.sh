@@ -19,6 +19,10 @@ echo Pruning files in $TREE
 rm -rf $TREE/sysroot
 rm -rf $TREE/ostree
 
+#
+# /etc handling
+#
+
 # Handle files that rpm-ostree would normally remove
 if [ -f $TREE/etc/passwd ]; then
     echo
@@ -53,6 +57,14 @@ root:x:0:
 wheel:x:10:
 EOT
 
+# Merge /usr/etc to /etc
+# OSTree will error out if both dirs exist
+# And rpm-ostree will be confused and use only one of them
+if [ -d $TREE/usr/etc ]; then
+    rsync -a $TREE/usr/etc/ $TREE/etc/
+    rm -rf $TREE/usr/etc
+fi
+
 # Extra lock files created by container processes that might cause issues
 # Referencing OSTree
 # // Lock/backup files that should not be in the base commit (TODO fix).
@@ -74,20 +86,31 @@ rm -rf \
     $TREE/etc/subuid- \
     $TREE/etc/subgid- \
 
-# Merge /usr/etc to /etc then copy it back
-# OSTree will error out if both dirs exist
-# And rpm-ostree will be confused and use only one of them
-rsync -a $TREE/usr/etc/ $TREE/etc/
-rm -rf $TREE/usr/etc
+# Move back etc
 mv $TREE/etc $TREE/usr/etc 
 
-# Extra files leftover from container stuff
+#
+# Other directories
+#
+
+# Copy var files to factory
+if [ -d $TREE/var ]; then
+    rsync -a $TREE/var/ $TREE/usr/share/factory/var/
+    rm -rf $TREE/var
+fi
+
+# Remove top level dir contents
+# TODO: Fix perms ?
+# const EXCLUDED_TOPLEVEL_PATHS: &[&str] = &["run", "tmp", "proc", "sys", "dev"];
 rm -rf \
     $TREE/run/* \
-    $TREE/var/* \
+    $TREE/tmp/* \
+    $TREE/proc/* \
+    $TREE/sys/* \
+    $TREE/dev/* \
     $TREE/boot/* \
     .dockerenv \
-    $TREE/etc/containers/* \
+    # $TREE/etc/containers/* \ # Remove this ?
 
 # Make basic dirs
 # that OSTree expects and will panic without
