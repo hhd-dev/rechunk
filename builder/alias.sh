@@ -33,3 +33,13 @@ compl() {
 
     sudo diff --brief --recursive --no-dereference $outd | grep -v "sysroot/ostree"
 }
+
+compa() {
+    # compare 2 file attributes
+    # 1 and 2 are mounted instances of the diffedd and original image
+    for i in $1/$3 $2/$3; do
+        echo "######## $i"
+        sudo stat -c "%a" $i
+        sudo getfattr -h -d -m '' $i
+    done
+}
