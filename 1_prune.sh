@@ -40,21 +40,54 @@ if [ -f $TREE/etc/passwd ] || [ -f $TREE/etc/group ]; then
     echo "Warning: Make sure processed users and groups are from installed programs!"
 fi
 
-# Remove passwd and group files
-rm -rf $TREE/etc/passwd*
-rm -rf $TREE/etc/group*
+# Remove passwd and group backup files
+rm -rf $TREE/etc/passwd- \
+    $TREE/etc/group- 
 
-# Merge /usr/etc to /etc
+# Create defaults for /etc/passwd, /etc/group
+cat <<EOT > $TREE/etc/passwd
+root:x:0:0:root:/root:/bin/bash
+EOT
+cat <<EOT > $TREE/etc/group
+root:x:0:
+wheel:x:10:
+EOT
+
+# Extra lock files created by container processes that might cause issues
+# Referencing OSTree
+# // Lock/backup files that should not be in the base commit (TODO fix).
+# static PWGRP_LOCK_AND_BACKUP_FILES: &[&str] = &[
+#     ".pwd.lock",
+#     "passwd-",
+#     "group-",
+#     "shadow-",
+#     "gshadow-",
+#     "subuid-",
+#     "subgid-",
+# ];
+rm -rf \
+    $TREE/etc/.pwd.lock \
+    $TREE/etc/passwd- \
+    $TREE/etc/group- \
+    $TREE/etc/shadow- \
+    $TREE/etc/gshadow- \
+    $TREE/etc/subuid- \
+    $TREE/etc/subgid- \
+
+# Merge /usr/etc to /etc then copy it back
 # OSTree will error out if both dirs exist
 # And rpm-ostree will be confused and use only one of them
-# rsync -a $TREE/usr/etc/ $TREE/etc/
-# rm -rf $TREE/usr/etc
-rm -r $TREE/usr/etc
+rsync -a $TREE/usr/etc/ $TREE/etc/
+rm -rf $TREE/usr/etc
 mv $TREE/etc $TREE/usr/etc 
 
 # Extra files leftover from container stuff
-rm -r $TREE/run/*
-rm -r $TREE/var/*
+rm -rf \
+    $TREE/run/* \
+    $TREE/var/* \
+    $TREE/boot/* \
+    .dockerenv \
+    $TREE/etc/containers/* \
 
 # Make basic dirs
 # that OSTree expects and will panic without
@@ -69,4 +102,10 @@ ln -s sysroot/ostree $TREE/ostree
 # Touch files for reproducibility
 echo
 echo Touching files with timestamp $TIMESTAMP for reproducibility
-sudo find $TREE/ -exec touch -t $TIMESTAMP -h {} + &> /dev/null
+# Also remove user.overlay.impure, which comes from somewhere
+sudo find $TREE/ \
+    -exec touch -t $TIMESTAMP -h {} + \
+    &> /dev/null
+# This attribute exists in some files, could be removed
+# but seems harmless and causes a delay
+# -exec setfattr --remove user.overlay.impure {} + \
