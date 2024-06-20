@@ -17,12 +17,6 @@ if [ -z "$IMAGE_REF" ] || [ -z "$OUT_NAME" ]; then
     exit 1
 fi
 
-# Check rpm-ostree exists to a void wasting time
-if [ -n $SKIP_CHUNK ] && [ ! $(command -v rpm-ostree) ]; then
-    echo "rpm-ostree command not found. Run me in podman?"
-    exit 1
-fi
-
 # Load and mount image to ./tree
 echo
 echo Creating a $IMAGE_REF container
@@ -34,6 +28,11 @@ export TREE=${TREE:=./tree}
 TREE=./$TREE
 rm -rf $TREE
 MOUNT=$(buildah mount $CREF)
+if [ -z $MOUNT ] ; then
+    echo "Mount is empty."
+    exit 1
+fi
+
 ln -s $MOUNT $TREE
 
 if [ -n "$JUST_MOUNT" ]; then
@@ -41,6 +40,12 @@ if [ -n "$JUST_MOUNT" ]; then
     echo "Mounted at '$MOUNT'"
     echo "Symlink to '$TREE'"
     exit 0
+fi
+
+# Check rpm-ostree exists to a void wasting time
+if [ -n $SKIP_CHUNK ] && [ ! $(command -v rpm-ostree) ]; then
+    echo "rpm-ostree command not found. Run me in podman?"
+    exit 1
 fi
 
 echo
