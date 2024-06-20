@@ -85,6 +85,7 @@ rm -rf \
     $TREE/etc/gshadow- \
     $TREE/etc/subuid- \
     $TREE/etc/subgid- \
+    $TREE/.dockerenv \
 
 # Move back etc
 mv $TREE/etc $TREE/usr/etc 
@@ -95,21 +96,26 @@ mv $TREE/etc $TREE/usr/etc
 
 # Copy var files to factory
 if [ -d $TREE/var ]; then
+    mkdir -p $TREE/usr/share/factory/var
     rsync -a $TREE/var/ $TREE/usr/share/factory/var/
-    rm -rf $TREE/var
 fi
 
 # Remove top level dir contents
 # TODO: Fix perms ?
 # const EXCLUDED_TOPLEVEL_PATHS: &[&str] = &["run", "tmp", "proc", "sys", "dev"];
-rm -rf \
-    $TREE/run/* \
-    $TREE/tmp/* \
-    $TREE/proc/* \
-    $TREE/sys/* \
-    $TREE/dev/* \
-    $TREE/boot/* \
-    .dockerenv \
+echo
+echo Removing top level directory contents:
+find \
+    $TREE/var/ \
+    $TREE/run/ \
+    $TREE/tmp/ \
+    $TREE/proc/ \
+    $TREE/sys/ \
+    $TREE/dev/ \
+    $TREE/boot/ \
+    -mindepth 1 \
+    -exec rm -rf {} + \
+    -exec echo {} + \
     # $TREE/etc/containers/* \ # Remove this ?
 
 # Make basic dirs
@@ -120,7 +126,28 @@ rm -rf \
 mkdir -p $TREE/sysroot
 ln -s sysroot/ostree $TREE/ostree
 
-# Deal with /boot?
+# Fix perms. Unsure why these break
+# FIXME: Find out why and remove
+chmod 750 $TREE/usr/etc/audit
+chmod 750 $TREE/usr/etc/audit/rules.d
+chmod 755 $TREE/usr/etc/bluetooth
+chmod 750 $TREE/usr/etc/dhcp
+chmod 750 $TREE/usr/etc/firewalld
+chmod 700 $TREE/usr/etc/grub.d
+chmod 700 $TREE/usr/etc/nftables
+chmod 700 $TREE/usr/etc/nftables/osf
+chmod 555 $TREE/usr/etc/pki/ca-trust/extracted/pem/directory-hash
+chmod 750 $TREE/usr/etc/polkit-1/rules.d
+chmod 700 $TREE/usr/etc/ssh/sshd_config.d
+chmod 700 $TREE/usr/lib/containers/storage/overlay-images
+chmod 700 $TREE/usr/lib/containers/storage/overlay-layers
+chmod 700 $TREE/usr/lib/ostree-boot/efi
+chmod 700 $TREE/usr/lib/ostree-boot/efi/EFI
+chmod 700 $TREE/usr/lib/ostree-boot/efi/EFI/BOOT
+chmod 700 $TREE/usr/lib/ostree-boot/efi/EFI/fedora
+chmod 700 $TREE/usr/lib/ostree-boot/grub2
+chmod 700 $TREE/usr/lib/ostree-boot/grub2/fonts
+chmod 750 $TREE/usr/libexec/initscripts/legacy-actions/auditd
 
 # Touch files for reproducibility
 echo
@@ -128,7 +155,5 @@ echo Touching files with timestamp $TIMESTAMP for reproducibility
 # Also remove user.overlay.impure, which comes from somewhere
 sudo find $TREE/ \
     -exec touch -t $TIMESTAMP -h {} + \
-    &> /dev/null
-# This attribute exists in some files, could be removed
-# but seems harmless and causes a delay
-# -exec setfattr --remove user.overlay.impure {} + \
+    -exec setfattr --remove user.overlay.impure {} + \
+    &> /dev/null || true
