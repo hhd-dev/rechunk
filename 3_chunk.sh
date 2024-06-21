@@ -21,7 +21,7 @@ if [ -z "$PREV_NAME" ]; then
     echo "Warning: PREV_NAME is empty. Will not use previous build to avoid layer shifts."
 else
     echo "Using previous manifest $PREV_NAME to avoid layer shifts."
-    if [-d $PREV_NAME.manifest.raw.json ]; then
+    if [ -d $PREV_NAME.manifest.raw.json ]; then
         echo "Previous build $PREV_NAME does not exist."
         exit 1
     fi
