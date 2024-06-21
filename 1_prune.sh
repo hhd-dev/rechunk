@@ -44,10 +44,6 @@ if [ -f $TREE/etc/passwd ] || [ -f $TREE/etc/group ]; then
     echo "Warning: Make sure processed users and groups are from installed programs!"
 fi
 
-# Remove passwd and group backup files
-rm -rf $TREE/etc/passwd- \
-    $TREE/etc/group- 
-
 # Create defaults for /etc/passwd, /etc/group
 cat <<EOT > $TREE/etc/passwd
 root:x:0:0:root:/root:/bin/bash
@@ -93,6 +89,15 @@ mv $TREE/etc $TREE/usr/etc
 #
 # Other directories
 #
+
+# Copy opt
+
+# Copy var/lib to /usr/lib
+if [ -d $TREE/var ]; then
+    mkdir -p $TREE/usr/lib
+    rsync -a $TREE/var/lib/ $TREE/usr/lib/
+    rm -r $TREE/var/lib
+fi
 
 # Copy var files to factory
 if [ -d $TREE/var ]; then
