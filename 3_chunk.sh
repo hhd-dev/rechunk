@@ -59,4 +59,4 @@ skopeo inspect ${OUT_REF} > ${OUT_NAME}.manifest.json
 skopeo inspect --raw ${OUT_REF} > ${OUT_NAME}.manifest.raw.json
 
 # Reset perms to make the files usable
-chmod 666 ${OUT_NAME}*
+chmod 666 ${OUT_NAME}* -R
