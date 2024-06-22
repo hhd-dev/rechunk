@@ -64,10 +64,12 @@ RUN cargo fetch
 RUN make
 
 # Apply patches
-COPY 0001-skip-multiple-packages-check-to-avoid-32bit-packages.patch /tmp/patch.patch
-COPY 0001-place-all-etc-files-in-the-last-layer.patch /tmp/patch2.patch
-RUN patch -Np1 < "/tmp/patch.patch"; \
-    patch -Np1 < "/tmp/patch2.patch"
+RUN mkdir -p /tmp/rosp
+COPY *.patch /tmp/rosp
+RUN for patch in /tmp/rosp/*.patch; do \
+    echo "Applying patch: $patch"; \
+    patch -Np1 < $patch; \
+    done
 
 # Make with patches (90s vs 5m)
 RUN make
