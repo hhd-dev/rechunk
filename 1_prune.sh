@@ -106,7 +106,7 @@ if [ -d $TREE/var ]; then
 fi
 
 # Remove top level dir contents
-# TODO: Fix perms ?
+# TODO: fix /var/lib to symlink to /usr/lib
 # const EXCLUDED_TOPLEVEL_PATHS: &[&str] = &["run", "tmp", "proc", "sys", "dev"];
 echo
 echo Removing top level directory contents:
@@ -122,6 +122,13 @@ find \
     -exec rm -rf {} + \
     -exec echo {} + \
     # $TREE/etc/containers/* \ # Remove this ?
+
+#
+# Cache busters
+#
+
+# Changes every docker build
+rm -rf $TREE/usr/lib/.build-id
 
 # Make basic dirs
 # that OSTree expects and will panic without
