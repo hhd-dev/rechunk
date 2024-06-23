@@ -178,7 +178,7 @@ def print_results(
         total_bw += np.sum(layer_upd[i]) * sum([p.size for p in l])
 
     # Detailed package breakdown and frequency analysis
-    logger.info(f"Packages in layers:")
+    logger.info(f"Packages in layers (sorted by frequency):")
     for i, l in sorted(
         enumerate(layers), key=lambda x: -float(np.sum(layer_upd[x[0]]))
     ):
@@ -186,16 +186,16 @@ def print_results(
             f"{i+1:3d}: (pkg: {len(l):3d}, freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f})",  #:\n{str([p.nevra for p in l])}",
         )
 
-    # Condensed results
-    log = f"Final layer fill:\n"
-    for i, (l, pl) in enumerate(zip(layers, prefill_layers)):
-        log += f"Layer {i+1:2d}: {sum([p.size for p in l]) / 1e6:3.0f} MB "
-        log += f"(compr. {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}) with {len(l):3d}"
-        if len(pl) != len(l):
-            log += f" packages (prev {sum([p.size for p in pl]) / 1e6:3.0f} MB with {len(pl):3d}).\n"
-        else:
-            log += " packages.\n"
-    logger.info(log)
+    # # Condensed results
+    # log = f"Final layer fill:\n"
+    # for i, (l, pl) in enumerate(zip(layers, prefill_layers)):
+    #     log += f"Layer {i+1:2d}: {sum([p.size for p in l]) / 1e6:3.0f} MB "
+    #     log += f"(compr. {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}) with {len(l):3d}"
+    #     if len(pl) != len(l):
+    #         log += f" packages (prev {sum([p.size for p in pl]) / 1e6:3.0f} MB with {len(pl):3d}).\n"
+    #     else:
+    #         log += " packages.\n"
+    # logger.info(log)
 
     logger.info(
         f"Total per update (uncompressed): {total_bw / (n_segments * 1e9):.3f} GB.\n"
@@ -228,9 +228,10 @@ def main():
     unpackage_size = total_size - package_size
 
     log = f"Size analysis:\n"
-    log += f" - Packages: {package_size / 1e9:.3f} GB."
-    log += f" - Unpackaged: {unpackage_size / 1e9:.3f} GB."
+    log += f" - Packages: {package_size / 1e9:.3f} GB.\n"
+    log += f" - Unpackaged: {unpackage_size / 1e9:.3f} GB.\n"
     log += f" - Total: {total_size / 1e9:.3f} GB."
+    logger.info(log)
 
     # Calculate plan
     layer_size = total_size / max_layers
