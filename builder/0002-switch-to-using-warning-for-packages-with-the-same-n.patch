@@ -26,7 +26,7 @@ index 46f63621..8ad003dd 100644
 -              = g_strdup_printf ("Multiple installed '%s' (%s, %s)", name_c.c_str (),
 -                                 retval->nevra ().c_str (), nevra.c_str ());
 -          throw std::runtime_error (buf);
-+          g_print ("Warning! Multiple installed '%s' (%s, %s).",
++          g_print ("Warning! Multiple installed '%s' (%s, %s).\n",
 +                   name_c.c_str (), retval->nevra ().c_str (), nevra.c_str ());
          }
  
