@@ -29,12 +29,19 @@ def prefill_layers(
 
     # Handle dedicated packages
     dedi_layers = []
+    dedi = 0
     for p in packages:
         if p.dedicated:
             dedi_layers.append([p])
+            logger.info(
+                f"Layer {dedi+1:2d}: Using dedicated layer for meta {p.name}."
+            )
+            dedi += 1
             todo.pop(p)
     max_layers -= len(dedi_layers)
-    assert max_layers > 0, "No layers left after dedicated packages (set dedicated=False for some packages in meta.yml)."
+    assert (
+        max_layers > 0
+    ), "No layers left after dedicated packages (set dedicated=False for some packages in meta.yml)."
 
     # Handle the rest of the layers
     pbar = tqdm(total=max_layers, desc="Initial layer fill")
@@ -61,7 +68,7 @@ def prefill_layers(
         elif l_size > fill_size:
             layers.append(curr)
             logger.info(
-                f"Layer {len(layers):2d}: {l_size / 1e9:.3f} GB with {len(curr):3d} packages."
+                f"Layer {dedi+len(layers):2d}: {l_size / 1e9:.3f} GB with {len(curr):3d} packages."
             )
             if len(layers) >= max_layers:
                 break
@@ -205,7 +212,7 @@ def print_results(
         enumerate(layers), key=lambda x: -float(np.sum(layer_upd[x[0]]))
     ):
         logger.info(
-            f"{i+1:3d}: (pkg: {len(l):3d}, freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}):\n{str([p.nevra for p in l])}",
+            f"{i+1:3d}: (freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}, pkg: {len(l):3d})",  #:\n{str([p.nevra for p in l])}",
         )
 
     # # Condensed results
@@ -243,29 +250,33 @@ def process_meta(meta: dict[str, Any], files: dict[str, int], packages: list[Pac
                     meta_files.extend([f.name for f in pkg.files])
 
         total_size = 0
+        added_files = False
         for fn in meta_files:
-            if fn not in mapping:
+            if fn not in mapping and fn in remaining_files:
                 mapping[fn] = name
-            s = remaining_files.pop(fn, 0)
+                s = remaining_files.pop(fn, 0)
+                added_files = True
             total_size += s
 
-        new_packages.append(
-            Package(
-                index=len(new_packages),
-                name=name,
-                nevra=name,
-                size=total_size,
-                dedicated=contents.get("dedicated", True),
+        if added_files:
+            # Only add if it has files to prevent wasting layers
+            new_packages.append(
+                Package(
+                    index=len(new_packages),
+                    name=name,
+                    nevra=name,
+                    size=total_size,
+                    dedicated=contents.get("dedicated", True),
+                )
             )
-        )
 
     for pkg in remaining_packages.values():
         new_size = 0
         for f in pkg.files:
             fn = f.name
-            new_size += remaining_files.pop(fn, 0)
-            if fn not in mapping:
+            if fn not in mapping and fn in remaining_files:
                 mapping[f.name] = pkg.nevra
+                new_size += remaining_files.pop(fn, 0)
 
         new_packages.append(
             Package(
@@ -300,7 +311,7 @@ def main():
     dir = "./tree"
     meta_fn = "./meta.yml"
     max_layers = 40
-    prefill_ratio = 0.6
+    prefill_ratio = 0.4
     max_layer_ratio = 1.3
 
     with open(meta_fn, "r") as f:
@@ -346,7 +357,9 @@ def main():
     logger.info(f"Update matrix shape: {upd_matrix.shape}.")
 
     logger.info("Prefilling layers.")
-    todo, dedi_layers, prefill = prefill_layers(new_packages, upd_matrix, max_layers, prefill_size)
+    todo, dedi_layers, prefill = prefill_layers(
+        new_packages, upd_matrix, max_layers, prefill_size
+    )
 
     logger.info("Filling layers.")
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)

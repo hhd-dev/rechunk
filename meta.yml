@@ -23,3 +23,11 @@ meta:
     files:
       # Bazzite dirty writes to /lib/firmware for the Steam Deck
       - /usr/lib/firmware/*
+  kde:
+    packages:
+      - plasma*
+      - kde*
+      - kio*
+      - kwayland*
+      - kwin*
+      - sddm*
