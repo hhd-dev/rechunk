@@ -138,6 +138,14 @@ rm -rf $TREE/usr/lib/.build-id
 mkdir -p $TREE/sysroot
 ln -s sysroot/ostree $TREE/ostree
 
+# Containerfile overode RPM db, so now there are 2 RPM dbs
+# Use hardlinks so analyzer cant take into account these being the same files
+rm -rf $TREE/usr/lib/sysimage/rpm-ostree-base-db/
+rsync -a \
+    --link-dest="../../../share/rpm" \
+    "$TREE/usr/share/rpm/" \
+    "$TREE/usr/lib/sysimage/rpm-ostree-base-db"
+
 # Fix perms. Unsure why these break
 # FIXME: Find out why and remove
 chmod 750 $TREE/usr/etc/audit
