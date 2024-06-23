@@ -14,9 +14,6 @@ meta:
     files:
       - /usr/lib/modules/*
       - /usr/lib/ostree-boot/*
-  gamescope:
-    packages:
-      - gamescope*
   mesa:
     packages:
       - mesa*
