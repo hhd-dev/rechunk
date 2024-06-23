@@ -41,6 +41,7 @@ def get_files(dir: str):
         # Read the dir directly to enable progress bar
         # and skip IPC and to string conversion
         pbar = tqdm(total=300_000, desc="Reading files")
+        inodes = set()
         all_files = {}
         for root, _, files in os.walk(dir):
             if "/sysroot/ostree" in root:
@@ -53,7 +54,14 @@ def get_files(dir: str):
                 if os.path.islink(fn):
                     s = 0
                 else:
-                    s = os.path.getsize(fn)
+                    stat = os.stat(fn, follow_symlinks=True)
+                    st_size = stat.st_size
+                    st_ino = stat.st_ino
+                    if st_ino in inodes:
+                        s = 0
+                    else:
+                        s = st_size
+                        inodes.add(st_ino)
 
                 # remove leading dot
                 all_files[fn[len(dir) :]] = s
