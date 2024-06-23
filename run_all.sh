@@ -54,6 +54,13 @@ echo Image ref is: $IMAGE_REF
 echo "##### Pruning Tree"
 time ./1_prune.sh
 
+if [ -n "$JUST_PRUNE" ]; then
+    echo "Skipping other steps due to JUST_PRUNE."
+    echo "Mounted at '$MOUNT'"
+    echo "Symlink to '$TREE'"
+    exit 0
+fi
+
 # Now that the destructive actions are done
 # switch to absolute path
 # Required by OSTree
