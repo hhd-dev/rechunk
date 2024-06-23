@@ -8,6 +8,8 @@ tree
 tmp
 .env
 *_oci
+*_oci*
 auth.json
 comp
 ref
+old
