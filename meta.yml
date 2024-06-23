@@ -11,9 +11,18 @@ meta:
   kernel:
     packages:
       - kernel*
+    files:
+      - /usr/lib/modules/*
+      - /usr/lib/ostree-boot/*
   gamescope:
     packages:
       - gamescope*
   mesa:
     packages:
       - mesa*
+  firmware:
+    packages:
+      - linux-firmware*
+    files:
+      # Bazzite dirty writes to /lib/firmware for the Steam Deck
+      - /usr/lib/firmware/*

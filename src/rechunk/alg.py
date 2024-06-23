@@ -1,10 +1,15 @@
 import logging
 
 import numpy as np
+import yaml
+from typing import Any
 
 from .fedora import get_packages
 from .model import Package
 from .utils import get_files, get_update_matrix, tqdm
+
+import fnmatch
+from rechunk.model import Package
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +27,16 @@ def prefill_layers(
     todo = dict.fromkeys(packages)
     n_segments = upd_matrix.shape[1]
 
+    # Handle dedicated packages
+    dedi_layers = []
+    for p in packages:
+        if p.dedicated:
+            dedi_layers.append([p])
+            todo.pop(p)
+    max_layers -= len(dedi_layers)
+    assert max_layers > 0, "No layers left after dedicated packages (set dedicated=False for some packages in meta.yml)."
+
+    # Handle the rest of the layers
     pbar = tqdm(total=max_layers, desc="Initial layer fill")
     layers = []
     curr = []
@@ -85,7 +100,7 @@ def prefill_layers(
     logger.info(
         f"Leftover packages: {len(todo)}/{len(packages)} with a size of {sum([p.size for p in todo]) / 1e9:.3f} GB."
     )
-    return todo, layers
+    return todo, dedi_layers, layers
 
 
 def fill_layers(
@@ -158,6 +173,7 @@ def fill_layers(
 
 
 def print_results(
+    dedi_layers: list[list[Package]],
     prefill_layers: list[list[Package]],
     layers: list[list[Package]],
     upd_matrix: np.ndarray,
@@ -178,12 +194,18 @@ def print_results(
         total_bw += np.sum(layer_upd[i]) * sum([p.size for p in l])
 
     # Detailed package breakdown and frequency analysis
+    logger.info(f"Dedicated layers:")
+    for i, l in enumerate(dedi_layers):
+        logger.info(
+            f"{i+1:3d}: (pkg: {len(l):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}): {str([p.nevra for p in l])}",
+        )
+
     logger.info(f"Packages in layers (sorted by frequency):")
     for i, l in sorted(
         enumerate(layers), key=lambda x: -float(np.sum(layer_upd[x[0]]))
     ):
         logger.info(
-            f"{i+1:3d}: (pkg: {len(l):3d}, freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f})",  #:\n{str([p.nevra for p in l])}",
+            f"{i+1:3d}: (pkg: {len(l):3d}, freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}):\n{str([p.nevra for p in l])}",
         )
 
     # # Condensed results
@@ -204,17 +226,88 @@ def print_results(
     )
 
 
+def process_meta(meta: dict[str, Any], files: dict[str, int], packages: list[Package]):
+    mapping = {}
+    remaining_files = dict(files)
+    remaining_packages = {p.nevra: p for p in packages}
+    new_packages = []
+
+    for name, contents in meta.items():
+        meta_files = []
+        for file_pat in contents.get("files", []):
+            meta_files.extend(fnmatch.filter(files.keys(), file_pat))
+        for pkg_pat in contents.get("packages", []):
+            for pname in fnmatch.filter(remaining_packages.keys(), pkg_pat):
+                pkg = remaining_packages.pop(pname, None)
+                if pkg:
+                    meta_files.extend([f.name for f in pkg.files])
+
+        total_size = 0
+        for fn in meta_files:
+            if fn not in mapping:
+                mapping[fn] = name
+            s = remaining_files.pop(fn, 0)
+            total_size += s
+
+        new_packages.append(
+            Package(
+                index=len(new_packages),
+                name=name,
+                nevra=name,
+                size=total_size,
+                dedicated=contents.get("dedicated", True),
+            )
+        )
+
+    for pkg in remaining_packages.values():
+        new_size = 0
+        for f in pkg.files:
+            fn = f.name
+            new_size += remaining_files.pop(fn, 0)
+            if fn not in mapping:
+                mapping[f.name] = pkg.nevra
+
+        new_packages.append(
+            Package(
+                index=len(new_packages),
+                name=pkg.name,
+                nevra=pkg.nevra,
+                size=new_size,
+                updates=pkg.updates,
+                dedicated=False,
+            )
+        )
+
+    # Add remaining files to unpackaged
+    for fn, s in remaining_files.items():
+        if fn not in mapping:
+            mapping[fn] = "unpackaged"
+    new_packages.append(
+        Package(
+            index=len(new_packages),
+            name="unpackaged",
+            nevra="unpackaged",
+            size=sum(remaining_files.values()),
+            dedicated=True,
+        )
+    )
+
+    return mapping, new_packages
+
+
 def main():
     # Hardcode for now
     dir = "./tree"
+    meta_fn = "./meta.yml"
     max_layers = 40
     prefill_ratio = 0.6
     max_layer_ratio = 1.3
 
+    with open(meta_fn, "r") as f:
+        meta = yaml.safe_load(f)["meta"]
 
     # File analysis of treeusing root perms
     logger.info(f"Beginning analysis.")
-    dir = "./tree"
     logger.info(f"Scanning directory '{dir}' for files.")
     files = get_files(dir)
     logger.info(f"Found {len(files)} files.")
@@ -222,15 +315,19 @@ def main():
     packages = get_packages(dir)
     logger.info(f"Found {len(packages)} packages.")
 
+    # Repackage using meta file
+    mapping, new_packages = process_meta(meta, files, packages)
+
     # Size results
-    total_size = sum([f.size for f in files])
+    total_size = sum(files.values())
     package_size = sum([p.size for p in packages])
+    new_package_size = sum([p.size for p in new_packages])
     unpackage_size = total_size - package_size
 
-    log = f"Size analysis:\n"
-    log += f" - Packages: {package_size / 1e9:.3f} GB.\n"
-    log += f" - Unpackaged: {unpackage_size / 1e9:.3f} GB.\n"
-    log += f" - Total: {total_size / 1e9:.3f} GB."
+    log = f"Size analysis:"
+    log += f"\n -   Packages: {package_size / 1e9:.3f} GB."
+    log += f"\n - Unpackaged: {unpackage_size / 1e9:.3f} GB."
+    log += f"\n -      Total: {total_size / 1e9:.3f} GB."
     logger.info(log)
 
     # Calculate plan
@@ -245,13 +342,13 @@ def main():
     )
 
     logger.info("Creating update matrix.")
-    upd_matrix = get_update_matrix(packages)
+    upd_matrix = get_update_matrix(new_packages)
     logger.info(f"Update matrix shape: {upd_matrix.shape}.")
 
     logger.info("Prefilling layers.")
-    todo, prefill = prefill_layers(packages, upd_matrix, max_layers, prefill_size)
+    todo, dedi_layers, prefill = prefill_layers(new_packages, upd_matrix, max_layers, prefill_size)
 
     logger.info("Filling layers.")
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
 
-    print_results(prefill, layers, upd_matrix)
+    print_results(dedi_layers, prefill, layers, upd_matrix)

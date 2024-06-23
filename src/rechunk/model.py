@@ -12,5 +12,6 @@ class Package(NamedTuple):
     name: str
     nevra: str
     size: int
-    files: tuple[File]
-    updates: tuple[datetime]
+    files: tuple[File, ...] = tuple()
+    updates: tuple[datetime, ...] = tuple()
+    dedicated: bool = False

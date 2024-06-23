@@ -41,7 +41,7 @@ def get_files(dir: str):
         # Read the dir directly to enable progress bar
         # and skip IPC and to string conversion
         pbar = tqdm(total=300_000, desc="Reading files")
-        all_files = []
+        all_files = {}
         for root, _, files in os.walk(dir):
             if "/sysroot/ostree" in root:
                 continue
@@ -56,17 +56,17 @@ def get_files(dir: str):
                     s = os.path.getsize(fn)
 
                 # remove leading dot
-                all_files.append(File(fn[1:], s))
+                all_files[fn[len(dir) :]] = s
                 pbar.update(1)
         pbar.close()
     else:
-        all_files = []
+        all_files = {}
 
         for line in run(f"'{sys.executable}' -m rechunk.walker '{dir}'").splitlines():
             idx = line.index(" ")
             size = int(line[:idx])
             name = line[idx + 1 :]
-            all_files.append(File(name, size))
+            all_files[name] = size
 
     return all_files
 
