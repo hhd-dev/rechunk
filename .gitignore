@@ -13,3 +13,5 @@ auth.json
 comp
 ref
 old
+*.egg-info
+__pycache__

@@ -1,0 +1,19 @@
+version: 1
+distro: fedora
+
+meta:
+  initramfs:
+    files:
+      - /usr/lib/modules/*/initramfs.img
+  homebrew:
+    files:
+      - /usr/share/homebrew.tar.zst
+  kernel:
+    packages:
+      - kernel*
+  gamescope:
+    packages:
+      - gamescope*
+  mesa:
+    packages:
+      - mesa*

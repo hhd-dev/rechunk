@@ -1,0 +1,36 @@
+[project]
+name = "rechunk"
+version = "0.0.1"
+authors = [
+  { name="Kapenekakis Antheas", email="pypi@antheas.dev" },
+]
+description = "Rechunk. A tool for reprocessing OCI images to optimize pulling."
+readme = "readme.md"
+requires-python = ">=3.10"
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX :: Linux",
+]
+
+dependencies = [
+  "PyYAML>=6.0.1",
+  "rich>=13.5.2",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/todo"
+"Bug Tracker" = "https://github.com/todo/issues"
+
+[project.entry-points."console_scripts"]
+rechunk = "rechunk.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["rechunk*"]  # package names should match these glob patterns (["*"] by default)
