@@ -239,7 +239,7 @@ def print_results(
     logger.info(
         f"Total per update (uncompressed): {total_bw / (n_segments * 1e9):.3f} GB.\n"
         + f"Total per update (compressed): {total_bw / (n_segments * 1e9) / COMPRESSION_RATIO:.3f} GB.\n"
-        + f"Layers changed per update: {np.sum([np.sum(u) for u in layer_upd]) / n_segments + len(dedi_layers) / DEDI_RATIO:.1f}."
+        + f"Layers changed per update: {np.sum([np.sum(u) for u in layer_upd]) / n_segments + len(dedi_layers) * DEDI_RATIO:.1f}."
     )
 
 
@@ -395,7 +395,7 @@ def main():
     ostree = "./tree.ls"
     meta_fn = "./meta.yml"
     layerdata_fn = "./layerdata.txt"
-    max_layers = 40
+    max_layers = 45
     prefill_ratio = 0.5
     max_layer_ratio = 1.3
 
