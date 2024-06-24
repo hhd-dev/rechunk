@@ -47,3 +47,9 @@ meta:
     packages:
       - fcitx5*
     dedicated: False
+  kf6:
+    packages:
+      - kf6*
+  llvm:
+    packages:
+      - llvm*
