@@ -20,36 +20,262 @@ meta:
       - ayaneo-platform*
       - bmi260*
       - ryzen-smu*
+  mesa-va:
+    packages:
+      - mesa-va-drivers*
+      - mesa-vdpau-drivers*
   mesa:
     packages:
       - mesa*
   firmware:
     packages:
       - linux-firmware*
-    # files:
-    #   # Bazzite dirty writes to /lib/firmware for the Steam Deck
-    #   - /usr/lib/firmware/*
-  kde:
-    packages:
-      - plasma*
-      - kde*
-      - kio*
-      - kwayland*
-      - kwin*
-      - sddm*
-  qt6:
-    packages:
-      - qt6*
+      - "*-firmware*"
   wine:
     packages:
       - wine*
+    # files:
+    #   # Bazzite dirty writes to /lib/firmware for the Steam Deck
+    #   - /usr/lib/firmware/*
+  # Analyzed by finding packages having a shared version
+  # Plasma
+  plasma:
+    packages:
+      - plasma*
+      - sddm-breeze*
+      - libkworkspace*
+      - sddm-wayland*
+  kwin:
+    packages:
+      - kwin*
+    dedicated: False
+  qt6:
+    packages:
+      - qt6*
+  qt5:
+    packages:
+      - qt5*
   fcitx5:
     packages:
       - fcitx5*
     dedicated: False
+  kio:
+    # Make kio which is from git get these packages to not invalidate kf6
+    packages:
+      - kf6-kio*
+    dedicated: False
   kf6:
     packages:
       - kf6*
+      - breeze-icon-theme*
+  kf5:
+    packages:
+      - kf5*
+    dedicated: False
+  kde_apps:
+    packages:
+      - libkexiv2-qt6*
+      - signon-kwallet-extension*
+      - kdegraphics-mobipocket*
+      - kde-inotify-survey*
+      - kpmcore*
+      - libkgapi*
+      - libkdcraw*
+      - libkexiv2-qt5*
+      - libkcompactdisc*
+      - kio-extras*
+      - libkcddb-doc*
+      - libkcddb*
+      - audiocd-kio-doc*
+      - audiocd-kio*
+      - baloo-widgets*
+      - dolphin-libs*
+      - keditbookmarks-libs*
+      - keditbookmarks*
+      - dolphin-plugins*
+      - dolphin*
+      - kate-libs*
+      - ark*
+      - ark-libs*
+      - kaccounts-integration-qt6*
+      - kaccounts-providers*
+      - akonadi-server-mysql*
+      - akonadi-server*
+      - kio-gdrive*
+      - kwrite*
+      - colord-kde*
+      - kamera*
+      - kfind*
+      - kio-admin*
+      - ffmpegthumbs*
+      - kde-partitionmanager*
+      - kdegraphics-thumbnailers*
+      - kwalletmanager5*
+      - kdialog*
+      - kdnssd*
+      - kcharselect*
+      - kdebugsettings*
+      - kate-plugins*
+      - kate*
+      - kcron*
+  kde:
+    packages:
+      - breeze-gtk-common*
+      - plasma-breeze-common*
+      - breeze-gtk-gtk3*
+      - breeze-gtk-gtk4*
+      - breeze-cursor-theme*
+      - ocean-sound-theme*
+      - plasma-activities*
+      - kwayland*
+      - layer-shell-qt*
+      - kdecoration*
+      - plasma-activities-stats*
+      - libkscreen*
+      - plasma5support*
+      - kwayland-integration*
+      - qqc2-breeze-style*
+      - plasma-breeze-qt6*
+      - kwrited*
+      - plasma-milou*
+      - libksysguard-common*
+      - polkit-kde*
+      - breeze-gtk-gtk2*
+      - libksysguard*
+      - plasma-breeze-qt5*
+      - kpipewire*
+      - libplasma*
+      - kde-cli-tools*
+      - kscreenlocker*
+      - plasma-systemsettings*
+      - plasma-nm*
+      - kglobalacceld*
+      - ksystemstats*
+      - powerdevil*
+      - kmenuedit*
+      - flatpak-kcm*
+      - plasma-breeze*
+      - plasma-pa*
+      - kactivitymanagerd*
+      - plasma-discover-libs*
+      - plasma-browser-integration*
+      - plasma-desktop*
+      - plasma-discover*
+      - plasma-discover-flatpak*
+      - plasma-print-manager-libs*
+      - plasma-print-manager*
+      - plasma-discover-notifier*
+      - kdeplasma-addons*
+      - plasma-drkonqi*
+      - plasma-systemmonitor*
+      - sddm-kcm*
+      - plasma-nm-openconnect*
+      - plasma-nm-openvpn*
+      - plasma-nm-vpnc*
+      - kinfocenter*
+      - kde-gtk-config*
+      - plasma-vault*
+      - plasma-disks*
+      - plasma-thunderbolt*
+      - pam-kwallet*
+      - plasma-workspace-wallpapers*
+      - plasma-desktop-doc*
+      - kate-krunner-plugin*
+      - ksshaskpass*
+
+  # Compilers
+  llvm-libs:
+    packages:
+      - llvm-libs*
   llvm:
     packages:
       - llvm*
+      - clang*
+  glibc:
+    packages:
+      - glibc*
+      - libsnl*
+  libgcc:
+    packages:
+      - libgcc**
+      - libgcc*
+      - libstdc++*
+      - libgomp*
+      - libobjc*
+      - cpp*
+      - libatomic*
+      - libgfortran*
+      - gcc*
+      - libgcc*
+      - libstdc++*
+      - libatomic*
+      - gcc-plugin-annobin*
+      - libgomp*
+      - libstdc++-devel*
+      - gcc-c++*
+  qemu:
+    packages:
+      - qemu*
+  fluidsynth:
+    packages:
+      - fluid-soundfont*
+  mingw:
+    packages:
+      - mingw*
+  google-fonts:
+    packages:
+      - google-noto-*
+  mariadb:
+    packages:
+      - mariadb*
+  cldr:
+    packages:
+      - cldr-emoji-annotation*
+  python3:
+    packages:
+      - python3*
+      - python-unversioned-command*
+
+  # Apps
+  vlc:
+    packages:
+      - vlc*
+    dedicated: False
+  vim:
+    packages:
+      - vim*
+      - xxd*
+    dedicated: False
+  intel_driver:
+    packages:
+      - libva*
+      - intel-media-driver*
+    dedicated: False
+  systemd:
+    packages:
+      - systemd*
+    dedicated: False
+  gstreamer:
+    packages:
+      - gstreamer1*
+    dedicated: False
+  speech:
+    packages:
+      - speech-dispatcher*
+      - python3-speechd*
+    dedicated: False
+  sane:
+    packages:
+      - sane-backends*
+    dedicated: False
+  networkmanager:
+    packages:
+      - NetworkManager*
+    dedicated: False
+  pipewire:
+    packages:
+      - pipewire*
+    dedicated: False
+  ibus:
+    packages:
+      - ibus*

@@ -216,6 +216,7 @@ def print_results(
             logger.info(data)
 
         logger.info(f"Packages in layers (sorted by frequency):")
+        f.write("Packages in layers (sorted by frequency):\n")
         for i, l in sorted(
             enumerate(layers), key=lambda x: -float(np.sum(layer_upd[x[0]]))
         ):
@@ -238,7 +239,7 @@ def print_results(
     logger.info(
         f"Total per update (uncompressed): {total_bw / (n_segments * 1e9):.3f} GB.\n"
         + f"Total per update (compressed): {total_bw / (n_segments * 1e9) / COMPRESSION_RATIO:.3f} GB.\n"
-        + f"Layers changed per update: {np.sum([np.sum(u) for u in layer_upd]) / n_segments + len(dedi_layers):.1f}."
+        + f"Layers changed per update: {np.sum([np.sum(u) for u in layer_upd]) / n_segments + len(dedi_layers) / DEDI_RATIO:.1f}."
     )
 
 
