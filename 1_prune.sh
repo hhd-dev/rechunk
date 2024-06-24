@@ -53,14 +53,6 @@ root:x:0:
 wheel:x:10:
 EOT
 
-# Merge /usr/etc to /etc
-# OSTree will error out if both dirs exist
-# And rpm-ostree will be confused and use only one of them
-if [ -d $TREE/usr/etc ]; then
-    rsync -a $TREE/usr/etc/ $TREE/etc/
-    rm -rf $TREE/usr/etc
-fi
-
 # Extra lock files created by container processes that might cause issues
 # Referencing OSTree
 # // Lock/backup files that should not be in the base commit (TODO fix).
@@ -83,8 +75,15 @@ rm -rf \
     $TREE/etc/subgid- \
     $TREE/.dockerenv \
 
-# Move back etc
-mv $TREE/etc $TREE/usr/etc 
+# Merge /etc to /usr/etc
+# OSTree will error out if both dirs exist
+# And rpm-ostree will be confused and use only one of them
+# /usr/etc might have broken permissions, so we sync /etc/ to it,
+# even though /etc is much bigger
+if [ -d $TREE/usr/etc ]; then
+    rsync -a $TREE/etc/ $TREE/usr/etc
+    rm -rf $TREE/etc
+fi
 
 #
 # Other directories
@@ -92,18 +91,18 @@ mv $TREE/etc $TREE/usr/etc
 
 # Copy opt
 
-# Copy var/lib to /usr/lib
-if [ -d $TREE/var ]; then
-    mkdir -p $TREE/usr/lib
-    rsync -a $TREE/var/lib/ $TREE/usr/lib/
-    rm -r $TREE/var/lib
-fi
+# # Copy var/lib to /usr/lib
+# if [ -d $TREE/var ]; then
+#     mkdir -p $TREE/usr/lib
+#     rsync -a $TREE/var/lib/ $TREE/usr/lib/
+#     rm -r $TREE/var/lib
+# fi
 
-# Copy var files to factory
-if [ -d $TREE/var ]; then
-    mkdir -p $TREE/usr/share/factory/var
-    rsync -a $TREE/var/ $TREE/usr/share/factory/var/
-fi
+# # Copy var files to factory
+# if [ -d $TREE/var ]; then
+#     mkdir -p $TREE/usr/share/factory/var
+#     rsync -a $TREE/var/ $TREE/usr/share/factory/var/
+# fi
 
 # Remove top level dir contents
 # TODO: fix /var/lib to symlink to /usr/lib
@@ -120,7 +119,7 @@ find \
     $TREE/boot/ \
     -mindepth 1 \
     -exec rm -rf {} + \
-    -exec echo {} + \
+    -exec echo {} +
     # $TREE/etc/containers/* \ # Remove this ?
 
 #
@@ -140,11 +139,11 @@ ln -s sysroot/ostree $TREE/ostree
 
 # Containerfile overode RPM db, so now there are 2 RPM dbs
 # Use hardlinks so analyzer cant take into account these being the same files
-rm -rf $TREE/usr/lib/sysimage/rpm-ostree-base-db/
-rsync -a \
-    --link-dest="../../../share/rpm" \
-    "$TREE/usr/share/rpm/" \
-    "$TREE/usr/lib/sysimage/rpm-ostree-base-db"
+# rm -rf $TREE/usr/lib/sysimage/rpm-ostree-base-db/
+# rsync -a \
+#     --link-dest="../../../share/rpm" \
+#     "$TREE/usr/share/rpm/" \
+#     "$TREE/usr/lib/sysimage/rpm-ostree-base-db"
 
 # Fix perms. Unsure why these break
 # FIXME: Find out why and remove

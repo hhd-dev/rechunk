@@ -8,10 +8,16 @@ class File(NamedTuple):
 
 
 class Package(NamedTuple):
-    index: int
     name: str
     nevra: str
     size: int
     files: tuple[File, ...] = tuple()
+    updates: tuple[datetime, ...] = tuple()
+
+class MetaPackage(NamedTuple):
+    index: int
+    name: str
+    nevra: tuple[str, ...]
+    size: int
     updates: tuple[datetime, ...] = tuple()
     dedicated: bool = False

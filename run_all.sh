@@ -42,12 +42,6 @@ if [ -n "$JUST_MOUNT" ]; then
     exit 0
 fi
 
-# Check rpm-ostree exists to a void wasting time
-if [ -n $SKIP_CHUNK ] && [ ! $(command -v rpm-ostree) ]; then
-    echo "rpm-ostree command not found. Run me in podman?"
-    exit 1
-fi
-
 echo
 echo Image ref is: $IMAGE_REF
 
@@ -60,7 +54,6 @@ if [ -n "$JUST_PRUNE" ]; then
     echo "Symlink to '$TREE'"
     exit 0
 fi
-
 # Now that the destructive actions are done
 # switch to absolute path
 # Required by OSTree
@@ -70,14 +63,22 @@ echo
 echo "##### Creating OSTree repo"
 time ./2_create.sh
 
+if [[ -n $SKIP_CHUNK ]]; then
+    echo "Skipping chunking due to SKIP_CHUNK."
+    exit 0
+fi
+
+# TODO, install in the image somehow
+RECHUNK=${RECHUNK:=venv/bin/rechunk}
+$RECHUNK
+cp results.txt ${OUT_NAME}.results.txt
+
 # Cleanup
 echo
 echo "##### Removing interim container"
 buildah unmount $CREF > /dev/null
 buildah rm $CREF > /dev/null
 
-if [[ -z $SKIP_CHUNK ]]; then
-    echo
-    echo "##### Chunking OSTree repo"
-    time ./3_chunk.sh
-fi
+echo
+echo "##### Chunking OSTree repo"
+time ./3_chunk.sh

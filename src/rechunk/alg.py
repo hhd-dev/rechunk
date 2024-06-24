@@ -1,26 +1,30 @@
+import fnmatch
 import logging
+from typing import Any
 
 import numpy as np
+import os
 import yaml
-from typing import Any
+
+from rechunk.model import Package, MetaPackage
 
 from .fedora import get_packages
 from .model import Package
 from .utils import get_files, get_update_matrix, tqdm
 
-import fnmatch
-from rechunk.model import Package
+from .ostree import get_ostree_map, dump_ostree_packages
 
 logger = logging.getLogger(__name__)
 
 
 def prefill_layers(
-    packages: list[Package],
+    packages: list[MetaPackage],
     upd_matrix: np.ndarray,
     max_layers: int,
     fill_size: int,
 ):
     layers = []
+    logger.info("Prefilling layers.")
 
     # Use a dict because it maintains order
     # Important for reproducibility
@@ -34,7 +38,7 @@ def prefill_layers(
         if p.dedicated:
             dedi_layers.append([p])
             logger.info(
-                f"Layer {dedi+1:2d}: Using dedicated layer for meta {p.name}."
+                f"Layer {dedi+1:2d}: {p.size / 1e9:.3f} GB, dedicated layer for meta '{p.name}'."
             )
             dedi += 1
             todo.pop(p)
@@ -104,15 +108,12 @@ def prefill_layers(
 
     pbar.update(1)
     pbar.close()
-    logger.info(
-        f"Leftover packages: {len(todo)}/{len(packages)} with a size of {sum([p.size for p in todo]) / 1e9:.3f} GB."
-    )
     return todo, dedi_layers, layers
 
 
 def fill_layers(
-    todo: dict[Package, None],
-    layers: list[list[Package]],
+    todo: dict[MetaPackage, None],
+    layers: list[list[MetaPackage]],
     upd_matrix: np.ndarray,
     max_layer_size: int,
 ):
@@ -180,12 +181,14 @@ def fill_layers(
 
 
 def print_results(
-    dedi_layers: list[list[Package]],
-    prefill_layers: list[list[Package]],
-    layers: list[list[Package]],
+    dedi_layers: list[list[MetaPackage]],
+    prefill_layers: list[list[MetaPackage]],
+    layers: list[list[MetaPackage]],
     upd_matrix: np.ndarray,
+    result_fn: str = "./results.txt",
 ):
     COMPRESSION_RATIO = 12 / 4.6  # This is for bazzite
+    DEDI_RATIO = 0.25  # Assume dedicated layers update a quarter of the time
 
     n_segments = upd_matrix.shape[1]
 
@@ -199,21 +202,27 @@ def print_results(
     total_bw = 0
     for i, l in enumerate(layers):
         total_bw += np.sum(layer_upd[i]) * sum([p.size for p in l])
+    for l in dedi_layers:
+        total_bw += np.sum([p.size for p in l]) * n_segments * DEDI_RATIO
 
-    # Detailed package breakdown and frequency analysis
-    logger.info(f"Dedicated layers:")
-    for i, l in enumerate(dedi_layers):
-        logger.info(
-            f"{i+1:3d}: (pkg: {len(l):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}): {str([p.nevra for p in l])}",
-        )
+    with open(result_fn, "w") as f:
+        # Detailed package breakdown and frequency analysis
+        logger.info(f"Dedicated layers:")
+        f.write("Dedicated layers:\n")
+        for i, l in enumerate(dedi_layers):
+            data = f"{i+1:3d}: (pkg: {len(l):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}): {l[0].name}"
+            f.write(data + "\n")
+            f.write(str([p for p in l[0].nevra]) + "\n")
+            logger.info(data)
 
-    logger.info(f"Packages in layers (sorted by frequency):")
-    for i, l in sorted(
-        enumerate(layers), key=lambda x: -float(np.sum(layer_upd[x[0]]))
-    ):
-        logger.info(
-            f"{i+1:3d}: (freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}, pkg: {len(l):3d})",  #:\n{str([p.nevra for p in l])}",
-        )
+        logger.info(f"Packages in layers (sorted by frequency):")
+        for i, l in sorted(
+            enumerate(layers), key=lambda x: -float(np.sum(layer_upd[x[0]]))
+        ):
+            data = f"{i+1:3d}: (freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}, pkg: {len(l):3d})"
+            logger.info(data)
+            f.write(data + "\n")
+            f.write(str([p.name for p in l]) + "\n")
 
     # # Condensed results
     # log = f"Final layer fill:\n"
@@ -229,11 +238,13 @@ def print_results(
     logger.info(
         f"Total per update (uncompressed): {total_bw / (n_segments * 1e9):.3f} GB.\n"
         + f"Total per update (compressed): {total_bw / (n_segments * 1e9) / COMPRESSION_RATIO:.3f} GB.\n"
-        + f"Layers changed per update: {np.sum([np.sum(u) for u in layer_upd]) / n_segments:.1f}."
+        + f"Layers changed per update: {np.sum([np.sum(u) for u in layer_upd]) / n_segments + len(dedi_layers):.1f}."
     )
 
 
-def process_meta(meta: dict[str, Any], files: dict[str, int], packages: list[Package]):
+def process_meta(
+    meta: dict[str, Any], files: dict[str, int], packages: list[Package]
+) -> tuple[dict[str, str], list[MetaPackage]]:
     mapping = {}
     remaining_files = dict(files)
     remaining_packages = {p.nevra: p for p in packages}
@@ -241,13 +252,15 @@ def process_meta(meta: dict[str, Any], files: dict[str, int], packages: list[Pac
 
     for name, contents in meta.items():
         meta_files = []
+        meta_packages = {}
         for file_pat in contents.get("files", []):
             meta_files.extend(fnmatch.filter(files.keys(), file_pat))
         for pkg_pat in contents.get("packages", []):
-            for pname in fnmatch.filter(remaining_packages.keys(), pkg_pat):
-                pkg = remaining_packages.pop(pname, None)
+            for nevra in fnmatch.filter(remaining_packages.keys(), pkg_pat):
+                pkg = remaining_packages.pop(nevra, None)
                 if pkg:
                     meta_files.extend([f.name for f in pkg.files])
+                    meta_packages[nevra] = None
 
         total_size = 0
         added_files = False
@@ -261,30 +274,42 @@ def process_meta(meta: dict[str, Any], files: dict[str, int], packages: list[Pac
         if added_files:
             # Only add if it has files to prevent wasting layers
             new_packages.append(
-                Package(
+                MetaPackage(
                     index=len(new_packages),
                     name=name,
-                    nevra=name,
+                    nevra=tuple(meta_packages.keys()),
                     size=total_size,
                     dedicated=contents.get("dedicated", True),
                 )
             )
 
-    for pkg in remaining_packages.values():
+    # Group different variants of packages together
+    remaining_names = [p.name for p in remaining_packages.values()]
+    for name in remaining_names:
         new_size = 0
-        for f in pkg.files:
-            fn = f.name
-            if fn not in mapping and fn in remaining_files:
-                mapping[f.name] = pkg.nevra
-                new_size += remaining_files.pop(fn, 0)
+        added_nevra = []
+        updates = []
+        for pkg in remaining_packages.values():
+            if pkg.name != name:
+                continue
+            added_nevra.append(pkg.nevra)
+            updates.extend(pkg.updates)
+            for f in pkg.files:
+                fn = f.name
+                if fn not in mapping and fn in remaining_files:
+                    mapping[f.name] = name
+                    new_size += remaining_files.pop(fn, 0)
+
+        for nevra in added_nevra:
+            remaining_packages.pop(nevra, None)
 
         new_packages.append(
-            Package(
+            MetaPackage(
                 index=len(new_packages),
-                name=pkg.name,
-                nevra=pkg.nevra,
+                name=name,
+                nevra=tuple(added_nevra),
                 size=new_size,
-                updates=pkg.updates,
+                updates=tuple(updates),
                 dedicated=False,
             )
         )
@@ -294,10 +319,10 @@ def process_meta(meta: dict[str, Any], files: dict[str, int], packages: list[Pac
         if fn not in mapping:
             mapping[fn] = "unpackaged"
     new_packages.append(
-        Package(
+        MetaPackage(
             index=len(new_packages),
             name="unpackaged",
-            nevra="unpackaged",
+            nevra=("unpackaged",),
             size=sum(remaining_files.values()),
             dedicated=True,
         )
@@ -306,16 +331,77 @@ def process_meta(meta: dict[str, Any], files: dict[str, int], packages: list[Pac
     return mapping, new_packages
 
 
+def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int):
+    with open(fn, "r") as f:
+        raw = f.readlines()
+
+    # Process previous manifest
+    todo = dict.fromkeys(packages)
+    dedi_layers = []
+    used_packages = set()
+    log = ""
+    prefill = []
+    for line in raw:
+        layer = []
+        logger.info(log)
+        log = ""
+        for name in line.split(","):
+            name = name.strip().replace("meta:", "")
+            if name == "null" or not name:
+                continue
+            log += f"{name}, "
+
+            pkg = None
+            for p in todo:
+                if p.name == name:
+                    pkg = p
+                    break
+
+            if pkg is None:
+                logger.warning(f"Package '{name}' was removed.")
+                continue
+
+            todo.pop(pkg, None)
+
+            if pkg.dedicated:
+                dedi_layers.append([pkg])
+                logger.info(
+                    f"Layer {len(dedi_layers)+len(prefill)}: Dedicated layer for meta '{pkg.name}'."
+                )
+            else:
+                layer.append(pkg)
+            used_packages.add(pkg)
+
+        if layer:
+            logger.info(
+                f"Layer {len(dedi_layers)+len(prefill)}: {sum([p.size for p in layer]) // 1e6} MB loaded with {len(layer)} packages."
+            )
+            prefill.append(layer)
+
+    # Add empty layers for the rest
+    for _ in range(len(dedi_layers) + len(prefill) - 1, max_layers):
+        prefill.append([])
+
+    if todo:
+        logger.info(f"New packages found:\n{[p.name for p in todo]}")
+
+    return todo, dedi_layers, prefill
+
+
 def main():
     # Hardcode for now
     dir = "./tree"
+    ostree = "./tree.ls"
     meta_fn = "./meta.yml"
+    layerdata_fn = "./layerdata.txt"
     max_layers = 40
-    prefill_ratio = 0.4
+    prefill_ratio = 0.5
     max_layer_ratio = 1.3
 
     with open(meta_fn, "r") as f:
         meta = yaml.safe_load(f)["meta"]
+
+    ostree_map, ostree_hash = get_ostree_map(ostree)
 
     # File analysis of treeusing root perms
     logger.info(f"Beginning analysis.")
@@ -328,6 +414,8 @@ def main():
 
     # Repackage using meta file
     mapping, new_packages = process_meta(meta, files, packages)
+
+    logger.info(f"Created {len(new_packages)} meta packages.")
 
     # Size results
     total_size = sum(files.values())
@@ -351,17 +439,29 @@ def main():
         + f" -   Prefill size: {prefill_size / 1e9:.3f} GB\n"
         + f" - Max layer size: {max_layer_size / 1e9:.3f} GB."
     )
-
     logger.info("Creating update matrix.")
     upd_matrix = get_update_matrix(new_packages)
     logger.info(f"Update matrix shape: {upd_matrix.shape}.")
 
-    logger.info("Prefilling layers.")
-    todo, dedi_layers, prefill = prefill_layers(
-        new_packages, upd_matrix, max_layers, prefill_size
-    )
+    if os.path.exists(layerdata_fn):
+        logger.info("Loading existing layer data.")
+        todo, dedi_layers, prefill = load_previous_manifest(
+            layerdata_fn, new_packages, max_layers
+        )
+    else:
+        logger.warning("No existing layer data. Expect layer shifts")
+        todo, dedi_layers, prefill = prefill_layers(
+            new_packages, upd_matrix, max_layers, prefill_size
+        )
 
+    logger.info(
+        f"Leftover packages: {len(todo)}/{len(packages)} with a size of {sum([p.size for p in todo]) / 1e9:.3f} GB."
+    )
     logger.info("Filling layers.")
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
 
     print_results(dedi_layers, prefill, layers, upd_matrix)
+
+    dump_ostree_packages(
+        dedi_layers, layers, "./contentmeta.json", mapping, ostree_map, ostree_hash
+    )

@@ -8,6 +8,7 @@ FROM quay.io/coreos-assembler/fcos-buildroot:testing-devel as build
 # Install niceties
 RUN dnf install -y skopeo buildah just git jq fuse-overlayfs \
     make bubblewrap fedpkg selinux-policy-targeted
+RUN dnf install -y python3 python3-pip python3-devel
 
 #
 # Build ostree-rs-ext
@@ -15,7 +16,7 @@ RUN dnf install -y skopeo buildah just git jq fuse-overlayfs \
 # Required to unencapsulate OCI to ostree
 # rpm-ostree seems to not have the ability.
 # It is not provided as a package in fedora.
-ARG OSTREE_EXT_TAG="ostree-ext-v0.14.1"
+ARG OSTREE_EXT_TAG="ostree-ext-v0.14.2"
 RUN mkdir -p /sources; \
     cd /sources; \
     git clone --branch ${OSTREE_EXT_TAG} --depth 1 \
@@ -24,6 +25,16 @@ RUN mkdir -p /sources; \
 WORKDIR /sources/ostree-rs-ext
 
 RUN cargo fetch
+RUN cargo build --release
+
+# Apply patches
+RUN mkdir -p /tmp/oext
+COPY ostree-ext/*.patch /tmp/oext
+RUN for patch in /tmp/oext/*.patch; do \
+    echo "Applying patch: $patch"; \
+    patch -Np1 < $patch; \
+    done
+
 # Only run build after fetch to avoid
 # re-downloading dependencies after fail
 RUN cargo build --release
@@ -41,39 +52,39 @@ RUN groupadd admin -g $GID && \
     echo "admin ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/user && \
     chmod 0440 /etc/sudoers.d/user
 
-#
-# Build rpm-ostree
-#
-# Is a package, but handling lib32 steam deps
-# requires a couple patches. 
-ARG RPM_OSTREE_TAG="v2024.6"
-RUN mkdir -p /sources; \
-    cd /sources; \
-    git clone --branch ${RPM_OSTREE_TAG} --depth 1 \
-    https://github.com/coreos/rpm-ostree rpm-ostree;
+# #
+# # Build rpm-ostree
+# #
+# # Is a package, but handling lib32 steam deps
+# # requires a couple patches. 
+# ARG RPM_OSTREE_TAG="v2024.6"
+# RUN mkdir -p /sources; \
+#     cd /sources; \
+#     git clone --branch ${RPM_OSTREE_TAG} --depth 1 \
+#     https://github.com/coreos/rpm-ostree rpm-ostree;
 
-WORKDIR /sources/rpm-ostree
+# WORKDIR /sources/rpm-ostree
 
-# Install dependencies
-RUN git submodule update --init; \
-    ./autogen.sh --prefix=/usr --libdir=/usr/lib64 --sysconfdir=/etc
-RUN cargo fetch
+# # Install dependencies
+# RUN git submodule update --init; \
+#     ./autogen.sh --prefix=/usr --libdir=/usr/lib64 --sysconfdir=/etc
+# RUN cargo fetch
 
-# Make once to cache most of the build process
-# TODO: Remove for production
-RUN make
+# # Make once to cache most of the build process
+# # TODO: Remove for production
+# RUN make
 
-# Apply patches
-RUN mkdir -p /tmp/rosp
-COPY *.patch /tmp/rosp
-RUN for patch in /tmp/rosp/*.patch; do \
-    echo "Applying patch: $patch"; \
-    patch -Np1 < $patch; \
-    done
+# # Apply patches
+# RUN mkdir -p /tmp/rosp
+# COPY rpm-ostree/*.patch /tmp/rosp
+# RUN for patch in /tmp/rosp/*.patch; do \
+#     echo "Applying patch: $patch"; \
+#     patch -Np1 < $patch; \
+#     done
 
-# Make with patches (90s vs 5m)
-RUN make
-RUN make install
+# # Make with patches (90s vs 5m)
+# RUN make
+# RUN make install
 
 #
 # Post-build niceties

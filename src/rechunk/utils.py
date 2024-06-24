@@ -5,7 +5,7 @@ from tqdm.auto import tqdm as tqdm_orig
 import numpy as np
 import os
 
-from .model import File, Package
+from .model import MetaPackage
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,7 @@ def get_files(dir: str):
     return all_files
 
 
-def get_update_matrix(packages: list[Package], biweekly: bool = True):
+def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
     # Update matrix for packages
     # For each package, it lists the times it was updated last year
     # The frequency is bi-weekly, assuming that a distro might update 2x
@@ -108,10 +108,12 @@ def get_update_matrix(packages: list[Package], biweekly: bool = True):
         # may have not updated last year.
         if len(p.updates) <= 2:
             p_upd[i] = 1
-            pkg_nochangelog.append(p.name)
+            # Dedicated packages we do not care for
+            if not p.dedicated:
+                pkg_nochangelog.append(p.name)
 
     logger.info(
-        f"Found {len(pkg_nochangelog)} packages with no changelog:\n{str(pkg_nochangelog)}"
+        f"Found {len(pkg_nochangelog)} packages with no changelog:\n{str(sorted(pkg_nochangelog))}"
     )
 
     return p_upd

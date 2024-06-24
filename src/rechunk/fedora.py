@@ -26,7 +26,7 @@ def get_packages(dir: str):
             name = data[0]
             nevra = data[1]
             size = int(data[2])
-            package = Package(i, name, nevra, size, tuple(files), tuple(updates))
+            package = Package(name, nevra, size, tuple(files), tuple(updates))
             packages.append(package)
 
             files = []

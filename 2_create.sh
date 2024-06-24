@@ -46,3 +46,6 @@ ostree --repo=./repo commit \
 # podman unmount $CREF > /dev/null
 # podman rm $CREF > /dev/null
 echo Created repo with ref "$OUT_TAG"
+
+echo Writing checksums to ./tree.ls
+sudo ostree ls -C --repo=./repo master -R > ./tree.ls

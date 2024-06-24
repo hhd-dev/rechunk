@@ -11,6 +11,13 @@ meta:
   kernel:
     packages:
       - kernel*
+      # Kmods
+      - kmod*
+      - nct*
+      - ayn-platform*
+      - ayaneo-platform*
+      - bmi260*
+      - ryzen-smu*
     files:
       - /usr/lib/modules/*
       - /usr/lib/ostree-boot/*
@@ -31,3 +38,9 @@ meta:
       - kwayland*
       - kwin*
       - sddm*
+  qt6:
+    packages:
+      - qt6*
+  wine:
+    packages:
+      - wine*

@@ -1,4 +1,4 @@
-venv
+venv*
 repo
 cache
 tree
@@ -15,3 +15,8 @@ ref
 old
 *.egg-info
 __pycache__
+*.ls
+contentmeta.json
+oci_*
+*layerdata.txt
+layerdata.txt
