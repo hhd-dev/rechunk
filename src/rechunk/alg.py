@@ -194,9 +194,9 @@ def print_results(
 
     # Update matrix for each layer
     layer_upd = [np.zeros(n_segments, dtype=np.bool) for _ in range(len(layers))]
-    for l in layers:
+    for i, l in enumerate(layers):
         for p in l:
-            layer_upd[layers.index(l)] |= upd_matrix[p.index]
+            layer_upd[i] |= upd_matrix[p.index]
 
     # Bandwidth calc
     total_bw = 0
@@ -252,6 +252,7 @@ def process_meta(
 
     for name, contents in meta.items():
         meta_files = []
+        meta_updates = []
         meta_packages = {}
         for file_pat in contents.get("files", []):
             meta_files.extend(fnmatch.filter(files.keys(), file_pat))
@@ -261,6 +262,7 @@ def process_meta(
                 if pkg:
                     meta_files.extend([f.name for f in pkg.files])
                     meta_packages[nevra] = None
+                    meta_updates.extend(pkg.updates)
 
         total_size = 0
         added_files = False
@@ -279,12 +281,13 @@ def process_meta(
                     name=name,
                     nevra=tuple(meta_packages.keys()),
                     size=total_size,
+                    updates=tuple(meta_updates),
                     dedicated=contents.get("dedicated", True),
                 )
             )
 
     # Group different variants of packages together
-    remaining_names = [p.name for p in remaining_packages.values()]
+    remaining_names = dict.fromkeys([p.name for p in remaining_packages.values()])
     for name in remaining_names:
         new_size = 0
         added_nevra = []
@@ -338,18 +341,14 @@ def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int
     # Process previous manifest
     todo = dict.fromkeys(packages)
     dedi_layers = []
-    used_packages = set()
-    log = ""
+    removed = list()
     prefill = []
     for line in raw:
         layer = []
-        logger.info(log)
-        log = ""
         for name in line.split(","):
             name = name.strip().replace("meta:", "")
             if name == "null" or not name:
                 continue
-            log += f"{name}, "
 
             pkg = None
             for p in todo:
@@ -358,7 +357,7 @@ def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int
                     break
 
             if pkg is None:
-                logger.warning(f"Package '{name}' was removed.")
+                removed.append(name)
                 continue
 
             todo.pop(pkg, None)
@@ -370,7 +369,6 @@ def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int
                 )
             else:
                 layer.append(pkg)
-            used_packages.add(pkg)
 
         if layer:
             logger.info(
@@ -384,6 +382,8 @@ def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int
 
     if todo:
         logger.info(f"New packages found:\n{[p.name for p in todo]}")
+    if removed:
+        logger.info(f"The following packages were removed:\n{removed}")
 
     return todo, dedi_layers, prefill
 

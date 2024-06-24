@@ -91,18 +91,18 @@ fi
 
 # Copy opt
 
-# # Copy var/lib to /usr/lib
-# if [ -d $TREE/var ]; then
-#     mkdir -p $TREE/usr/lib
-#     rsync -a $TREE/var/lib/ $TREE/usr/lib/
-#     rm -r $TREE/var/lib
-# fi
+# Copy var/lib to /usr/lib
+if [ -d $TREE/var ]; then
+    mkdir -p $TREE/usr/lib
+    rsync -a $TREE/var/lib/ $TREE/usr/lib/
+    rm -r $TREE/var/lib
+fi
 
-# # Copy var files to factory
-# if [ -d $TREE/var ]; then
-#     mkdir -p $TREE/usr/share/factory/var
-#     rsync -a $TREE/var/ $TREE/usr/share/factory/var/
-# fi
+# Copy var files to factory
+if [ -d $TREE/var ]; then
+    mkdir -p $TREE/usr/share/factory/var
+    rsync -a $TREE/var/ $TREE/usr/share/factory/var/
+fi
 
 # Remove top level dir contents
 # TODO: fix /var/lib to symlink to /usr/lib
@@ -139,11 +139,11 @@ ln -s sysroot/ostree $TREE/ostree
 
 # Containerfile overode RPM db, so now there are 2 RPM dbs
 # Use hardlinks so analyzer cant take into account these being the same files
-# rm -rf $TREE/usr/lib/sysimage/rpm-ostree-base-db/
-# rsync -a \
-#     --link-dest="../../../share/rpm" \
-#     "$TREE/usr/share/rpm/" \
-#     "$TREE/usr/lib/sysimage/rpm-ostree-base-db"
+rm -rf $TREE/usr/lib/sysimage/rpm-ostree-base-db/
+rsync -a \
+    --link-dest="../../../share/rpm" \
+    "$TREE/usr/share/rpm/" \
+    "$TREE/usr/lib/sysimage/rpm-ostree-base-db"
 
 # Fix perms. Unsure why these break
 # FIXME: Find out why and remove

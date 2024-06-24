@@ -92,11 +92,12 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
 
     pkg_nochangelog = []
     curr = datetime.now()
-    for i, p in enumerate(packages):
+    for p in packages:
+        i = p.index
         for u in p.updates:
             if (curr - u).days > 365:
                 continue
-
+            
             _, w, d = u.isocalendar()
             if biweekly:
                 p_upd[i, 2 * w + (d >= 4)] = 1
