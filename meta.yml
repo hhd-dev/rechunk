@@ -5,6 +5,8 @@ meta:
   initramfs:
     files:
       - /usr/lib/modules/*/initramfs.img
+      # - /usr/lib/modules/*
+      # - /usr/lib/ostree-boot/*
   homebrew:
     files:
       - /usr/share/homebrew.tar.zst
@@ -18,18 +20,15 @@ meta:
       - ayaneo-platform*
       - bmi260*
       - ryzen-smu*
-    files:
-      - /usr/lib/modules/*
-      - /usr/lib/ostree-boot/*
   mesa:
     packages:
       - mesa*
   firmware:
     packages:
       - linux-firmware*
-    files:
-      # Bazzite dirty writes to /lib/firmware for the Steam Deck
-      - /usr/lib/firmware/*
+    # files:
+    #   # Bazzite dirty writes to /lib/firmware for the Steam Deck
+    #   - /usr/lib/firmware/*
   kde:
     packages:
       - plasma*
@@ -44,3 +43,7 @@ meta:
   wine:
     packages:
       - wine*
+  fcitx5:
+    packages:
+      - fcitx5*
+    dedicated: False
