@@ -22,13 +22,14 @@ oci_extract() {
     sudo rm -rf $cname/extracted 
     
     i=0
-    for l in $(sudo skopeo inspect oci:$1 | jq -r '.LayersData[] | select(.MIMEType | contains("tar+gzip")) | .Digest'); do
-        hash=$(echo $i | cut -d'.' -f1)
-        echo "Extracting layer $hash"
-        out_name=$(printf "%05d\n" $i)
+    for l in $(sudo skopeo inspect oci:$1 | jq -c '.LayersData[] | select(.MIMEType | contains("tar+gzip"))'); do
+        out_name=$(echo $l | jq -r '.Annotations."ostree.components"' | cut -c1-11)
+        out_name=${out_name:-noname}
+        out_name=$(printf "_%10s" "$out_name" | tr ' ' '_')
+        hash=$(echo $l | jq -r '.Digest' | cut -d'.' -f1)
+        echo "Extracting layer $out_name with $hash"
         sudo mkdir -p $cname/extracted/$out_name
-        sudo tar -xzf $cname/blobs/sha256/$(echo $l | cut -d':' -f 2) -C $cname/extracted/$out_name
-        i=$(( i + 1 ))
+        sudo tar -xzf $cname/blobs/sha256/$(echo $hash | cut -d':' -f 2) -C $cname/extracted/$out_name
     done
 }
 
@@ -84,7 +85,7 @@ oci_diff() {
         exit 1
     fi
 
-    sudo rsync -n -i -rlHAX --links \
+    sudo rsync --stats -n -i -rlHAX --links \
         --no-t --delete --exclude sysroot \
         $2/extracted/ $1/extracted/ | grep -v ">f..T......"
 }
