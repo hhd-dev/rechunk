@@ -37,13 +37,16 @@ def get_packages(dir: str):
             mode = "file"
         else:
             if mode == "changelog" and line.startswith("* "):
-                try:
-                    updates.append(
-                        datetime.strptime(line[2:26], "%a %b %d %H:%M:%S %Y")
-                    )
-                except ValueError:
-                    # There are 2 dates without time we could parse
-                    # but lets keep the code simple
+                date = None
+                for format in ["%a %d %b %Y %H:%M:%S", "%a %d %b %H:%M:%S %Y"]:
+                    try:
+                        date = datetime.strptime(line[2:26], format)
+                        break
+                    except ValueError:
+                        pass
+                if date:
+                    updates.append(date)
+                else:
                     fail_count += 1
 
             elif mode == "file":

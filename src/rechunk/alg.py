@@ -248,8 +248,9 @@ def process_meta(
 ) -> tuple[dict[str, str], list[MetaPackage]]:
     mapping = {}
     remaining_files = dict(files)
-    remaining_packages = {p.nevra: p for p in packages}
+    remaining_packages = dict.fromkeys(packages)
     new_packages = []
+    unpackaged = None
 
     for name, contents in meta.items():
         meta_files = []
@@ -258,11 +259,14 @@ def process_meta(
         for file_pat in contents.get("files", []):
             meta_files.extend(fnmatch.filter(files.keys(), file_pat))
         for pkg_pat in contents.get("packages", []):
-            for nevra in fnmatch.filter(remaining_packages.keys(), pkg_pat):
-                pkg = remaining_packages.pop(nevra, None)
-                if pkg:
+            for pname in fnmatch.filter(
+                dict.fromkeys([p.name for p in remaining_packages]), pkg_pat
+            ):
+                pkgs = [p for p in remaining_packages if p.name == pname]
+                for pkg in pkgs:
+                    remaining_packages.pop(pkg, None)
                     meta_files.extend([f.name for f in pkg.files])
-                    meta_packages[nevra] = None
+                    meta_packages[pkg.nevra] = None
                     meta_updates.extend(pkg.updates)
 
         total_size = 0
@@ -276,27 +280,30 @@ def process_meta(
 
         if added_files:
             # Only add if it has files to prevent wasting layers
-            new_packages.append(
-                MetaPackage(
-                    index=len(new_packages),
-                    name=name,
-                    nevra=tuple(meta_packages.keys()),
-                    size=total_size,
-                    updates=tuple(meta_updates),
-                    dedicated=contents.get("dedicated", True),
-                )
+            npkg = MetaPackage(
+                index=len(new_packages),
+                name=name,
+                nevra=tuple(meta_packages.keys()),
+                size=total_size,
+                updates=tuple(meta_updates),
+                dedicated=contents.get("dedicated", True),
+                meta=True,
             )
+            if npkg.name == "unpackaged":
+                unpackaged = npkg
+            else:
+                new_packages.append(npkg)
 
     # Group different variants of packages together
-    remaining_names = dict.fromkeys([p.name for p in remaining_packages.values()])
+    remaining_names = dict.fromkeys([p.name for p in remaining_packages])
     for name in remaining_names:
         new_size = 0
-        added_nevra = []
+        added_pkg = []
         updates = []
-        for pkg in remaining_packages.values():
+        for pkg in remaining_packages:
             if pkg.name != name:
                 continue
-            added_nevra.append(pkg.nevra)
+            added_pkg.append(pkg)
             updates.extend(pkg.updates)
             for f in pkg.files:
                 fn = f.name
@@ -304,14 +311,14 @@ def process_meta(
                     mapping[f.name] = name
                     new_size += remaining_files.pop(fn, 0)
 
-        for nevra in added_nevra:
-            remaining_packages.pop(nevra, None)
+        for pkg in added_pkg:
+            remaining_packages.pop(pkg, None)
 
         new_packages.append(
             MetaPackage(
                 index=len(new_packages),
                 name=name,
-                nevra=tuple(added_nevra),
+                nevra=tuple([p.nevra for p in added_pkg]),
                 size=new_size,
                 updates=tuple(updates),
                 dedicated=False,
@@ -322,15 +329,30 @@ def process_meta(
     for fn, s in remaining_files.items():
         if fn not in mapping:
             mapping[fn] = "unpackaged"
-    new_packages.append(
-        MetaPackage(
-            index=len(new_packages),
-            name="unpackaged",
-            nevra=("unpackaged",),
-            size=sum(remaining_files.values()),
-            dedicated=True,
+
+    if unpackaged is None:
+        new_packages.append(
+            MetaPackage(
+                index=len(new_packages),
+                name="unpackaged",
+                nevra=("unpackaged",),
+                size=sum(remaining_files.values()),
+                dedicated=True,
+                meta=True,
+            )
         )
-    )
+    else:
+        new_packages.append(
+            MetaPackage(
+                index=len(new_packages),
+                name="unpackaged",
+                nevra=(*unpackaged.nevra, "unpackaged"),
+                size=sum(remaining_files.values()) + unpackaged.size,
+                # updates=unpackaged.updates,
+                dedicated=True,
+                meta=True,
+            )
+        )
 
     return mapping, new_packages
 
@@ -347,7 +369,7 @@ def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int
     for line in raw:
         layer = []
         for name in line.split(","):
-            name = name.strip().replace("meta:", "")
+            name = name.strip().replace("meta:", "").replace("dedi:", "")
             if name == "null" or not name:
                 continue
 

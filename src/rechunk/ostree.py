@@ -53,8 +53,11 @@ def dump_ostree_packages(
     smeta = []
     pkg_to_layer = {}
 
+    def get_pkg_name(pkg: MetaPackage):
+        return f"meta:{pkg.name}" if pkg.meta else pkg.name
+
     for layer in dedi_layers:
-        layer_name = f"meta:{layer[0].name}"
+        layer_name = f"dedi:{get_pkg_name(layer[0])}"
 
         smeta.append(
             {
@@ -70,7 +73,7 @@ def dump_ostree_packages(
 
     for i, layer in enumerate(layers):
         layer_name = f"rechunk_layer{i}"
-        layer_human = ",".join([pkg.name for pkg in layer])
+        layer_human = ",".join([get_pkg_name(pkg) for pkg in layer])
 
         unpackaged = len(layer) == 1 and layer[0].name == "unpackaged"
         smeta.append(

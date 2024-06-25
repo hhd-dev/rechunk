@@ -38,7 +38,7 @@ ostree --repo=./repo commit \
     --selinux-policy=$TREE \
     --selinux-labeling-epoch=1
 # --selinux-policy="${MOUNT}" # tree now has correct selinux policy
-# --selinux-policy-from-base \ # Same as above without a mount, assumes container is faulty
+# --selinux-policy-from-base \ # Uses the base commit, assumes container is faulty
 # --consume \ # eats the previous dir, makes hard to rerun
 # --tar-autocreate-parents \ Use this setting if ingesting from tar to avoid error
         

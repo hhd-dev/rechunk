@@ -21,3 +21,4 @@ class MetaPackage(NamedTuple):
     size: int
     updates: tuple[datetime, ...] = tuple()
     dedicated: bool = False
+    meta: bool = False

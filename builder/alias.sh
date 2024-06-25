@@ -19,13 +19,14 @@ oci_extract() {
         exit 1
     fi
     cname=$1
+    echo "Removing old extracted files"
     sudo rm -rf $cname/extracted 
     
     i=0
     for l in $(sudo skopeo inspect oci:$1 | jq -c '.LayersData[] | select(.MIMEType | contains("tar+gzip"))'); do
-        out_name=$(echo $l | jq -r '.Annotations."ostree.components"' | cut -c1-11)
+        out_name=$(echo $l | jq -r '.Annotations."ostree.components"' | cut -c1-20)
         out_name=${out_name:-noname}
-        out_name=$(printf "_%10s" "$out_name" | tr ' ' '_')
+        out_name=$(printf "%20s" "$out_name" | tr ' ' '_')
         hash=$(echo $l | jq -r '.Digest' | cut -d'.' -f1)
         echo "Extracting layer $out_name with $hash"
         sudo mkdir -p $cname/extracted/$out_name
