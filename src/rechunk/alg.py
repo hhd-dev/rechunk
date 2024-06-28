@@ -10,9 +10,9 @@ from rechunk.model import Package, MetaPackage
 
 from .fedora import get_packages
 from .model import Package
-from .utils import get_files, get_update_matrix, tqdm
+from .utils import get_update_matrix, tqdm
 
-from .ostree import get_ostree_map, dump_ostree_packages
+from .ostree import get_ostree_map, dump_ostree_packages, run_with_ostree_files
 
 logger = logging.getLogger(__name__)
 
@@ -411,37 +411,43 @@ def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int
     return todo, dedi_layers, prefill
 
 
-def main():
-    # Hardcode for now
-    dir = "./tree"
-    ostree = "./tree.ls"
-    meta_fn = "./meta.yml"
-    layerdata_fn = "./layerdata.txt"
-    max_layers = 38
-    prefill_ratio = 0.5
-    max_layer_ratio = 1.3
-
+def main(
+    repo: str,
+    ref: str,
+    contentmeta_fn: str,
+    meta_fn: str,
+    previous_manifest: str,
+    max_layers,
+    prefill_ratio,
+    max_layer_ratio,
+):
     with open(meta_fn, "r") as f:
         meta = yaml.safe_load(f)["meta"]
 
-    ostree_map, ostree_hash = get_ostree_map(ostree)
-
-    # File analysis of treeusing root perms
     logger.info(f"Beginning analysis.")
-    logger.info(f"Scanning directory '{dir}' for files.")
-    files = get_files(dir)
-    logger.info(f"Found {len(files)} files.")
-    logger.info("Getting packages.")
-    packages = get_packages(dir)
+    logger.info(f"Scanning OSTree repo '{repo}' with ref '{ref}' for files.")
+    ostree_map, ostree_hash = get_ostree_map(repo, ref)
+
+    # Use the database by pulling it from ostree
+    packages = run_with_ostree_files(
+        repo, ostree_map, ["/usr/share/rpm/rpmdb.sqlite"], get_packages
+    )
     logger.info(f"Found {len(packages)} packages.")
 
+    # Calculate file sizes from ostree
+    ostree_hash_tmp = dict(ostree_hash)
+    file_sizes = {}
+    for fn, hash in ostree_map.items():
+        if hash in ostree_hash_tmp:
+            file_sizes[fn] = ostree_hash_tmp.pop(hash)
+
     # Repackage using meta file
-    mapping, new_packages = process_meta(meta, files, packages)
+    mapping, new_packages = process_meta(meta, file_sizes, packages)
 
     logger.info(f"Created {len(new_packages)} meta packages.")
 
     # Size results
-    total_size = sum(files.values())
+    total_size = sum(file_sizes.values())
     package_size = sum([p.size for p in packages])
     new_package_size = sum([p.size for p in new_packages])
     unpackage_size = total_size - package_size
@@ -466,10 +472,10 @@ def main():
     upd_matrix = get_update_matrix(new_packages)
     logger.info(f"Update matrix shape: {upd_matrix.shape}.")
 
-    if os.path.exists(layerdata_fn):
+    if previous_manifest:
         logger.info("Loading existing layer data.")
         todo, dedi_layers, prefill = load_previous_manifest(
-            layerdata_fn, new_packages, max_layers
+            previous_manifest, new_packages, max_layers
         )
     else:
         logger.warning("No existing layer data. Expect layer shifts")
@@ -486,5 +492,5 @@ def main():
     print_results(dedi_layers, prefill, layers, upd_matrix)
 
     dump_ostree_packages(
-        dedi_layers, layers, "./contentmeta.json", mapping, ostree_map, ostree_hash
+        dedi_layers, layers, contentmeta_fn, mapping, ostree_map, ostree_hash
     )

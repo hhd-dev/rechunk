@@ -1,20 +1,42 @@
 import json
 import logging
-
+import shutil
+import subprocess
+import tempfile
+from typing import Any, Callable, Sequence
+import os
 from .model import MetaPackage
+from .utils import tqdm
 
 logger = logging.getLogger(__name__)
 
-def get_ostree_map(fn: str):
+
+def get_ostree_map(repo: str, ref: str):
     # Prefix has a fixed length
     # unless filesize is larger than what fits
     prefix = len("d00555 0 0")
     hash_len = 64
 
-    mapping = {}
-    hashes = {}
-    with open(fn, "r") as f:
-        for line in f.readlines():
+    proc = None
+    pbar = tqdm(desc=f"Reading OSTree ref '{ref}'", unit="files", total=300_000)
+    try:
+        proc = subprocess.Popen(
+            [
+                "ostree",
+                "ls",
+                "-C",
+                "-R",
+                "--repo",
+                repo,
+                ref,
+            ],
+            stdout=subprocess.PIPE,
+        )
+        assert proc.stdout is not None
+
+        mapping = {}
+        hashes = {}
+        while line := proc.stdout.readline().decode("utf-8"):
             # Skip directories and soft links
             if line[0] == "d":
                 continue
@@ -27,8 +49,10 @@ def get_ostree_map(fn: str):
             while line[ofs] == " ":
                 ofs += 1
             # Size
+            size_start = ofs
             while line[ofs] != " ":
                 ofs += 1
+            size = int(line[size_start:ofs])
 
             fhash = line[ofs + 1 : ofs + 65]
             assert " " not in fhash, f"Hash fail: {fhash} | {line}"
@@ -38,8 +62,12 @@ def get_ostree_map(fn: str):
                 end_i = -1
             fn = line[ofs + hash_len + 1 : end_i].strip()
             mapping[fn] = fhash
-            hashes[fhash] = None
-
+            hashes[fhash] = size
+            pbar.update(1)
+    finally:
+        if proc is not None:
+            assert proc.wait() == 0, f"OSTree exited with error: {proc.returncode}"
+        pbar.close()
     return mapping, hashes
 
 
@@ -123,5 +151,28 @@ def dump_ostree_packages(
         )
 
 
+def run_with_ostree_files(
+    repo: str,
+    file_map: dict[str, str],
+    fns: Sequence[str],
+    callback: Callable[[str], Any],
+):
+    with tempfile.TemporaryDirectory() as dir:
+        for fn in fns:
+            if fn in file_map:
+                hash = file_map[fn]
+                shutil.copy2(
+                    f"{repo}/objects/{hash[:2]}/{hash[2:]}.file",
+                    os.path.join(dir, os.path.basename(fn)),
+                )
+            else:
+                logger.warning(f"File not found in OSTree: {fn}")
+                raise FileNotFoundError(fn)
+
+        return callback(dir)
+
+
 if __name__ == "__main__":
-    print(get_ostree_map("./tree.ls"))
+    import sys
+
+    print(sum(get_ostree_map(sys.argv[1], sys.argv[2])[-1].values()))

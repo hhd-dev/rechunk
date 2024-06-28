@@ -1,9 +1,9 @@
 import logging
+import subprocess
 from datetime import datetime
 from typing import Literal
 
 from .model import File, Package
-from .utils import run, run_nested
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +17,20 @@ def get_packages(dir: str):
     updates = []
     mode: Literal["changelog", "file"] = "changelog"
 
-    for line in run_nested(
-        'rpm -qa --queryformat ">\n[%{FILESIZES} %{FILENAMES}\n]<%{NAME} %{NEVRA} %{SIZE}\n" --changes',
-        dir,
-    ).splitlines():
+    for eline in subprocess.run(
+        [
+            "rpm",
+            "-qa",
+            "--queryformat",
+            '>\n[%{FILESIZES} %{FILENAMES}\n]<%{NAME} %{NEVRA} %{SIZE}\n',
+            "--changes",
+            "--dbpath",
+            dir,
+        ],
+        stdout=subprocess.PIPE,
+    ).stdout.splitlines():
+        line = eline.decode("utf-8")
+
         if line.startswith("<"):
             data = line[1:].split(" ")
             name = data[0]
@@ -53,7 +63,6 @@ def get_packages(dir: str):
                 size = int(line[: line.index(" ")])
                 name = line[line.index(" ") + 1 :]
                 files.append(File(name, size))
-
     if fail_count:
         logger.warning(f"Failed to parse {fail_count} changelog entries")
 
