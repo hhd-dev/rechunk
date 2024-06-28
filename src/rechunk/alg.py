@@ -4,6 +4,7 @@ from typing import Any
 
 import numpy as np
 import os
+import json
 import yaml
 
 from rechunk.model import Package, MetaPackage
@@ -358,15 +359,28 @@ def process_meta(
 
 
 def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int):
+    logger.info(f"Loading previous manifest from '{fn}'.")
+
     with open(fn, "r") as f:
-        raw = f.readlines()
+        raw = json.load(f)
+
+    logger.info(f"Processing previous manifest with {len(raw)} layers.")
 
     # Process previous manifest
     todo = dict.fromkeys(packages)
     dedi_layers = []
     removed = list()
     prefill = []
-    for line in raw:
+    for data in raw["LayersData"]:
+        if "Annotations" not in data:
+            continue
+        annotations = data["Annotations"]
+        if not annotations:
+            continue
+        if "ostree.components" not in annotations:
+            continue
+        line = annotations["ostree.components"]
+
         layer = []
         for name in line.split(","):
             name = name.strip().replace("meta:", "").replace("dedi:", "")
@@ -416,10 +430,10 @@ def main(
     ref: str,
     contentmeta_fn: str,
     meta_fn: str,
-    previous_manifest: str,
-    max_layers,
-    prefill_ratio,
-    max_layer_ratio,
+    previous_manifest: str | None,
+    max_layers: int,
+    prefill_ratio: float,
+    max_layer_ratio: float,
 ):
     with open(meta_fn, "r") as f:
         meta = yaml.safe_load(f)["meta"]
@@ -491,6 +505,7 @@ def main(
 
     print_results(dedi_layers, prefill, layers, upd_matrix)
 
-    dump_ostree_packages(
-        dedi_layers, layers, contentmeta_fn, mapping, ostree_map, ostree_hash
-    )
+    if contentmeta_fn:
+        dump_ostree_packages(
+            dedi_layers, layers, contentmeta_fn, mapping, ostree_map, ostree_hash
+        )

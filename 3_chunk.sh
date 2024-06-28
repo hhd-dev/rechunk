@@ -36,6 +36,9 @@ PREV_ARG=""
 if [ -f "$PREV_MANIFEST" ]; then
     PREV_ARG="--previous-manifest $PREV_MANIFEST"
 fi
+if [ -n "$MAX_LAYERS" ]; then
+    PREV_ARG="$PREV_ARG --max-layers $MAX_LAYERS"
+fi
 
 $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG
 

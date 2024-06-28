@@ -19,17 +19,22 @@ def get_ostree_map(repo: str, ref: str):
 
     proc = None
     pbar = tqdm(desc=f"Reading OSTree ref '{ref}'", unit="files", total=300_000)
+
+    cmd = [
+        "ostree",
+        "ls",
+        "-C",
+        "-R",
+        "--repo",
+        repo,
+        ref,
+    ]
+    if os.getuid() != 0:
+        cmd = ["sudo", *cmd]
+
     try:
         proc = subprocess.Popen(
-            [
-                "ostree",
-                "ls",
-                "-C",
-                "-R",
-                "--repo",
-                repo,
-                ref,
-            ],
+            cmd,
             stdout=subprocess.PIPE,
         )
         assert proc.stdout is not None

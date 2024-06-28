@@ -27,6 +27,8 @@ echo Creating a $IMAGE_REF container
 export CREF=$(podman create $IMAGE_REF)
 export OUT_NAME
 export OUT_TAG
+export PREV_NAME
+export MAX_LAYERS
 
 # Prevent heavy tears by forcing relative path
 MOUNT=$(podman mount $CREF)
