@@ -1,5 +1,5 @@
 venv*
-repo
+repo*
 cache
 tree
 *.tar

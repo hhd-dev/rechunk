@@ -22,6 +22,16 @@ set -e
 OUT_TAG=${OUT_TAG:=master}
 CONTENT_META=${CONTENT_META:=contentmeta.json}
 
+# Try to use venv if it exists for
+# debug builds
+if [[ -f venv/bin/rechunk ]]; then
+    RECHUNK=${RECHUNK:=venv/bin/rechunk}
+else
+    RECHUNK=rechunk
+fi
+$RECHUNK
+cp results.txt ${OUT_NAME}.results.txt
+
 echo Creating archive with ref ${OUT_REF}
 ostree-ext-cli \
     container encapsulate \

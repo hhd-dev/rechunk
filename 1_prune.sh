@@ -9,8 +9,13 @@ fi
 TREE=${TREE:=./tree}
 TIMESTAMP=${TIMESTAMP:=202001010100}
 
-# Prevent heavy tears by forcing relative path
-TREE=./$TREE
+if [ -z "$TREE" ]; then
+    echo "TREE is empty. Please be careful! This script can prune your system!"
+    exit 1
+fi
+
+# # Prevent heavy tears by forcing relative path
+# TREE=./$TREE
 
 # Main OSTree dir, is remade in the end
 # If it contains kinoite files that were removed by bazzite,

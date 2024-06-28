@@ -17,28 +17,28 @@ if [ -z "$IMAGE_REF" ] || [ -z "$OUT_NAME" ]; then
     exit 1
 fi
 
+# Volumes
+VOL_CONTAINER_CACHE=${VOL_CONTAINER_CACHE:=container_cache}
+VOL_OSTREE_CACHE=${VOL_OSTREE_CACHE:=ostree_cache}
+
 # Load and mount image to ./tree
 echo
 echo Creating a $IMAGE_REF container
-export CREF=$(buildah from $IMAGE_REF)
-export OUT_NAME=${OUT_NAME}
-export TREE=${TREE:=./tree}
+export CREF=$(podman create $IMAGE_REF)
+export OUT_NAME
+export OUT_TAG
 
 # Prevent heavy tears by forcing relative path
-TREE=./$TREE
-rm -rf $TREE
-MOUNT=$(buildah mount $CREF)
+MOUNT=$(podman mount $CREF)
 if [ -z $MOUNT ] ; then
     echo "Mount is empty."
     exit 1
 fi
-
-ln -s $MOUNT $TREE
+export TREE=${MOUNT}
+echo "Mounted at '$MOUNT'"
 
 if [ -n "$JUST_MOUNT" ]; then
     echo "Skipping other steps due to JUST_MOUNT."
-    echo "Mounted at '$MOUNT'"
-    echo "Symlink to '$TREE'"
     exit 0
 fi
 
@@ -46,7 +46,14 @@ echo
 echo Image ref is: $IMAGE_REF
 
 echo "##### Pruning Tree"
-time ./1_prune.sh
+podman run -it --rm \
+    -v $(pwd):/workspace -w /workspace \
+    -v "$VOL_CONTAINER_CACHE":/var/lib/containers \
+    -v "$TREE":/var/tree \
+    -e TREE=/var/tree \
+    -u 0:0 \
+    fedora_build \
+    bash -c "time ./1_prune.sh"
 
 if [ -n "$JUST_PRUNE" ]; then
     echo "Skipping other steps due to JUST_PRUNE."
@@ -61,23 +68,28 @@ TREE=$MOUNT
 
 echo
 echo "##### Creating OSTree repo"
-time ./2_create.sh
-
-if [[ -n $SKIP_CHUNK ]]; then
-    echo "Skipping chunking due to SKIP_CHUNK."
-    exit 0
-fi
-
-# TODO, install in the image somehow
-RECHUNK=${RECHUNK:=venv/bin/rechunk}
-$RECHUNK
-cp results.txt ${OUT_NAME}.results.txt
+podman run -it --rm \
+    -v $(pwd):/workspace -w /workspace \
+    -v "$VOL_CONTAINER_CACHE":/var/lib/containers \
+    -v "$VOL_OSTREE_CACHE":/var/ostree \
+    -e REPO=/var/ostree/repo \
+    -v "$TREE":/var/tree \
+    -e TREE=/var/tree \
+    -e OUT_TAG \
+    -u 0:0 \
+    fedora_build \
+    bash -c "time ./2_create.sh"
 
 # Cleanup
 echo
 echo "##### Removing interim container"
-buildah unmount $CREF > /dev/null
-buildah rm $CREF > /dev/null
+podman unmount $CREF > /dev/null
+podman rm $CREF > /dev/null
+
+if [[ -n $JUST_COMMIT ]]; then
+    echo "Skipping chunking due to JUST_COMMIT."
+    exit 0
+fi
 
 echo
 echo "##### Chunking OSTree repo"

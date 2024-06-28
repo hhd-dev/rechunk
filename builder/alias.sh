@@ -3,14 +3,19 @@
 # Use host
 # CONTAINER_CACHE=/var/cache/containers
 # Or just a normal volume
-CONTAINER_CACHE=${CONTAINER_CACHE:=container_cache}
+VOL_CONTAINER_CACHE=${VOL_CONTAINER_CACHE:=container_cache}
+VOL_OSTREE_CACHE=${VOL_OSTREE_CACHE:=ostree_cache}
 
-alias fd="sudo podman run\
-    -it --rm -v \$(pwd):/workspace -w /workspace \
-    -v $CONTAINER_CACHE:/var/lib/containers \
+alias fd="sudo podman run -it --rm \
+    -v \$(pwd):/workspace -w /workspace \
+    -v '$VOL_CONTAINER_CACHE':/var/lib/containers \
+    -v '$VOL_OSTREE_CACHE':/var/ostree/repo \
+    -v \${TREE:=\$(pwd)/tree}:/var/tree \
+    -e REPO=/var/ostree \
     --privileged --device /dev/fuse --security-opt label:disable \
     -u \$(id -u):\$(id -g) \
     fedora_build"
+    # -e TREE=/var/tree \
 
 oci_extract() {
     # Extract an oci image

@@ -5,47 +5,33 @@ if [ $(id -u) -ne 0 ]; then
     exit 1
 fi
 
-if [ -z "$IMAGE_REF" ]; then
-    echo "IMAGE_REF is empty"
-    exit 1
-fi
-
 # this script creates the ostree from ./tree
 TREE=${TREE:=./tree}
+REPO=${REPO:=./repo}
 OUT_TAG=${OUT_TAG:=master}
 
 # # Due to using a buildah mount this is not required
 # # Create a temporary container to pull the
 # # so we can mount for SELinux
-# echo Mounting image with ref "$IMAGE_REF"
-# CREF=$(podman create $IMAGE_REF)
-# MOUNT=$(podman mount $CREF)
+
+# Create an ostree repo
+if [ -n "$INIT_REPO" ] | [ ! -d "$REPO" ]; then
+    echo
+    echo "Initializing OSTree repo"
+    rm -rf $REPO
+    ostree --repo=$REPO init --mode=bare-user
+    # Set option to reduce fsync for transient builds
+    ostree --repo=$REPO config set 'core.fsync' 'false'
+fi
 
 echo
 echo Creating repo with ref "$OUT_TAG"
-
-# Create a fresh ostree repo
-rm -rf ./repo
-ostree --repo=./repo init --mode=bare-user
-# Set option to reduce fsync for transient builds
-ostree --repo=repo config set 'core.fsync' 'false'
-
 # Ingest previous tree dir
-ostree --repo=./repo commit \
+ostree --repo=$REPO commit \
     -b $OUT_TAG \
     --tree=dir=$TREE \
     --bootable \
     --selinux-policy=$TREE \
     --selinux-labeling-epoch=1
-# --selinux-policy="${MOUNT}" # tree now has correct selinux policy
-# --selinux-policy-from-base \ # Uses the base commit, assumes container is faulty
-# --consume \ # eats the previous dir, makes hard to rerun
-# --tar-autocreate-parents \ Use this setting if ingesting from tar to avoid error
         
-# Cleanup
-# podman unmount $CREF > /dev/null
-# podman rm $CREF > /dev/null
-echo Created repo with ref "$OUT_TAG"
-
-echo Writing checksums to ./tree.ls
-sudo ostree ls -C --repo=./repo master -R > ./tree.ls
+echo Commited ref "$OUT_TAG" to repo "$REPO"
