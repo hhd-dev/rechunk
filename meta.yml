@@ -2,6 +2,10 @@ version: 1
 distro: fedora
 
 meta:
+  hhd-ui:
+    # HHD-UI is 110mb compressed :/
+    packages:
+      - hhd-ui
   # Random stuff
   unpackaged:
     packages:
@@ -29,10 +33,12 @@ meta:
       - ayaneo-platform
       - bmi260
       - ryzen-smu
+    dedicated: False
   mesa-va:
     packages:
       - mesa-va-drivers*
       - mesa-vdpau-drivers*
+    dedicated: False
   mesa:
     packages:
       - mesa*
@@ -66,6 +72,7 @@ meta:
   qt5:
     packages:
       - qt5*
+    dedicated: False
   fcitx5:
     packages:
       - fcitx5*
@@ -200,6 +207,7 @@ meta:
       - sddm-breeze*
       - libkworkspace*
       - sddm-wayland*
+    dedicated: False
 
   # Toolchains
   llvm-libs:
@@ -243,6 +251,7 @@ meta:
   mingw-libgcc:
     packages:
       - mingw*-lib*
+    dedicated: False
   mingw-sdl:
     packages:
       - mingw*-SDL*
@@ -262,16 +271,18 @@ meta:
   mariadb:
     packages:
       - mariadb*
+    dedicated: False
   cldr:
     packages:
       - cldr-emoji-annotation*
+    dedicated: False
   python3:
     packages:
       - python3
       - python3-libs
       - python3-tkinter
       - python-unversioned-command
-
+    dedicated: False
   # Apps
   vlc:
     packages:
@@ -319,6 +330,7 @@ meta:
   ibus:
     packages:
       - ibus*
+    dedicated: False
   cockpit:
     packages:
       - cockpit*
