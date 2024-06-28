@@ -38,7 +38,7 @@ def get_packages(dir: str):
         else:
             if mode == "changelog" and line.startswith("* "):
                 date = None
-                for format in ["%a %d %b %Y %H:%M:%S", "%a %d %b %H:%M:%S %Y"]:
+                for format in ["%a %d %b %Y %H:%M:%S", "%a %b %d %H:%M:%S %Y"]:
                     try:
                         date = datetime.strptime(line[2:26], format)
                         break

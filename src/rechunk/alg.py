@@ -276,7 +276,7 @@ def process_meta(
                 mapping[fn] = name
                 s = remaining_files.pop(fn, 0)
                 added_files = True
-            total_size += s
+                total_size += s
 
         if added_files:
             # Only add if it has files to prevent wasting layers
@@ -417,7 +417,7 @@ def main():
     ostree = "./tree.ls"
     meta_fn = "./meta.yml"
     layerdata_fn = "./layerdata.txt"
-    max_layers = 45
+    max_layers = 38
     prefill_ratio = 0.5
     max_layer_ratio = 1.3
 

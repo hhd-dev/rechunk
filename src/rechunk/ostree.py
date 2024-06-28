@@ -50,7 +50,7 @@ def dump_ostree_packages(
 ):
     # Create layer meta
     ostree_hashes = dict(ostree_hashes)
-    smeta = []
+    smeta = {}
     pkg_to_layer = {}
 
     def get_pkg_name(pkg: MetaPackage):
@@ -59,52 +59,50 @@ def dump_ostree_packages(
     for layer in dedi_layers:
         layer_name = f"dedi:{get_pkg_name(layer[0])}"
 
-        smeta.append(
-            {
-                "identifier": layer_name,
-                "name": layer_name,
-                "srcid": layer_name,
-                "change_time_offset": 1,
-                "change_frequency": 1,
-            }
-        )
+        smeta[layer_name] = layer_name
         for pkg in layer:
             pkg_to_layer[pkg.name] = layer_name
 
     for i, layer in enumerate(layers):
-        layer_name = f"rechunk_layer{i}"
+        layer_name = f"rechunk_layer{i:03d}"
         layer_human = ",".join([get_pkg_name(pkg) for pkg in layer])
 
-        unpackaged = len(layer) == 1 and layer[0].name == "unpackaged"
-        smeta.append(
-            {
-                "identifier": layer_name,
-                "name": layer_human,
-                "srcid": f"rechunk_layer{i}",
-                "change_time_offset": i,
-                "change_frequency": 0xFFFFFFFF if unpackaged else 1,
-            }
-        )
+        unpackaged = len(layer) == 1 and "unpackaged" in layer[0].name
+        if unpackaged:
+            layer_name = "unpackaged"
+        smeta[layer_name] = layer_human
+
         for pkg in layer:
             pkg_to_layer[pkg.name] = layer_name
 
     # Create mappings
     ostree_out = {}
+    used_layers = set()
     for fn, pkg in mapping.items():
         layer = pkg_to_layer[pkg]
+        if fn.startswith("/etc/") or fn.startswith("/usr/etc"):
+            # Multiple packages can own the same etc file
+            # and they may be modified. Avoid breaking layer caching.
+            continue
         if fn in ostree_map:
             fhash = ostree_map[fn]
-            ostree_hashes.pop(fhash, None)
-            ostree_out[fhash] = layer
+            if fhash in ostree_hashes:
+                # First layer to get hash owns it
+                ostree_hashes.pop(fhash, None)
+                ostree_out[fhash] = layer
+                used_layers.add(layer)
 
     for fhash in ostree_hashes:
         ostree_out[fhash] = layer_name
 
+    # Trim layers to avoid empty ones
+    final_layers = {k: v for k, v in smeta.items() if k in used_layers}
+
     with open(out_fn, "w") as f:
         json.dump(
             {
-                "set": list(smeta),
-                "map": ostree_out,
+                "layers": final_layers,
+                "mapping": dict(sorted(ostree_out.items())),
             },
             f,
             indent=2,
