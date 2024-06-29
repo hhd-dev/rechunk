@@ -2,6 +2,9 @@ version: 1
 distro: fedora
 
 meta:
+  #
+  # Ublue
+  #
   hhd-ui:
     # HHD-UI is 110mb compressed :/
     packages:
@@ -14,12 +17,16 @@ meta:
   unpackaged:
     packages:
       - ublue*
+      - kmod-nvidia-6.9.6-201.fsync.fc40.x86_64
     files:
       - /usr/share/distribution-gpg-keys*
       # This small dir is affected by multiple packages
       - /usr/src/kernels/*scripts*
       - /usr/share/ublue-os*
+
+  #
   # Core
+  #
   initramfs:
     files:
       - /usr/lib/modules/*/initramfs.img
@@ -63,7 +70,9 @@ meta:
     #   - /usr/lib/firmware/*
   # Analyzed by finding packages having a shared version
 
+  #
   # Plasma
+  #
   kwin:
     packages:
       - kwin*
@@ -214,8 +223,64 @@ meta:
       - sddm-breeze*
       - libkworkspace*
       - sddm-wayland*
+  
+  #
+  # Gnome
+  #
+  webkit:
+    packages:
+      - webkit2gtk*
+      - webkitgtk*
+      - javascriptcoregtk*
+  gnome-utils:
+    packages:
+      - gnome-remote-desktop
+      - gnome-keyring
+      - gnome-keyring-pam
+      - gnome-user-docs
+      - gnome-tweaks
+  gnome-shell:
+    packages:
+      - gnome-control-center-filesystem
+      - adwaita-icon-theme-legacy
+      - nautilus-extensions
+      - xdg-desktop-portal-gnome
+      - nautilus
+      - gnome-software
+      - gnome-control-center
+      - gnome-shell*
+      - gnome-shell-extension*
+  gtk3:
+    packages:
+      - gtk3
+      - gtk-update-icon-cache
+  gnome-session:
+    packages:
+      - gsettings-desktop-schemas
+      - gnome-settings-daemon
+      - gnome-session
+      - gnome-session-wayland-session
+      - gnome-session-xsession
+      - gnome-shell-extension-background-logo
+      - gnome-system-monitor
+      - gnome-disk-utility
+      - gnome-backgrounds
+  gutenprint:
+    packages:
+      - gutenprint*
+    dedicated: False
+  libcanberra:
+    packages:
+      - libcanberra*
+    dedicated: False
+  gdk-pixbuf:
+    packages:
+      - gdk-pixbuf*
+    dedicated: False
 
+  #
   # Toolchains
+  #
   cosign:
     packages:
       - cosign*
@@ -296,7 +361,20 @@ meta:
   python3-botocore:
     packages:
       - python3-botocore*
+
+  #
+  # Nvidia
+  #
+  nvidia-xorg:
+    packages:
+      - nvidia-modprobe
+      - nvidia-persistenced
+      - nvidia-settings
+      - xorg-x11-drv*
+
+  #
   # Apps
+  #
   vlc:
     packages:
       - vlc*
@@ -550,4 +628,39 @@ meta:
   malliit:
     packages:
       - malliit*
+    dedicated: False
+  avahi:
+    packages:
+      - avahi*
+    dedicated: False
+  libobs:
+    packages:
+      - libobs*
+      - obs-vkcapture
+    dedicated: False
+  gvfs:
+    packages:
+      - gvfs*
+    dedicated: False
+  hardbuzz:
+    packages:
+      - hardbuzz*
+    dedicated: False
+  httd:
+    packages:
+      - httpd*
+      - mod_lua
+      - mod_ssl
+    dedicated: False
+  shim:
+    packages:
+      - shim*
+    dedicated: False
+  lvm2:
+    packages:
+      - lvm2*
+    dedicated: False
+  libqmi:
+    packages:
+      - libqmi*
     dedicated: False

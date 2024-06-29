@@ -408,9 +408,9 @@ def process_meta(
         )
 
     hash_to_file = {v: k for k, v in ostree_map.items()}
-    log = f"Large emaining files:"
+    log = f"Large remaining files:"
     for hash, size in sorted(remaining_hashes.items(), key=lambda x: x[1], reverse=True)[:50]:
-        if size < 1e5:
+        if size < 5e5:
             break
         log += f"\n - {size / 1e6:6.3f} MB {hash_to_file[hash]}"
     logger.info(log)
@@ -539,9 +539,9 @@ def main(
     unpackage_size = total_size - package_size
 
     log = f"Size analysis:"
-    log += f"\n -   Packages: {package_size / 1e9:.3f} GB."
-    log += f"\n - Unpackaged: {unpackage_size / 1e9:.3f} GB."
-    log += f"\n -      Total: {total_size / 1e9:.3f} GB."
+    log += f"\n -   Packages: {package_size / 1e9:6.3f} GB."
+    log += f"\n - Unpackaged: {unpackage_size / 1e9:6.3f} GB."
+    log += f"\n -      Total: {total_size / 1e9:6.3f} GB."
     logger.info(log)
 
     # Calculate plan
