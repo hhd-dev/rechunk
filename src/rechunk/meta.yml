@@ -33,12 +33,10 @@ meta:
       - ayaneo-platform
       - bmi260
       - ryzen-smu
-    dedicated: False
   mesa-va:
     packages:
       - mesa-va-drivers*
       - mesa-vdpau-drivers*
-    dedicated: False
   mesa:
     packages:
       - mesa*
@@ -72,7 +70,6 @@ meta:
   qt5:
     packages:
       - qt5*
-    dedicated: False
   fcitx5:
     packages:
       - fcitx5*
@@ -89,7 +86,6 @@ meta:
   kf5:
     packages:
       - kf5*
-    dedicated: False
   kde-apps:
     packages:
       - libkexiv2-qt6
@@ -207,9 +203,11 @@ meta:
       - sddm-breeze*
       - libkworkspace*
       - sddm-wayland*
-    dedicated: False
 
   # Toolchains
+  cosign:
+    packages:
+      - cosign*
   llvm-libs:
     packages:
       - llvm-libs*
@@ -251,7 +249,6 @@ meta:
   mingw-libgcc:
     packages:
       - mingw*-lib*
-    dedicated: False
   mingw-sdl:
     packages:
       - mingw*-SDL*
@@ -265,13 +262,16 @@ meta:
       - mingw*-libjpeg-turbo
       - libjpeg-turbo
     dedicated: False
+  mingw-crt:
+    packages:
+      - mingw*-crt*
+    dedicated: False
   google-fonts:
     packages:
       - google-noto-*
   mariadb:
     packages:
       - mariadb*
-    dedicated: False
   cldr:
     packages:
       - cldr-emoji-annotation*
@@ -282,12 +282,13 @@ meta:
       - python3-libs
       - python3-tkinter
       - python-unversioned-command
-    dedicated: False
+  python3-botocore:
+    packages:
+      - python3-botocore*
   # Apps
   vlc:
     packages:
       - vlc*
-    dedicated: False
   vim:
     packages:
       - vim*
@@ -297,7 +298,6 @@ meta:
     packages:
       - libva*
       - intel-media-driver*
-    dedicated: False
   systemd:
     packages:
       - systemd*
@@ -330,7 +330,6 @@ meta:
   ibus:
     packages:
       - ibus*
-    dedicated: False
   cockpit:
     packages:
       - cockpit*
@@ -385,7 +384,6 @@ meta:
   rocm:
     packages:
       - rocm*
-    dedicated: False
   openssl:
     packages:
       - openssl*

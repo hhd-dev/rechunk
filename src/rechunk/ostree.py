@@ -10,18 +10,12 @@ from .utils import tqdm
 
 logger = logging.getLogger(__name__)
 
-_cache = {}
 
 def get_ostree_map(repo: str, ref: str):
     # Prefix has a fixed length
     # unless filesize is larger than what fits
     prefix = len("d00555 0 0")
     hash_len = 64
-
-    if ref in _cache:
-        # Use cache to speedup experiments
-        logger.warning(f"Using cached inmemory data from '{ref}'!")
-        return _cache[ref]
 
     proc = None
     pbar = tqdm(desc=f"Reading OSTree ref '{ref}'", unit="files", total=300_000)
@@ -80,7 +74,6 @@ def get_ostree_map(repo: str, ref: str):
             assert proc.wait() == 0, f"OSTree exited with error: {proc.returncode}"
         pbar.close()
 
-    _cache[ref] = mapping, hashes
     return mapping, hashes
 
 

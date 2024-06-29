@@ -43,14 +43,33 @@ def prefill_layers(
             )
             dedi += 1
             todo.pop(p)
+
+    SIZE_LIMITS = (5e5, 1e6)
     max_layers -= len(dedi_layers)
-    assert (
-        max_layers > 0
-    ), "No layers left after dedicated packages (set dedicated=False for some packages in meta.yml)."
+    assert max_layers > len(
+        SIZE_LIMITS
+    ), "No layers left after dedicated packages and fine layers (set dedicated=False for some packages in meta.yml)."
 
     # Handle the rest of the layers
     pbar = tqdm(total=max_layers, desc="Initial layer fill")
     layers = []
+
+    # Add layers for small packages
+    # These packages will just ruin the cache
+    # in other layers for little benefit
+    for size_limit in SIZE_LIMITS:
+        fines = []
+        for p in packages:
+            if p.size < size_limit and p in todo:
+                fines.append(p)
+                todo.pop(p)
+        if fines:
+            layers.append(fines)
+            logger.info(
+                f"Layer {dedi+len(layers):2d}: {sum([p.size for p in fines]) / 1e9:.3f} GB, for small (< {size_limit // 1e6} MB) packages with {len(fines)} packages."
+            )
+            pbar.update(1)
+
     curr = []
     l_upd = np.zeros(n_segments, dtype=np.bool)
     l_size = 0
@@ -226,7 +245,15 @@ def print_results(
             data = f"{i+1:3d}: (freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}, pkg: {len(l):3d})"
             logger.info(data)
             f.write(data + "\n")
-            f.write(str([p.name for p in l]) + "\n")
+            f.write(
+                str(
+                    [
+                        f"{p.name}: {p.size // 1e6}"
+                        for p in sorted(l, key=lambda p: p.size, reverse=True)
+                    ]
+                )
+                + "\n"
+            )
 
     # # Condensed results
     # log = f"Final layer fill:\n"
@@ -443,21 +470,30 @@ def main(
     max_layers: int = 39,
     prefill_ratio: float = 0.4,
     max_layer_ratio: float = 1.3,
+    biweekly: bool = False,
+    _cache: dict | None = None,
 ):
     if not meta_fn:
         meta_fn = get_default_meta_yaml()
     with open(meta_fn, "r") as f:
         meta = yaml.safe_load(f)["meta"]
 
-    logger.info(f"Beginning analysis.")
-    logger.info(f"Scanning OSTree repo '{repo}' with ref '{ref}' for files.")
-    ostree_map, ostree_hash = get_ostree_map(repo, ref)
+    if _cache is not None and ref in _cache:
+        # Use cache to speedup experiments
+        logger.warning(f"Using cached inmemory data from '{ref}'!")
+        ostree_map, ostree_hash, packages = _cache[ref]
+    else:
+        logger.info(f"Beginning analysis.")
+        logger.info(f"Scanning OSTree repo '{repo}' with ref '{ref}' for files.")
+        ostree_map, ostree_hash = get_ostree_map(repo, ref)
 
-    # Use the database by pulling it from ostree
-    packages = run_with_ostree_files(
-        repo, ostree_map, ["/usr/share/rpm/rpmdb.sqlite"], get_packages
-    )
-    logger.info(f"Found {len(packages)} packages.")
+        # Use the database by pulling it from ostree
+        packages = run_with_ostree_files(
+            repo, ostree_map, ["/usr/share/rpm/rpmdb.sqlite"], get_packages
+        )
+        logger.info(f"Found {len(packages)} packages.")
+        if _cache is not None:
+            _cache[ref] = ostree_map, ostree_hash, packages
 
     # Calculate file sizes from ostree
     ostree_hash_tmp = dict(ostree_hash)
@@ -494,7 +530,7 @@ def main(
         + f" - Max layer size: {max_layer_size / 1e9:.3f} GB."
     )
     logger.info("Creating update matrix.")
-    upd_matrix = get_update_matrix(new_packages)
+    upd_matrix = get_update_matrix(new_packages, biweekly)
     logger.info(f"Update matrix shape: {upd_matrix.shape}.")
 
     if previous_manifest:
@@ -512,6 +548,9 @@ def main(
         f"Leftover packages: {len(todo)}/{len(packages)} with a size of {sum([p.size for p in todo]) / 1e9:.3f} GB."
     )
     logger.info("Filling layers.")
+    # Legacy algorithm simulation
+    # prefill[-1] += list(todo.keys())
+    # todo = {}
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
 
     print_results(dedi_layers, prefill, layers, upd_matrix)
