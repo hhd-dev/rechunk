@@ -29,6 +29,7 @@ export OUT_NAME
 export OUT_TAG
 export PREV_NAME
 export MAX_LAYERS
+export PREFILL_RATIO
 
 # Prevent heavy tears by forcing relative path
 MOUNT=$(podman mount $CREF)
