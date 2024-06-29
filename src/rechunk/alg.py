@@ -11,7 +11,7 @@ from rechunk.model import Package, MetaPackage
 
 from .fedora import get_packages
 from .model import Package
-from .utils import get_update_matrix, tqdm
+from .utils import get_update_matrix, tqdm, get_default_meta_yaml
 
 from .ostree import get_ostree_map, dump_ostree_packages, run_with_ostree_files
 
@@ -125,6 +125,8 @@ def fill_layers(
     # minimal bandwidth increase.
 
     # Make a copy as we will muate
+    if not todo:
+        return layers
     todo = dict(todo)
     layers = [l.copy() for l in layers]
     pbar = tqdm(total=len(todo), desc="Final layer fill")
@@ -358,29 +360,36 @@ def process_meta(
     return mapping, new_packages
 
 
-def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int):
+def load_previous_manifest(
+    fn: str | list[str], packages: list[MetaPackage], max_layers: int
+):
     logger.info(f"Loading previous manifest from '{fn}'.")
 
-    with open(fn, "r") as f:
-        raw = json.load(f)
+    if isinstance(fn, str):
+        with open(fn, "r") as f:
+            raw = json.load(f)
 
-    logger.info(f"Processing previous manifest with {len(raw)} layers.")
+        lines = []
+        for data in raw["LayersData"]:
+            if "Annotations" not in data:
+                continue
+            annotations = data["Annotations"]
+            if not annotations:
+                continue
+            if "ostree.components" not in annotations:
+                continue
+            lines.append(annotations["ostree.components"])
+        logger.info(f"Processing previous manifest with {len(raw)} layers.")
+    else:
+        lines = fn
+        logger.info(f"Processing previous manifest with {fn} layers.")
 
     # Process previous manifest
     todo = dict.fromkeys(packages)
     dedi_layers = []
     removed = list()
     prefill = []
-    for data in raw["LayersData"]:
-        if "Annotations" not in data:
-            continue
-        annotations = data["Annotations"]
-        if not annotations:
-            continue
-        if "ostree.components" not in annotations:
-            continue
-        line = annotations["ostree.components"]
-
+    for line in lines:
         layer = []
         for name in line.split(","):
             name = name.strip().replace("meta:", "").replace("dedi:", "")
@@ -428,13 +437,15 @@ def load_previous_manifest(fn: str, packages: list[MetaPackage], max_layers: int
 def main(
     repo: str,
     ref: str,
-    contentmeta_fn: str,
-    meta_fn: str,
-    previous_manifest: str | None,
-    max_layers: int,
-    prefill_ratio: float,
-    max_layer_ratio: float,
+    contentmeta_fn: str | None = None,
+    meta_fn: str | None = None,
+    previous_manifest: str | list[str] | None = None,
+    max_layers: int = 39,
+    prefill_ratio: float = 0.4,
+    max_layer_ratio: float = 1.3,
 ):
+    if not meta_fn:
+        meta_fn = get_default_meta_yaml()
     with open(meta_fn, "r") as f:
         meta = yaml.safe_load(f)["meta"]
 
@@ -509,3 +520,5 @@ def main(
         dump_ostree_packages(
             dedi_layers, layers, contentmeta_fn, mapping, ostree_map, ostree_hash
         )
+
+    return dedi_layers, layers

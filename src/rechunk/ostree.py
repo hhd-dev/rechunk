@@ -10,12 +10,18 @@ from .utils import tqdm
 
 logger = logging.getLogger(__name__)
 
+_cache = {}
 
 def get_ostree_map(repo: str, ref: str):
     # Prefix has a fixed length
     # unless filesize is larger than what fits
     prefix = len("d00555 0 0")
     hash_len = 64
+
+    if ref in _cache:
+        # Use cache to speedup experiments
+        logger.warning(f"Using cached inmemory data from '{ref}'!")
+        return _cache[ref]
 
     proc = None
     pbar = tqdm(desc=f"Reading OSTree ref '{ref}'", unit="files", total=300_000)
@@ -73,6 +79,8 @@ def get_ostree_map(repo: str, ref: str):
         if proc is not None:
             assert proc.wait() == 0, f"OSTree exited with error: {proc.returncode}"
         pbar.close()
+
+    _cache[ref] = mapping, hashes
     return mapping, hashes
 
 
@@ -166,9 +174,16 @@ def run_with_ostree_files(
         for fn in fns:
             if fn in file_map:
                 hash = file_map[fn]
-                shutil.copy2(
+                cmd = [
+                    "cp",
                     f"{repo}/objects/{hash[:2]}/{hash[2:]}.file",
                     os.path.join(dir, os.path.basename(fn)),
+                ]
+                if os.getuid() != 0:
+                    cmd = ["sudo", *cmd]
+                subprocess.run(
+                    cmd,
+                    check=True,
                 )
             else:
                 logger.warning(f"File not found in OSTree: {fn}")

@@ -24,17 +24,6 @@ def setup_logger():
     )
 
 
-def get_default_meta_yaml():
-    """Returns the yaml data of a file in the relative dir provided."""
-    import inspect
-    import os
-    import yaml
-
-    script_fn = inspect.currentframe().f_back.f_globals["__file__"]  # type: ignore
-    dirname = os.path.dirname(script_fn)
-    return os.path.join(dirname, "meta.yml")
-
-
 def main():
     setup_logger()
 
@@ -68,9 +57,9 @@ def main():
     group.add_argument(
         "-m",
         "--meta",
-        help="Path to the meta.yml file. Contains meta package groupings that are used to create the layers.",
+        help="Path to the meta.yml file. Contains meta package groupings that are used to create the layers. A default file is provided.",
         required=False,
-        default=get_default_meta_yaml(),
+        default=None,
     )
     group.add_argument(
         "--max-layers",

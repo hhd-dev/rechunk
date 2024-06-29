@@ -19,6 +19,17 @@ class tqdm(tqdm_orig):
         super().__init__(*args, **kwargs)
 
 
+def get_default_meta_yaml():
+    """Returns the yaml data of a file in the relative dir provided."""
+    import inspect
+    import os
+    import yaml
+
+    script_fn = inspect.currentframe().f_back.f_globals["__file__"]  # type: ignore
+    dirname = os.path.dirname(script_fn)
+    return os.path.join(dirname, "meta.yml")
+
+
 def run(cmd: str, chroot_dir: str | None = None):
     import os
     import subprocess
@@ -97,7 +108,7 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
         for u in p.updates:
             if (curr - u).days > 365:
                 continue
-            
+
             _, w, d = u.isocalendar()
             if biweekly:
                 p_upd[i, 2 * w + (d >= 4)] = 1
