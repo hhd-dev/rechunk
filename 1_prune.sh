@@ -7,7 +7,10 @@ if [ $(id -u) -ne 0 ]; then
 fi
 
 TREE=${TREE:=./tree}
-TIMESTAMP=${TIMESTAMP:=202001010100}
+TIMESTAMP=${TIMESTAMP:=197001010100}
+
+# Copy _everything_ including perms
+RSYNC="rsync -aHAX --numeric-ids"
 
 if [ -z "$TREE" ]; then
     echo "TREE is empty. Please be careful! This script can prune your system!"
@@ -78,17 +81,28 @@ rm -rf \
     $TREE/etc/gshadow- \
     $TREE/etc/subuid- \
     $TREE/etc/subgid- \
-    $TREE/.dockerenv \
+    $TREE/.dockerenv
 
-# Merge /etc to /usr/etc
+# Merge /usr/etc to /etc
 # OSTree will error out if both dirs exist
 # And rpm-ostree will be confused and use only one of them
-# /usr/etc might have broken permissions, so we sync /etc/ to it,
-# even though /etc is much bigger
 if [ -d $TREE/usr/etc ]; then
-    rsync -a $TREE/etc/ $TREE/usr/etc
-    rm -rf $TREE/etc
+    # # Fix dir perms
+    # # These may prevent the system from booting
+    # # Systemd expects certain dirs to be readable only by root
+    # echo Fixing /usr/etc dir perms
+    # pushd $TREE/usr/etc
+    # find . -type d -exec chown -v --reference='{}' ../../etc/'{}' \; | grep changed
+    # find . -type d -exec chmod -v --reference='{}' ../../etc/'{}' \; | grep changed
+    # popd
+    # Sync
+    echo Merging /usr/etc to /etc
+    $RSYNC $TREE/usr/etc/ $TREE/etc
+    rm -rf $TREE/usr/etc
 fi
+
+# Move /etc to /usr/etc
+mv $TREE/etc $TREE/usr/
 
 #
 # Other directories
@@ -99,14 +113,14 @@ fi
 # Copy var/lib to /usr/lib
 if [ -d $TREE/var ]; then
     mkdir -p $TREE/usr/lib
-    rsync -a $TREE/var/lib/ $TREE/usr/lib/
+    $RSYNC $TREE/var/lib/ $TREE/usr/lib/
     rm -r $TREE/var/lib
 fi
 
 # Copy var files to factory
 if [ -d $TREE/var ]; then
     mkdir -p $TREE/usr/share/factory/var
-    rsync -a $TREE/var/ $TREE/usr/share/factory/var/
+    $RSYNC $TREE/var/ $TREE/usr/share/factory/var/
 fi
 
 # Remove top level dir contents
@@ -145,7 +159,7 @@ ln -s sysroot/ostree $TREE/ostree
 # Containerfile overode RPM db, so now there are 2 RPM dbs
 # Use hardlinks so analyzer cant take into account these being the same files
 rm -rf $TREE/usr/lib/sysimage/rpm-ostree-base-db/
-rsync -a \
+$RSYNC \
     --link-dest="../../../share/rpm" \
     "$TREE/usr/share/rpm/" \
     "$TREE/usr/lib/sysimage/rpm-ostree-base-db"
@@ -172,6 +186,18 @@ chmod 700 $TREE/usr/lib/ostree-boot/efi/EFI/fedora
 chmod 700 $TREE/usr/lib/ostree-boot/grub2
 chmod 700 $TREE/usr/lib/ostree-boot/grub2/fonts
 chmod 750 $TREE/usr/libexec/initscripts/legacy-actions/auditd
+
+# Fix polkid group
+POLKIT_ID=$(cat $TREE/usr/lib/group | grep polkitd | cut -d: -f3)
+if [ -z "$POLKIT_ID" ]; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "Polkitd group not found. Polkits will not work"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+else
+    echo "Fixing polkit perms"
+    chgrp $POLKIT_ID $TREE/usr/etc/polkit-1/localauthority
+    chgrp $POLKIT_ID $TREE/usr/etc/polkit-1/rules.d
+fi
 
 # Touch files for reproducibility
 echo

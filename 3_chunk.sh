@@ -39,6 +39,9 @@ fi
 if [ -n "$MAX_LAYERS" ]; then
     PREV_ARG="$PREV_ARG --max-layers $MAX_LAYERS"
 fi
+if [ -n "$PREFILL_RATIO" ]; then
+    PREV_ARG="$PREV_ARG --prefill-ratio $PREFILL_RATIO"
+fi
 
 $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG
 

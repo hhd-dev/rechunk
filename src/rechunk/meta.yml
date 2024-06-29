@@ -28,6 +28,9 @@ meta:
   homebrew:
     files:
       - /usr/share/homebrew.tar.zst
+  steam:
+    packages:
+      - steam
   kernel:
     packages:
       - kernel*

@@ -61,7 +61,6 @@ podman run -it --rm \
 if [ -n "$JUST_PRUNE" ]; then
     echo "Skipping other steps due to JUST_PRUNE."
     echo "Mounted at '$MOUNT'"
-    echo "Symlink to '$TREE'"
     exit 0
 fi
 # Now that the destructive actions are done
