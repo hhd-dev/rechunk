@@ -6,6 +6,10 @@ meta:
     # HHD-UI is 110mb compressed :/
     packages:
       - hhd-ui
+  topgrade:
+    files:
+      - /usr/bin/topgrade
+    dedicated: False
   # Random stuff
   unpackaged:
     packages:
@@ -13,7 +17,8 @@ meta:
     files:
       - /usr/share/distribution-gpg-keys*
       # This small dir is affected by multiple packages
-      - /usr/src/kernels/*/scripts
+      - /usr/src/kernels/*scripts*
+      - /usr/share/ublue-os*
   # Core
   initramfs:
     files:
@@ -33,6 +38,9 @@ meta:
       - ayaneo-platform
       - bmi260
       - ryzen-smu
+    files:
+      - /usr/lib/modules/*vmlinuz*
+      - /usr/lib/modules/*ko.xz
   mesa-va:
     packages:
       - mesa-va-drivers*
@@ -364,6 +372,10 @@ meta:
   grub2:
     packages:
       - grub2*
+    files:
+      - "*grubx64.efi"
+      - "*grubia32.efi"
+      - /usr/lib/ostree-boot/grub2/fonts*
     dedicated: False
   hplip:
     packages:

@@ -70,9 +70,12 @@ def get_ostree_map(repo: str, ref: str):
             hashes[fhash] = size
             pbar.update(1)
     finally:
-        if proc is not None:
-            assert proc.wait() == 0, f"OSTree exited with error: {proc.returncode}"
         pbar.close()
+        if proc is not None:
+            proc.wait()
+
+    if proc is not None:
+        assert proc.poll() == 0, f"OSTree exited with error: {proc.returncode}"
 
     return mapping, hashes
 
@@ -82,11 +85,8 @@ def dump_ostree_packages(
     layers: list[list[MetaPackage]],
     out_fn: str,
     mapping: dict[str, str],
-    ostree_map: dict[str, str],
-    ostree_hashes: dict[str, None],
 ):
     # Create layer meta
-    ostree_hashes = dict(ostree_hashes)
     smeta = {}
     pkg_to_layer = {}
 
@@ -122,26 +122,13 @@ def dump_ostree_packages(
         logger.info("No unpackaged layer found. Creating it manually.")
         smeta["unpackaged"] = "dedi:meta:unpackaged"
 
-    # Create mappings
+    # Create mappings for hash -> layer
     ostree_out = {}
     used_layers = set()
-    for fn, pkg in mapping.items():
+    for ohash, pkg in mapping.items():
         layer = pkg_to_layer[pkg]
-        if fn.startswith("/etc") or fn.startswith("/usr/etc"):
-            # Multiple packages can own the same etc file
-            # and they may be modified. Avoid breaking layer caching.
-            continue
-        if fn in ostree_map:
-            fhash = ostree_map[fn]
-            if fhash in ostree_hashes:
-                # First layer to get hash owns it
-                ostree_hashes.pop(fhash, None)
-                ostree_out[fhash] = layer
-                used_layers.add(layer)
-
-    for fhash in ostree_hashes:
-        ostree_out[fhash] = "unpackaged"
-        used_layers.add("unpackaged")
+        ostree_out[ohash] = layer
+        used_layers.add(layer)
 
     # Trim layers to avoid empty ones
     final_layers = {k: v for k, v in sorted(smeta.items()) if k in used_layers}

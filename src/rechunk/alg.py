@@ -274,10 +274,13 @@ def print_results(
 
 
 def process_meta(
-    meta: dict[str, Any], files: dict[str, int], packages: list[Package]
+    meta: dict[str, Any],
+    ostree_map: dict[str, str],
+    ostree_hash: dict[str, int],
+    packages: list[Package],
 ) -> tuple[dict[str, str], list[MetaPackage]]:
     mapping = {}
-    remaining_files = dict(files)
+    remaining_hashes = dict(ostree_hash)
     remaining_packages = dict.fromkeys(packages)
     new_packages = []
     unpackaged = None
@@ -287,7 +290,7 @@ def process_meta(
         meta_updates = []
         meta_packages = {}
         for file_pat in contents.get("files", []):
-            meta_files.extend(fnmatch.filter(files.keys(), file_pat))
+            meta_files.extend(fnmatch.filter(ostree_map.keys(), file_pat))
         for pkg_pat in contents.get("packages", []):
             for pname in fnmatch.filter(
                 dict.fromkeys([p.name for p in remaining_packages]), pkg_pat
@@ -302,11 +305,21 @@ def process_meta(
         total_size = 0
         added_files = False
         for fn in meta_files:
-            if fn not in mapping and fn in remaining_files:
-                mapping[fn] = name
-                s = remaining_files.pop(fn, 0)
-                added_files = True
-                total_size += s
+            if fn.startswith("/etc") or fn.startswith("/usr/etc"):
+                # Skip configuration files, they are small anyway
+                # Also, lib32 and lib64 packages use the same file
+                continue
+
+            if fn not in ostree_map:
+                continue
+            ohash = ostree_map[fn]
+
+            if ohash not in remaining_hashes:
+                continue
+
+            mapping[ohash] = name
+            total_size += remaining_hashes.pop(ohash)
+            added_files = True
 
         if added_files:
             # Only add if it has files to prevent wasting layers
@@ -337,9 +350,20 @@ def process_meta(
             updates.extend(pkg.updates)
             for f in pkg.files:
                 fn = f.name
-                if fn not in mapping and fn in remaining_files:
-                    mapping[f.name] = name
-                    new_size += remaining_files.pop(fn, 0)
+                if fn.startswith("/etc") or fn.startswith("/usr/etc"):
+                    # Skip configuration files, they are small anyway
+                    # Also, lib32 and lib64 packages use the same file
+                    continue
+
+                if fn not in ostree_map:
+                    continue
+                ohash = ostree_map[fn]
+
+                if ohash not in remaining_hashes:
+                    continue
+
+                mapping[ohash] = name
+                new_size += remaining_hashes.pop(ohash)
 
         for pkg in added_pkg:
             remaining_packages.pop(pkg, None)
@@ -356,9 +380,8 @@ def process_meta(
         )
 
     # Add remaining files to unpackaged
-    for fn, s in remaining_files.items():
-        if fn not in mapping:
-            mapping[fn] = "unpackaged"
+    for ohash in remaining_hashes:
+        mapping[ohash] = "unpackaged"
 
     if unpackaged is None:
         new_packages.append(
@@ -366,7 +389,7 @@ def process_meta(
                 index=len(new_packages),
                 name="unpackaged",
                 nevra=("unpackaged",),
-                size=sum(remaining_files.values()),
+                size=sum(remaining_hashes.values()),
                 dedicated=True,
                 meta=True,
             )
@@ -377,12 +400,20 @@ def process_meta(
                 index=len(new_packages),
                 name="unpackaged",
                 nevra=(*unpackaged.nevra, "unpackaged"),
-                size=sum(remaining_files.values()) + unpackaged.size,
+                size=sum(remaining_hashes.values()) + unpackaged.size,
                 # updates=unpackaged.updates,
                 dedicated=True,
                 meta=True,
             )
         )
+
+    hash_to_file = {v: k for k, v in ostree_map.items()}
+    log = f"Large emaining files:"
+    for hash, size in sorted(remaining_hashes.items(), key=lambda x: x[1], reverse=True)[:50]:
+        if size < 1e5:
+            break
+        log += f"\n - {size / 1e6:6.3f} MB {hash_to_file[hash]}"
+    logger.info(log)
 
     return mapping, new_packages
 
@@ -471,6 +502,7 @@ def main(
     prefill_ratio: float = 0.4,
     max_layer_ratio: float = 1.3,
     biweekly: bool = False,
+    result_fn: str = "./results.txt",
     _cache: dict | None = None,
 ):
     if not meta_fn:
@@ -495,20 +527,13 @@ def main(
         if _cache is not None:
             _cache[ref] = ostree_map, ostree_hash, packages
 
-    # Calculate file sizes from ostree
-    ostree_hash_tmp = dict(ostree_hash)
-    file_sizes = {}
-    for fn, hash in ostree_map.items():
-        if hash in ostree_hash_tmp:
-            file_sizes[fn] = ostree_hash_tmp.pop(hash)
-
     # Repackage using meta file
-    mapping, new_packages = process_meta(meta, file_sizes, packages)
+    mapping, new_packages = process_meta(meta, ostree_map, ostree_hash, packages)
 
     logger.info(f"Created {len(new_packages)} meta packages.")
 
     # Size results
-    total_size = sum(file_sizes.values())
+    total_size = sum(ostree_hash.values())
     package_size = sum([p.size for p in packages])
     new_package_size = sum([p.size for p in new_packages])
     unpackage_size = total_size - package_size
@@ -553,11 +578,11 @@ def main(
     # todo = {}
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
 
-    print_results(dedi_layers, prefill, layers, upd_matrix)
+    print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
     if contentmeta_fn:
         dump_ostree_packages(
-            dedi_layers, layers, contentmeta_fn, mapping, ostree_map, ostree_hash
+            dedi_layers, layers, contentmeta_fn, mapping
         )
 
     return dedi_layers, layers

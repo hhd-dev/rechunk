@@ -24,9 +24,7 @@ def setup_logger():
     )
 
 
-def main():
-    setup_logger()
-
+def argparse_func():
     parser = argparse.ArgumentParser(
         description="OCI Rechunk: Repartition your OCI images into OSTree commits."
     )
@@ -95,6 +93,15 @@ def main():
         args.prefill_ratio,
         args.max_layer_ratio,
     )
+
+
+def main():
+    setup_logger()
+    try:
+        argparse_func()
+    except KeyboardInterrupt:
+        logger = logging.getLogger(__name__)
+        logger.info("Received keyboard interrupt. Exiting.")
 
 
 if __name__ == "__main__":
