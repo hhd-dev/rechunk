@@ -17,7 +17,7 @@ jobs:
         uses: ./.
         with:
           ref: 'ghcr.io/ublue-os/bazzite:stable'
-          prev-ref: 'ghcr.io/ublue-os/bazzite-automated:stable'
+          prev-ref: 'ghcr.io/antheas/bazzite-automated:stable'
           rechunk: 'ghcr.io/antheas/rechunk:latest'
           version: '3.5_<date>'
           labels: |
