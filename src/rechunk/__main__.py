@@ -64,6 +64,9 @@ def argparse_func():
     parser.add_argument(
         "-l", "--label", help="Add labels to the output image.", action="append"
     )
+    parser.add_argument(
+        "--version-fn", help="Output path for version name.", default=None
+    )
 
     # Hyperparameters
     group = parser.add_argument_group("Hyperparameters")
@@ -109,6 +112,7 @@ def argparse_func():
         max_layer_ratio=args.max_layer_ratio,
         labels=args.label,
         version=args.version,
+        version_fn=args.version_fn,
         result_fn=None,
     )
 

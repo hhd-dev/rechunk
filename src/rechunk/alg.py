@@ -499,6 +499,7 @@ def main(
     result_fn: str | None = "./results.txt",
     labels: Sequence[str] = [],
     version: str | None = None,
+    version_fn: str | None = None,
     _cache: dict | None = None,
 ):
     if not meta_fn:
@@ -584,8 +585,9 @@ def main(
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
+    new_labels = get_labels(labels, version, manifest_json, version_fn)
+
     if contentmeta_fn:
-        new_labels = get_labels(labels, version, manifest_json)
         dump_ostree_packages(dedi_layers, layers, contentmeta_fn, mapping, new_labels)
 
     return dedi_layers, layers

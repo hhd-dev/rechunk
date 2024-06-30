@@ -50,6 +50,9 @@ fi
 if [ -n "$VERSION" ]; then
     PREV_ARG="$PREV_ARG --version $VERSION"
 fi
+if [ -n "$VERSION_FN" ]; then
+    PREV_ARG="$PREV_ARG --version-fn $VERSION_FN"
+fi
 
 LABEL_ARR=()
 if [ -n "$LABELS" ]; then

@@ -135,7 +135,7 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
 
 
 def get_labels(
-    labels: Sequence[str], version: str | None, prev_manifest
+    labels: Sequence[str], version: str | None, prev_manifest, version_fn: str | None
 ) -> dict[str, str]:
     if labels is None:
         return {}
@@ -154,7 +154,7 @@ def get_labels(
         version = version.replace("<date>", date)
 
         if version != prev_version:
-            new_labels[VERSION_TAG] = version
+            new_version = version
         elif prev_version and "." in prev_version:
             logger.warning(f"Version is the same as previous: {prev_version}")
             try:
@@ -164,15 +164,21 @@ def get_labels(
                 ), "Avoid writing version if we start going too far back"
                 major = prev_version[:idx]
                 minor = prev_version[idx + 1 :]
-                new_labels[VERSION_TAG] = f"{major}.{int(minor) + 1}"
+                new_version = f"{major}.{int(minor) + 1}"
             except ValueError or AssertionError:
-                new_labels[VERSION_TAG] = f"{prev_version}.1"
+                new_version = f"{prev_version}.1"
         else:
-            new_labels[VERSION_TAG] = f"{prev_version}.1"
+            new_version = f"{prev_version}.1"
 
-        logger.info(f"New version: '{new_labels[VERSION_TAG]}'")
+        logger.info(f"New version: '{new_version}'")
+        new_labels[VERSION_TAG] = new_version
         if prev_version:
             logger.info(f"Previous version: '{prev_version}'")
+
+        # Write version to file
+        if version_fn:
+            with open(version_fn, "w") as f:
+                f.write(new_version)
 
     for line in labels:
         if not "=" in line:
