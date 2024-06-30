@@ -61,9 +61,9 @@ def argparse_func():
     )
     group.add_argument(
         "--max-layers",
-        help="Maximum number of layers to create.",
+        help="Maximum number of layers to create (0-100).",
         type=int,
-        default=39,
+        default=None,
     )
     group.add_argument(
         "--prefill-ratio",
@@ -71,7 +71,7 @@ def argparse_func():
         + "It is heuristic and faster than the fill step, but may be non-optimal."
         + "The lower the ratio, the larger this script will take.",
         type=float,
-        default=0.4,
+        default=None,
     )
     group.add_argument(
         "--max-layer-ratio",
@@ -79,7 +79,7 @@ def argparse_func():
         + "Helps the output layers be uniform in size."
         + "Meta packages will always be grouped together.",
         type=float,
-        default=1.3,
+        default=None,
     )
 
     args = parser.parse_args()

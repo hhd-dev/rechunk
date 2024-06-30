@@ -1,19 +1,18 @@
 import fnmatch
+import json
 import logging
-from typing import Any
+import os
+from typing import Any, cast
 
 import numpy as np
-import os
-import json
 import yaml
 
-from rechunk.model import Package, MetaPackage
+from rechunk.model import MetaPackage, Package
 
 from .fedora import get_packages
 from .model import Package
-from .utils import get_update_matrix, tqdm, get_default_meta_yaml
-
-from .ostree import get_ostree_map, dump_ostree_packages, run_with_ostree_files
+from .ostree import dump_ostree_packages, get_ostree_map, run_with_ostree_files
+from .utils import get_default_meta_yaml, get_update_matrix, tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -409,7 +408,9 @@ def process_meta(
 
     hash_to_file = {v: k for k, v in ostree_map.items()}
     log = f"Large remaining files:"
-    for hash, size in sorted(remaining_hashes.items(), key=lambda x: x[1], reverse=True)[:50]:
+    for hash, size in sorted(
+        remaining_hashes.items(), key=lambda x: x[1], reverse=True
+    )[:50]:
         if size < 5e5:
             break
         log += f"\n - {size / 1e6:6.3f} MB {hash_to_file[hash]}"
@@ -498,9 +499,9 @@ def main(
     contentmeta_fn: str | None = None,
     meta_fn: str | None = None,
     previous_manifest: str | list[str] | None = None,
-    max_layers: int = 39,
-    prefill_ratio: float = 0.4,
-    max_layer_ratio: float = 1.3,
+    max_layers: int | None = None,
+    prefill_ratio: float | None = None,
+    max_layer_ratio: float | None = None,
     biweekly: bool = False,
     result_fn: str = "./results.txt",
     _cache: dict | None = None,
@@ -509,6 +510,12 @@ def main(
         meta_fn = get_default_meta_yaml()
     with open(meta_fn, "r") as f:
         meta = yaml.safe_load(f)["meta"]
+        if max_layers is None:
+            max_layers = cast(int, meta.get("max_layers", 39))
+        if prefill_ratio is None:
+            prefill_ratio = cast(float, meta.get("layer_prefill_ratio", 0.4))
+        if max_layer_ratio is None:
+            max_layer_ratio = cast(float, meta.get("layer_max_ratio", 1.3))
 
     if _cache is not None and ref in _cache:
         # Use cache to speedup experiments
@@ -581,8 +588,6 @@ def main(
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
     if contentmeta_fn:
-        dump_ostree_packages(
-            dedi_layers, layers, contentmeta_fn, mapping
-        )
+        dump_ostree_packages(dedi_layers, layers, contentmeta_fn, mapping)
 
     return dedi_layers, layers
