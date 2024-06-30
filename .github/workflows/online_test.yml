@@ -6,7 +6,7 @@ name: Rechunk Github Tester
 on: [ workflow_dispatch ]
 jobs:
   online_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
       - uses: actions/checkout@v4
