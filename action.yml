@@ -44,7 +44,7 @@ outputs:
     description: |
       The reference of the rechunked image. Will be in the form of `oci:<dir>`,
       with dir being the directory of the OCI image, relative to workdir.
-    value: ${{ steps.rechunk.outputs.ref }
+    value: ${{ steps.rechunk.outputs.ref }}
   version:
     description: |
       The version of the rechunked image to be used as a tag.
