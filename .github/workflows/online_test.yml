@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          TAGS=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite:stable | jq -r '.RepoTags[]')
       - name: Run Rechunker
         id: rechunk
         uses: ./.
