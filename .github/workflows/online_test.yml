@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Maximize build space
+        uses: ublue-os/remove-unwanted-software@v7
       - name: Run Rechunker
         id: rechunk
         uses: ./.
