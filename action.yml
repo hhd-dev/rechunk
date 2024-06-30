@@ -49,43 +49,43 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    # - name: Mount Image
-    #   id: mount
-    #   shell: bash
-    #   run: |
-    #     CREF=$(podman create ${{ inputs.ref }})
-    #     MOUNT=$(podman mount $CREF)
-    #     echo "container=$CREF" >> $GITHUB_OUTPUT
-    #     echo "mount=$MOUNT" >> $GITHUB_OUTPUT
-    # - name: Prune Directory
-    #   shell: bash
-    #   run: |
-    #     podman run -it --rm \
-    #         -v "${{ steps.mount.outputs.mount }}":/var/tree \
-    #         -e TREE=/var/tree \
-    #         ${{ inputs.rechunk }} \
-    #         /sources/rechunk/1_prune.sh
-    # - name: Commit to OSTree
-    #   shell: bash
-    #   run: |
-    #     podman run -it --rm \
-    #         -v "${{ steps.mount.outputs.mount }}":/var/tree \
-    #         -e TREE=/var/tree \
-    #         -v "cache_ostree:/var/ostree" \
-    #         -e REPO=/var/ostree/repo \
-    #         ${{ inputs.rechunk }} \
-    #         /sources/rechunk/2_create.sh
-    # - name: Unmount Image
-    #   shell: bash
-    #   run: |
-    #     podman unmount ${{ steps.mount.outputs.container }}
-    #     podman rm ${{ steps.mount.outputs.container }}
+    - name: Mount Image
+      id: mount
+      shell: bash
+      run: |
+        CREF=$(podman create ${{ inputs.ref }})
+        MOUNT=$(podman mount $CREF)
+        echo "container=$CREF" >> $GITHUB_OUTPUT
+        echo "mount=$MOUNT" >> $GITHUB_OUTPUT
+    - name: Prune Directory
+      shell: bash
+      run: |
+        podman run -it --rm \
+            -v "${{ steps.mount.outputs.mount }}":/var/tree \
+            -e TREE=/var/tree \
+            ${{ inputs.rechunk }} \
+            /sources/rechunk/1_prune.sh
+    - name: Commit to OSTree
+      shell: bash
+      run: |
+        podman run -it --rm \
+            -v "${{ steps.mount.outputs.mount }}":/var/tree \
+            -e TREE=/var/tree \
+            -v "cache_ostree:/var/ostree" \
+            -e REPO=/var/ostree/repo \
+            ${{ inputs.rechunk }} \
+            /sources/rechunk/2_create.sh
+    - name: Unmount Image
+      shell: bash
+      run: |
+        podman unmount ${{ steps.mount.outputs.container }}
+        podman rm ${{ steps.mount.outputs.container }}
     - name: Rechunk OSTree Commit
       id: rechunk
       shell: bash
       run: |
         OUT_NAME=$(echo ${{ inputs.ref }} | rev | cut -d'/' -f1 | rev | sed 's/:/_/')
-        echo "Outname is $OUT_NAME"
+        
         podman run -it --rm \
             -v "$(pwd):/workspace" \
             -v "cache_ostree:/var/ostree" \
