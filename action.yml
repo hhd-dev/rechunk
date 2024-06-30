@@ -84,10 +84,11 @@ runs:
             ${{ inputs.rechunk }} \
             /sources/rechunk/2_create.sh
 
-        # Cleanup
+        # Cleanup and make space
         echo Unmounting and removing container
         sudo podman unmount ${{ steps.mount.outputs.container }}
         sudo podman rm ${{ steps.mount.outputs.container }}
+        sudo podman rmi ${{ inputs.ref }}
     - name: Rechunk OSTree Commit
       id: rechunk
       shell: bash
@@ -112,6 +113,9 @@ runs:
 
         echo "version=$(sudo cat ./version.txt)" >> $GITHUB_OUTPUT
         echo "ref=oci:$OUT_NAME" >> $GITHUB_OUTPUT
+        
+        # Remove cached volume
+        sudo podman volume rm cache_ostree
       env:
         VERSION: ${{ inputs.version }}
         LABELS: ${{ inputs.labels }}
