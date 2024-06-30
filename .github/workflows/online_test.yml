@@ -17,9 +17,8 @@ jobs:
         uses: ./.
         with:
           ref: 'ghcr.io/ublue-os/bazzite:stable'
-          # prev-ref: 'ghcr.io/ublue-os/bazzite-automated:stable'
+          prev-ref: 'ghcr.io/ublue-os/bazzite-automated:stable'
           rechunk: 'ghcr.io/antheas/rechunk:latest'
-          # skip_compression: 'true'
           version: '3.5_<date>'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
@@ -35,6 +34,7 @@ jobs:
         id: upload
         shell: bash
         run: |
+          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/antheas/bazzite-automated:latest
           sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/antheas/bazzite-automated:stable
           sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/antheas/bazzite-automated:${{ steps.rechunk.outputs.version }}
         
