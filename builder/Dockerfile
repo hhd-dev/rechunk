@@ -1,14 +1,10 @@
-FROM quay.io/coreos-assembler/fcos-buildroot:testing-devel as build
+FROM quay.io/fedora/fedora:40 as build
 
 #
-# Usage dependencies
+# Build dependencies
 #
-# Done before building rpm-ostree to allow adding more patches.
-
-# Install niceties
-RUN dnf install -y skopeo buildah just git jq fuse-overlayfs \
-    make bubblewrap fedpkg selinux-policy-targeted
-RUN dnf install -y python3 python3-pip python3-devel
+RUN dnf install -y rust cargo libzstd-devel git openssl-devel \
+    glib2-devel ghc-gio ostree-devel patch
 
 #
 # Build ostree-rs-ext
@@ -38,8 +34,9 @@ RUN for patch in /tmp/oext/*.patch; do \
 # Only run build after fetch to avoid
 # re-downloading dependencies after fail
 RUN cargo build --release
-RUN cp /sources/ostree-rs-ext/target/release/ostree-ext-cli \
-    /usr/bin/ostree-ext-cli
+
+# Remove dependencies
+FROM quay.io/fedora/fedora:40
 
 # Allow for user access to files through container
 # and for use of sudo for escalation
@@ -52,39 +49,13 @@ RUN groupadd admin -g $GID && \
     echo "admin ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/user && \
     chmod 0440 /etc/sudoers.d/user
 
-# #
-# # Build rpm-ostree
-# #
-# # Is a package, but handling lib32 steam deps
-# # requires a couple patches. 
-# ARG RPM_OSTREE_TAG="v2024.6"
-# RUN mkdir -p /sources; \
-#     cd /sources; \
-#     git clone --branch ${RPM_OSTREE_TAG} --depth 1 \
-#     https://github.com/coreos/rpm-ostree rpm-ostree;
+# Install niceties
+RUN dnf install -y python3 python3-pip python3-devel \
+    libzstd openssl glib2 ghc-gio ostree skopeo selinux-policy-targeted
 
-# WORKDIR /sources/rpm-ostree
-
-# # Install dependencies
-# RUN git submodule update --init; \
-#     ./autogen.sh --prefix=/usr --libdir=/usr/lib64 --sysconfdir=/etc
-# RUN cargo fetch
-
-# # Make once to cache most of the build process
-# # TODO: Remove for production
-# RUN make
-
-# # Apply patches
-# RUN mkdir -p /tmp/rosp
-# COPY rpm-ostree/*.patch /tmp/rosp
-# RUN for patch in /tmp/rosp/*.patch; do \
-#     echo "Applying patch: $patch"; \
-#     patch -Np1 < $patch; \
-#     done
-
-# # Make with patches (90s vs 5m)
-# RUN make
-# RUN make install
+# Copy the built binary after installing deps
+COPY --from=build /sources/ostree-rs-ext/target/release/ostree-ext-cli \
+    /usr/bin/ostree-ext-cli
 
 #
 # Post-build niceties
