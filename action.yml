@@ -92,8 +92,6 @@ runs:
             -e REPO=/var/ostree/repo \
             -e MAX_LAYERS="${{ inputs.max-layers }}" \
             -e SKIP_COMPRESSION="${{ inputs.skip_compression }}" \
-            -e LABELS="${{ inputs.labels }}" \
-            -e VERSION="${{ inputs.version }}" \
             -e PREV_REF="${{ inputs.prev-ref }}" \
             -e OUT_NAME="$OUT_NAME" \
             -e LABELS \

@@ -17,8 +17,8 @@ jobs:
           skip_compression: 'true'
           version: '3.0_<date>'
           labels: |
-            io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png"
-            io.artifacthub.package.readme-url=https://bazzite.gg/"
+            io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
+            io.artifacthub.package.readme-url=https://bazzite.gg/
             org.opencontainers.image.created=<timestamp>
             org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
             org.opencontainers.image.licenses=Apache-2.0

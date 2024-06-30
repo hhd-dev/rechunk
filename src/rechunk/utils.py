@@ -175,6 +175,9 @@ def get_labels(
             logger.info(f"Previous version: '{prev_version}'")
 
     for line in labels:
+        if not "=" in line:
+            continue
+        line = line.strip("\n ")
         idx = line.index("=")
         key = line[:idx]
         value = line[idx + 1 :]
@@ -186,7 +189,7 @@ def get_labels(
 
     log = "Writing labels:\n"
     for key, value in new_labels.items():
-        log += f" - {key:>30s}='{value}'\n"
+        log += f" - {key:>45s} =\n'{value}'\n"
     logger.info(log)
 
     return new_labels

@@ -20,7 +20,14 @@ def setup_logger():
         level=logging.INFO,
         datefmt="[%H:%M]",
         format=FORMAT,
-        handlers=[TqdmLoggingHandler()],
+        handlers=[
+            TqdmLoggingHandler(
+                enable_link_path=False,
+                show_level=True,
+                show_path=False,
+                show_time=False,
+            )
+        ],
     )
 
 
@@ -54,7 +61,9 @@ def argparse_func():
         help="The version format (e.g., '3.1_<date>').",
         default=None,
     )
-    parser.add_argument("-l", "--label", help="Add labels to the output image.", nargs="*")
+    parser.add_argument(
+        "-l", "--label", help="Add labels to the output image.", action="append"
+    )
 
     # Hyperparameters
     group = parser.add_argument_group("Hyperparameters")

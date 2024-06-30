@@ -47,13 +47,18 @@ fi
 if [ -n "$PREFILL_RATIO" ]; then
     PREV_ARG="$PREV_ARG --prefill-ratio $PREFILL_RATIO"
 fi
+
+LABEL_ARR=()
 if [ -n "$LABELS" ]; then
+    IFS=$'\n'
     for label in $LABELS; do
-        PREV_ARG="$PREV_ARG --label $label"
+        LABEL_ARR+=("--label" "$label")
     done
+    unset IFS
 fi
 
-$RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG
+echo $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
+$RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
 
 PREV_ARG=""
 if [ -n "$SKIP_COMPRESSION" ]; then
