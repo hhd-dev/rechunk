@@ -61,18 +61,20 @@ runs:
         MOUNT=$(sudo podman mount $CREF)
         echo "container=$CREF" >> $GITHUB_OUTPUT
         echo "mount=$MOUNT" >> $GITHUB_OUTPUT
-    - name: Prune Directory
+    - name: Create OSTree Commit
       shell: bash
       run: |
+        # Pruning
+        echo Pruning
         sudo podman run --rm \
             -v "${{ steps.mount.outputs.mount }}":/var/tree \
             -e TREE=/var/tree \
             -u 0:0 \
             ${{ inputs.rechunk }} \
             /sources/rechunk/1_prune.sh
-    - name: Commit to OSTree
-      shell: bash
-      run: |
+        
+        # OSTree commit
+        echo Committing to OSTree
         sudo podman run --rm \
             -v "${{ steps.mount.outputs.mount }}":/var/tree \
             -e TREE=/var/tree \
@@ -81,9 +83,9 @@ runs:
             -u 0:0 \
             ${{ inputs.rechunk }} \
             /sources/rechunk/2_create.sh
-    - name: Unmount Image
-      shell: bash
-      run: |
+
+        # Cleanup
+        echo Unmounting and removing container
         sudo podman unmount ${{ steps.mount.outputs.container }}
         sudo podman rm ${{ steps.mount.outputs.container }}
     - name: Rechunk OSTree Commit
