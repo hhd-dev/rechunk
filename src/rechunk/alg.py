@@ -209,7 +209,7 @@ def print_results(
     result_fn: str | None = "./results.txt",
 ):
     COMPRESSION_RATIO = 12 / 4.6  # This is for bazzite
-    DEDI_RATIO = 0.25  # Assume dedicated layers update a quarter of the time
+    DEDI_RATIO = 0.4  # Assume dedicated layers update a quarter of the time
 
     n_segments = upd_matrix.shape[1]
 
