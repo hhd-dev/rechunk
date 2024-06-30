@@ -25,7 +25,7 @@ RUN cargo build --release
 
 # Apply patches
 RUN mkdir -p /tmp/oext
-COPY ostree-ext/*.patch /tmp/oext
+COPY builder/ostree-ext/*.patch /tmp/oext
 RUN for patch in /tmp/oext/*.patch; do \
     echo "Applying patch: $patch"; \
     patch -Np1 < $patch; \
@@ -38,17 +38,6 @@ RUN cargo build --release
 # Remove dependencies
 FROM quay.io/fedora/fedora:40
 
-# Allow for user access to files through container
-# and for use of sudo for escalation
-ARG UID=1000
-ARG GID=1000
-
-RUN groupadd admin -g $GID && \
-    useradd admin -u $UID -g admin -ms /bin/bash && \
-    passwd -d admin && \
-    echo "admin ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/user && \
-    chmod 0440 /etc/sudoers.d/user
-
 # Install niceties
 RUN dnf install -y python3 python3-pip python3-devel \
     libzstd openssl glib2 ghc-gio ostree skopeo selinux-policy-targeted
@@ -56,6 +45,13 @@ RUN dnf install -y python3 python3-pip python3-devel \
 # Copy the built binary after installing deps
 COPY --from=build /sources/ostree-rs-ext/target/release/ostree-ext-cli \
     /usr/bin/ostree-ext-cli
+
+# Install rechunk
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN mkdir -p /sources/rechunk
+COPY . /sources/rechunk/
+RUN pip install --no-cache-dir /sources/rechunk/
 
 #
 # Post-build niceties

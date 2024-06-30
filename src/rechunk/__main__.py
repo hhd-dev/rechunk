@@ -67,16 +67,16 @@ def argparse_func():
     )
     group.add_argument(
         "--prefill-ratio",
-        help="The amount to prefill layers in the first pass."
-        + "It is heuristic and faster than the fill step, but may be non-optimal."
+        help="The amount to prefill layers in the first pass. "
+        + "It is heuristic and faster than the fill step, but may be non-optimal. "
         + "The lower the ratio, the larger this script will take.",
         type=float,
         default=None,
     )
     group.add_argument(
         "--max-layer-ratio",
-        help="The amount after which the fill step will stop adding packages to layers."
-        + "Helps the output layers be uniform in size."
+        help="The amount after which the fill step will stop adding packages to layers. "
+        + "Helps the output layers be uniform in size. "
         + "Meta packages will always be grouped together.",
         type=float,
         default=None,

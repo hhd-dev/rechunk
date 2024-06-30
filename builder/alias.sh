@@ -10,7 +10,6 @@ alias fd="sudo podman run -it --rm \
     -v \$(pwd):/workspace -w /workspace \
     -v '$VOL_CONTAINER_CACHE':/var/lib/containers \
     -v '$VOL_OSTREE_CACHE':/var/ostree/repo \
-    -v \${TREE:=\$(pwd)/tree}:/var/tree \
     -e REPO=/var/ostree \
     --privileged --device /dev/fuse --security-opt label:disable \
     -u \$(id -u):\$(id -g) \
