@@ -21,3 +21,6 @@ oci_*
 *layerdata.txt
 layerdata.txt
 results.txt
+upload_all.sh
+make_images.sh
+notebooks/*
