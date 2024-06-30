@@ -96,7 +96,7 @@ runs:
         OUT_NAME=$(echo ${{ inputs.ref }} | rev | cut -d'/' -f1 | rev | sed 's/:/_/')
         
         sudo podman run --rm \
-            -v "$(pwd):/workspace" \
+            -v "${{ github.workspace }}:/workspace" \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
             -e MAX_LAYERS="${{ inputs.max-layers }}" \
@@ -105,13 +105,13 @@ runs:
             -e OUT_NAME="$OUT_NAME" \
             -e LABELS \
             -e VERSION \
-            -e VERSION_FN="./version.txt"\
+            -e VERSION_FN="/workspace/version.txt"\
             -e OUT_REF="oci:$OUT_NAME" \
             -u 0:0 \
             ${{ inputs.rechunk }} \
             /sources/rechunk/3_chunk.sh
 
-        echo "version=$(sudo cat ./version.txt)" >> $GITHUB_OUTPUT
+        echo "version=$(sudo cat ${{ github.workspace }}/version.txt)" >> $GITHUB_OUTPUT
         echo "ref=oci:$OUT_NAME" >> $GITHUB_OUTPUT
         
         # Remove cached volume
