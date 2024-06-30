@@ -1,7 +1,7 @@
 # This workflow is for testing locally with act
 # ./builder/prepare.sh
 # export DOCKER_HOST='unix:///var/run/podman/podman.sock'
-# sudo act -P ubuntu-latest=-self-hosted
+# sudo act -P ubuntu-latest=-self-hosted -j='local_test'
 name: Rechunk Local Tester
 on: [ workflow_dispatch ]
 jobs:
