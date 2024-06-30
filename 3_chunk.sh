@@ -70,6 +70,7 @@ $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
 
 PREV_ARG=""
 if [ -n "$SKIP_COMPRESSION" ]; then
+    echo Warning! Skipping compression
     PREV_ARG="$PREV_ARG --compression-fast"
 fi
 
