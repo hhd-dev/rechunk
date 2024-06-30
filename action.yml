@@ -57,14 +57,14 @@ runs:
       id: mount
       shell: bash
       run: |
-        CREF=$(podman create ${{ inputs.ref }})
-        MOUNT=$(podman mount $CREF)
+        CREF=$(sudo podman create ${{ inputs.ref }})
+        MOUNT=$(sudo podman mount $CREF)
         echo "container=$CREF" >> $GITHUB_OUTPUT
         echo "mount=$MOUNT" >> $GITHUB_OUTPUT
     - name: Prune Directory
       shell: bash
       run: |
-        podman run -it --rm \
+        sudo podman run -it --rm \
             -v "${{ steps.mount.outputs.mount }}":/var/tree \
             -e TREE=/var/tree \
             ${{ inputs.rechunk }} \
@@ -72,7 +72,7 @@ runs:
     - name: Commit to OSTree
       shell: bash
       run: |
-        podman run -it --rm \
+        sudo podman run -it --rm \
             -v "${{ steps.mount.outputs.mount }}":/var/tree \
             -e TREE=/var/tree \
             -v "cache_ostree:/var/ostree" \
@@ -82,15 +82,15 @@ runs:
     - name: Unmount Image
       shell: bash
       run: |
-        podman unmount ${{ steps.mount.outputs.container }}
-        podman rm ${{ steps.mount.outputs.container }}
+        sudo podman unmount ${{ steps.mount.outputs.container }}
+        sudo podman rm ${{ steps.mount.outputs.container }}
     - name: Rechunk OSTree Commit
       id: rechunk
       shell: bash
       run: |
         OUT_NAME=$(echo ${{ inputs.ref }} | rev | cut -d'/' -f1 | rev | sed 's/:/_/')
         
-        podman run -it --rm \
+        sudo podman run -it --rm \
             -v "$(pwd):/workspace" \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
@@ -105,7 +105,7 @@ runs:
             ${{ inputs.rechunk }} \
             /sources/rechunk/3_chunk.sh
 
-        echo "version=$(cat ./version.txt)" >> $GITHUB_OUTPUT
+        echo "version=$(sudo cat ./version.txt)" >> $GITHUB_OUTPUT
         echo "ref=oci:$OUT_NAME" >> $GITHUB_OUTPUT
       env:
         VERSION: ${{ inputs.version }}
