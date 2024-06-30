@@ -189,7 +189,7 @@ def get_labels(
 
     log = "Writing labels:\n"
     for key, value in new_labels.items():
-        log += f" - {key:>45s} =\n'{value}'\n"
+        log += f" - {key} =\n'{value}'\n"
     logger.info(log)
 
     return new_labels

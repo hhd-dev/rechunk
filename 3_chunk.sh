@@ -47,6 +47,9 @@ fi
 if [ -n "$PREFILL_RATIO" ]; then
     PREV_ARG="$PREV_ARG --prefill-ratio $PREFILL_RATIO"
 fi
+if [ -n "$VERSION" ]; then
+    PREV_ARG="$PREV_ARG --version $VERSION"
+fi
 
 LABEL_ARR=()
 if [ -n "$LABELS" ]; then
