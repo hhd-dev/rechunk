@@ -1,9 +1,12 @@
+import datetime
 import logging
+import os
 import sys
 from datetime import datetime
-from tqdm.auto import tqdm as tqdm_orig
+from typing import Sequence
+
 import numpy as np
-import os
+from tqdm.auto import tqdm as tqdm_orig
 
 from .model import MetaPackage
 
@@ -11,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 PBAR_OFFSET = 8
 PBAR_FORMAT = (" " * PBAR_OFFSET) + ">>>>>>>  {l_bar}{bar}{r_bar}"
+VERSION_TAG = "org.opencontainers.image.version"
 
 
 class tqdm(tqdm_orig):
@@ -23,7 +27,6 @@ def get_default_meta_yaml():
     """Returns the yaml data of a file in the relative dir provided."""
     import inspect
     import os
-    import yaml
 
     script_fn = inspect.currentframe().f_back.f_globals["__file__"]  # type: ignore
     dirname = os.path.dirname(script_fn)
@@ -129,3 +132,61 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
     )
 
     return p_upd
+
+
+def get_labels(
+    labels: Sequence[str], version: str | None, prev_manifest
+) -> dict[str, str]:
+    if labels is None:
+        return {}
+
+    # Date format is YYMMDD
+    # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
+    now = datetime.now()
+    date = now.strftime("%y%m%d")
+    timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    prev_labels = prev_manifest.get("Labels", {}) if prev_manifest else {}
+    prev_version = prev_labels.get(VERSION_TAG, None) if prev_labels else None
+
+    new_labels = {}
+    if version:
+        version = version.replace("<date>", date)
+
+        if version != prev_version:
+            new_labels[VERSION_TAG] = version
+        elif prev_version and "." in prev_version:
+            logger.warning(f"Version is the same as previous: {prev_version}")
+            try:
+                idx = prev_version.rindex(".")
+                assert (
+                    len(prev_version) - idx <= 3
+                ), "Avoid writing version if we start going too far back"
+                major = prev_version[:idx]
+                minor = prev_version[idx + 1 :]
+                new_labels[VERSION_TAG] = f"{major}.{int(minor) + 1}"
+            except ValueError or AssertionError:
+                new_labels[VERSION_TAG] = f"{prev_version}.1"
+        else:
+            new_labels[VERSION_TAG] = f"{prev_version}.1"
+
+        logger.info(f"New version: '{new_labels[VERSION_TAG]}'")
+        if prev_version:
+            logger.info(f"Previous version: '{prev_version}'")
+
+    for line in labels:
+        idx = line.index("=")
+        key = line[:idx]
+        value = line[idx + 1 :]
+        if "<date>" in value:
+            value = value.replace("<date>", date)
+        if "<timestamp>" in value:
+            value = value.replace("<timestamp>", timestamp)
+        new_labels[key] = value
+
+    log = "Writing labels:\n"
+    for key, value in new_labels.items():
+        log += f" - {key:>30s}='{value}'\n"
+    logger.info(log)
+
+    return new_labels

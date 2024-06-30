@@ -85,6 +85,7 @@ def dump_ostree_packages(
     layers: list[list[MetaPackage]],
     out_fn: str,
     mapping: dict[str, str],
+    labels: dict[str, str],
 ):
     # Create layer meta
     smeta = {}
@@ -136,6 +137,7 @@ def dump_ostree_packages(
     with open(out_fn, "w") as f:
         json.dump(
             {
+                "labels": labels,
                 "layers": final_layers,
                 "mapping": dict(sorted(ostree_out.items())),
             },

@@ -49,6 +49,12 @@ def argparse_func():
         help="The previous build manifest.",
         default=None,
     )
+    parser.add_argument(
+        "--version",
+        help="The version format (e.g., '3.1_<date>').",
+        default=None,
+    )
+    parser.add_argument("-l", "--label", help="Add labels to the output image.", nargs="*")
 
     # Hyperparameters
     group = parser.add_argument_group("Hyperparameters")
@@ -84,14 +90,17 @@ def argparse_func():
 
     args = parser.parse_args()
     alg_main(
-        args.repo,
-        args.ref,
-        args.contentmeta,
-        args.meta,
-        args.previous_manifest,
-        args.max_layers,
-        args.prefill_ratio,
-        args.max_layer_ratio,
+        repo=args.repo,
+        ref=args.ref,
+        contentmeta_fn=args.contentmeta,
+        meta_fn=args.meta,
+        previous_manifest=args.previous_manifest,
+        max_layers=args.max_layers,
+        prefill_ratio=args.prefill_ratio,
+        max_layer_ratio=args.max_layer_ratio,
+        labels=args.label,
+        version=args.version,
+        result_fn=None,
     )
 
 

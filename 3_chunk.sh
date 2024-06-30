@@ -47,18 +47,25 @@ fi
 if [ -n "$PREFILL_RATIO" ]; then
     PREV_ARG="$PREV_ARG --prefill-ratio $PREFILL_RATIO"
 fi
-if [ -n "$SKIP_COMPRESSION" ]; then
-    PREV_ARG="$PREV_ARG --compression-fast"
+if [ -n "$LABELS" ]; then
+    for label in $LABELS; do
+        PREV_ARG="$PREV_ARG --label $label"
+    done
 fi
 
 $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG
+
+PREV_ARG=""
+if [ -n "$SKIP_COMPRESSION" ]; then
+    PREV_ARG="$PREV_ARG --compression-fast"
+fi
 
 echo Creating archive with ref ${OUT_REF}
 ostree-ext-cli \
     container encapsulate \
     --repo "${REPO}" "${OUT_TAG}" \
     --contentmeta "${CONTENT_META}" \
-    "${OUT_REF}"
+    ${PREV_ARG} "${OUT_REF}"
 
 echo Created archive with ref ${OUT_REF}
 echo Writing manifests to $OUT_NAME.manifest.json, $OUT_NAME.manifest.raw.json

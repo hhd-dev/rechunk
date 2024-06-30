@@ -27,3 +27,4 @@ notebooks/*
 build
 build/*
 .env*
+.git

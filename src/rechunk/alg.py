@@ -2,7 +2,7 @@ import fnmatch
 import json
 import logging
 import os
-from typing import Any, cast
+from typing import Any, cast, Sequence
 
 import numpy as np
 import yaml
@@ -12,7 +12,7 @@ from rechunk.model import MetaPackage, Package
 from .fedora import get_packages
 from .model import Package
 from .ostree import dump_ostree_packages, get_ostree_map, run_with_ostree_files
-from .utils import get_default_meta_yaml, get_update_matrix, tqdm
+from .utils import get_default_meta_yaml, get_update_matrix, tqdm, get_labels
 
 logger = logging.getLogger(__name__)
 
@@ -206,7 +206,7 @@ def print_results(
     prefill_layers: list[list[MetaPackage]],
     layers: list[list[MetaPackage]],
     upd_matrix: np.ndarray,
-    result_fn: str = "./results.txt",
+    result_fn: str | None = "./results.txt",
 ):
     COMPRESSION_RATIO = 12 / 4.6  # This is for bazzite
     DEDI_RATIO = 0.25  # Assume dedicated layers update a quarter of the time
@@ -226,44 +226,36 @@ def print_results(
     for l in dedi_layers:
         total_bw += np.sum([p.size for p in l]) * n_segments * DEDI_RATIO
 
-    with open(result_fn, "w") as f:
-        # Detailed package breakdown and frequency analysis
-        logger.info(f"Dedicated layers:")
-        f.write("Dedicated layers:\n")
-        for i, l in enumerate(dedi_layers):
-            data = f"{i+1:3d}: (pkg: {len(l):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}): {l[0].name}"
-            f.write(data + "\n")
-            f.write(str([p for p in l[0].nevra]) + "\n")
-            logger.info(data)
+    # Detailed package breakdown and frequency analysis
+    logger.info(f"Dedicated layers:")
+    results = "Dedicated layers:\n"
+    for i, l in enumerate(dedi_layers):
+        data = f"{i+1:3d}: (pkg: {len(l):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}): {l[0].name}"
+        results += data + "\n"
+        results += str([p for p in l[0].nevra]) + "\n"
+        logger.info(data)
 
-        logger.info(f"Packages in layers (sorted by frequency):")
-        f.write("Packages in layers (sorted by frequency):\n")
-        for i, l in sorted(
-            enumerate(layers), key=lambda x: -float(np.sum(layer_upd[x[0]]))
-        ):
-            data = f"{i+1:3d}: (freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}, pkg: {len(l):3d})"
-            logger.info(data)
-            f.write(data + "\n")
-            f.write(
-                str(
-                    [
-                        f"{p.name}: {p.size // 1e6}"
-                        for p in sorted(l, key=lambda p: p.size, reverse=True)
-                    ]
-                )
-                + "\n"
+    logger.info(f"Packages in layers (sorted by frequency):")
+    results += "Packages in layers (sorted by frequency):\n"
+    for i, l in sorted(
+        enumerate(layers), key=lambda x: -float(np.sum(layer_upd[x[0]]))
+    ):
+        data = f"{i+1:3d}: (freq: {np.sum(layer_upd[i]):3d}, mb: {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}, pkg: {len(l):3d})"
+        logger.info(data)
+        results += data + "\n"
+        results += (
+            str(
+                [
+                    f"{p.name}: {p.size // 1e6}"
+                    for p in sorted(l, key=lambda p: p.size, reverse=True)
+                ]
             )
+            + "\n"
+        )
 
-    # # Condensed results
-    # log = f"Final layer fill:\n"
-    # for i, (l, pl) in enumerate(zip(layers, prefill_layers)):
-    #     log += f"Layer {i+1:2d}: {sum([p.size for p in l]) / 1e6:3.0f} MB "
-    #     log += f"(compr. {sum([p.size for p in l]) / 1e6 / COMPRESSION_RATIO:3.0f}) with {len(l):3d}"
-    #     if len(pl) != len(l):
-    #         log += f" packages (prev {sum([p.size for p in pl]) / 1e6:3.0f} MB with {len(pl):3d}).\n"
-    #     else:
-    #         log += " packages.\n"
-    # logger.info(log)
+    if result_fn:
+        with open(result_fn, "w") as f:
+            f.write(results)
 
     logger.info(
         f"Total per update (uncompressed): {total_bw / (n_segments * 1e9):.3f} GB.\n"
@@ -440,6 +432,7 @@ def load_previous_manifest(
             lines.append(annotations["ostree.components"])
         logger.info(f"Processing previous manifest with {len(raw)} layers.")
     else:
+        raw = None
         lines = fn
         logger.info(f"Processing previous manifest with {fn} layers.")
 
@@ -490,7 +483,7 @@ def load_previous_manifest(
     if removed:
         logger.info(f"The following packages were removed:\n{removed}")
 
-    return todo, dedi_layers, prefill
+    return todo, dedi_layers, prefill, raw
 
 
 def main(
@@ -503,7 +496,9 @@ def main(
     prefill_ratio: float | None = None,
     max_layer_ratio: float | None = None,
     biweekly: bool = False,
-    result_fn: str = "./results.txt",
+    result_fn: str | None = "./results.txt",
+    labels: Sequence[str] = [],
+    version: str | None = None,
     _cache: dict | None = None,
 ):
     if not meta_fn:
@@ -569,10 +564,11 @@ def main(
 
     if previous_manifest:
         logger.info("Loading existing layer data.")
-        todo, dedi_layers, prefill = load_previous_manifest(
+        todo, dedi_layers, prefill, manifest_json = load_previous_manifest(
             previous_manifest, new_packages, max_layers
         )
     else:
+        manifest_json = None
         logger.warning("No existing layer data. Expect layer shifts")
         todo, dedi_layers, prefill = prefill_layers(
             new_packages, upd_matrix, max_layers, prefill_size
@@ -586,10 +582,10 @@ def main(
     # prefill[-1] += list(todo.keys())
     # todo = {}
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
-
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
     if contentmeta_fn:
-        dump_ostree_packages(dedi_layers, layers, contentmeta_fn, mapping)
+        new_labels = get_labels(labels, version, manifest_json)
+        dump_ostree_packages(dedi_layers, layers, contentmeta_fn, mapping, new_labels)
 
     return dedi_layers, layers
