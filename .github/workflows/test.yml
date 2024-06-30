@@ -1,0 +1,16 @@
+# This workflow is for testing locally with act
+# ./builder/prepare.sh
+# export DOCKER_HOST='unix:///var/run/podman/podman.sock'
+# sudo act -P ubuntu-latest=-self-hosted
+name: Rechunk Local Tester
+on: [ workflow_dispatch ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run Rechunker
+        uses: ./.
+        with:
+          ref: 'ghcr.io/ublue-os/bazzite:stable'
+          rechunk: 'fedora_build'

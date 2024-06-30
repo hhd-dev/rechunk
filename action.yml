@@ -1,0 +1,103 @@
+name: 'OCI ReChunker'
+description: 'ReChunker allows you to repartition an existing OCI OS image into
+  a set of equal-sized package bundles, or chunks. Between releases, only
+  a subset of chunks are updated, reducing bandwidth use, and pulling is faster
+  due to their larger number.'
+
+inputs:
+  ref:
+    description: |
+      The image reference that will be rechunked. Use any reference 
+      that works under `podman create <ref>`.
+    required: true
+  prev-ref:
+    description: |
+      The previous image reference, if any. Used for versioning
+      the current image and to avoid layer shifts (important; may be skipped).
+  max-layers:
+    description: |
+      The number of layers (chunks) the output image will have.
+  skip_compression:
+    description: |
+      Skip compression of the output image. Use only if you are
+      recompressing the output (e.g., zstd:chunked). Saves 3-5min or 30% of runtime.
+  labels:
+    description: |
+      The labels to apply to the output image, e.g.,
+      `org.opencontainers.image.title=My Image`.
+      Separate by newline.
+  version:
+    description: |
+      The version of the image. Populates `org.opencontainers.image.version=<version>`.
+      If the `prev-ref` image manifest contains the same version, this will be
+      sufixed with .1, .2, etc.
+      Use `<date>` for the current date in the format `YYMMDD` (240305).
+      Example: `3.1_<date>` becomes `3.1_240305`.
+    default: '<date>'
+  rechunk:
+    description: |
+      The rechunker OCI image to use.
+    default: 'ghcr.io/antheas/rechunk:latest'
+
+outputs:
+  ref:
+    description: |
+      The reference of the rechunked image. Will be in the form of `oci:<dir>`,
+      with dir being the directory of the OCI image, relative to workdir.
+    value: ${{ steps.rechunk.outputs.tag }
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Mount Image
+      id: mount
+      shell: bash
+      run: |
+        CREF=$(podman create ${{ inputs.ref }})
+        MOUNT=$(podman mount $CREF)
+        echo "container=$CREF" >> $GITHUB_OUTPUT
+        echo "mount=$MOUNT" >> $GITHUB_OUTPUT
+
+        OUT_NAME=$(echo ${{ inputs.ref }} | rev | cut -d'/' -f1 | rev | sed 's/:/_/')
+        echo "tag=$OUT_NAME" >> $GITHUB_OUTPUT
+    - name: Prune Directory
+      shell: bash
+      run: |
+        podman run -it --rm \
+            -v "${{ steps.mount.outputs.mount }}":/var/tree \
+            -e TREE=/var/tree \
+            ${{ inputs.rechunk }} \
+            /sources/rechunk/1_prune.sh
+    - name: Commit to OSTree
+      shell: bash
+      run: |
+        podman run -it --rm \
+            -v "${{ steps.mount.outputs.mount }}":/var/tree \
+            -e TREE=/var/tree \
+            -v "cache_ostree:/var/ostree" \
+            -e REPO=/var/ostree/repo \
+            ${{ inputs.rechunk }} \
+            /sources/rechunk/2_create.sh
+    - name: Unmount Image
+      shell: bash
+      run: |
+        podman unmount ${{ steps.mount.outputs.container }}
+        podman rm ${{ steps.mount.outputs.container }}
+    - name: Rechunk OSTree Commit
+      id: rechunk
+      shell: bash
+      run: |
+        podman run -it --rm \
+            -v "cache_ostree:/var/ostree" \
+            -e REPO=/var/ostree/repo \
+            -e MAX_LAYERS="${{ inputs.max-layers }}" \
+            -e SKIP_COMPRESSION="${{ inputs.skip_compression }}" \
+            -e LABELS="${{ inputs.labels }}" \
+            -e VERSION="${{ inputs.version }}" \
+            -e PREV_REF="${{ inputs.prev-ref }}" \
+            -e OUT_NAME="${{ steps.mount.outputs.tag }}" \
+            -e OUT_REF="oci:${{ steps.mount.outputs.tag }}" \
+            ${{ inputs.rechunk }} \
+            /sources/rechunk/3_chunk.sh
+
+        echo "ref=oci:${{ steps.mount.outputs.tag }}" >> $GITHUB_OUTPUT

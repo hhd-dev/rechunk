@@ -6,7 +6,7 @@ tree
 *.oci-archive
 *.json
 tmp
-.env
+.env*
 *_oci
 *_oci*
 auth.json

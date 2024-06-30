@@ -26,3 +26,4 @@ make_images.sh
 notebooks/*
 build
 build/*
+.env*

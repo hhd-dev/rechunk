@@ -24,6 +24,11 @@ CONTENT_META=${CONTENT_META:="$OUT_NAME.contentmeta.json"}
 REPO=${REPO:=./repo}
 PREV_MANIFEST=${PREV_MANIFEST:=./${PREV_NAME}.manifest.json}
 
+if [ -n "$PREV_REF" ]; then
+    echo "PREV_REF is set, downloading manifest"
+    skopeo inspect docker://${PREV_REF} > $PREV_MANIFEST
+fi
+
 # Try to use venv if it exists for
 # debug builds
 if [[ -f venv/bin/rechunk ]]; then

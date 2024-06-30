@@ -509,7 +509,7 @@ def main(
     if not meta_fn:
         meta_fn = get_default_meta_yaml()
     with open(meta_fn, "r") as f:
-        meta = yaml.safe_load(f)["meta"]
+        meta = yaml.safe_load(f)
         if max_layers is None:
             max_layers = cast(int, meta.get("max_layers", 39))
         if prefill_ratio is None:
@@ -535,7 +535,9 @@ def main(
             _cache[ref] = ostree_map, ostree_hash, packages
 
     # Repackage using meta file
-    mapping, new_packages = process_meta(meta, ostree_map, ostree_hash, packages)
+    mapping, new_packages = process_meta(
+        meta["meta"], ostree_map, ostree_hash, packages
+    )
 
     logger.info(f"Created {len(new_packages)} meta packages.")
 
