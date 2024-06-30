@@ -17,7 +17,7 @@ pushd $TREE
 TIMESTAMP=${TIMESTAMP:=197001010100}
 
 # Copy _everything_ including perms
-RSYNC="rsync -aHAX --numeric-ids"
+RSYNC="rsync -aAX"
 
 # # Prevent heavy tears by forcing relative path
 # TREE=./$TREE
@@ -201,13 +201,13 @@ else
     chgrp $POLKIT_ID ./usr/etc/polkit-1/rules.d
 fi
 
-# Touch files for reproducibility
-echo
-echo Touching files with timestamp $TIMESTAMP for reproducibility
-# Also remove user.overlay.impure, which comes from somewhere
-sudo find ./ \
-    -exec touch -t $TIMESTAMP -h {} + \
-    -exec setfattr -h --remove user.overlay.impure {} + \
-    &> /dev/null || true
+# # Touch files for reproducibility
+# echo
+# echo Touching files with timestamp $TIMESTAMP for reproducibility
+# # Also remove user.overlay.impure, which comes from somewhere
+# sudo find ./ \
+#     -exec touch -t $TIMESTAMP -h {} + \
+#     -exec setfattr -h --remove user.overlay.impure {} + \
+#     &> /dev/null || true
 
 # popd
