@@ -14,7 +14,8 @@ jobs:
         uses: ./.
         with:
           ref: 'ghcr.io/ublue-os/bazzite:stable'
-          rechunk: 'fedora_build'
+          # prev-ref: 'ghcr.io/ublue-os/bazzite-automated:stable'
+          rechunk: 'ghcr.io/antheas/rechunk:latest'
           skip_compression: 'true'
           version: '3.5_<date>'
           labels: |
