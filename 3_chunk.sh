@@ -42,6 +42,9 @@ fi
 if [ -n "$PREFILL_RATIO" ]; then
     PREV_ARG="$PREV_ARG --prefill-ratio $PREFILL_RATIO"
 fi
+if [ -n "$SKIP_COMPRESSION" ]; then
+    PREV_ARG="$PREV_ARG --compression-fast"
+fi
 
 $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG
 
