@@ -63,8 +63,6 @@ if [ -n "$LABELS" ]; then
     unset IFS
 fi
 
-printenv
-
 echo $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
 $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
 
