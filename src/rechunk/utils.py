@@ -137,9 +137,6 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
 def get_labels(
     labels: Sequence[str], version: str | None, prev_manifest, version_fn: str | None
 ) -> dict[str, str]:
-    if labels is None:
-        return {}
-
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
     now = datetime.now()
@@ -166,9 +163,9 @@ def get_labels(
                 minor = prev_version[idx + 1 :]
                 new_version = f"{major}.{int(minor) + 1}"
             except ValueError or AssertionError:
-                new_version = f"{prev_version}.1"
+                new_version = f"{prev_version}.2"
         else:
-            new_version = f"{prev_version}.1"
+            new_version = f"{prev_version}.2"
 
         logger.info(f"New version: '{new_version}'")
         new_labels[VERSION_TAG] = new_version
