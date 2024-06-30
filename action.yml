@@ -64,19 +64,21 @@ runs:
     - name: Prune Directory
       shell: bash
       run: |
-        sudo podman run -it --rm \
+        sudo podman run --rm \
             -v "${{ steps.mount.outputs.mount }}":/var/tree \
             -e TREE=/var/tree \
+            -u 0:0 \
             ${{ inputs.rechunk }} \
             /sources/rechunk/1_prune.sh
     - name: Commit to OSTree
       shell: bash
       run: |
-        sudo podman run -it --rm \
+        sudo podman run --rm \
             -v "${{ steps.mount.outputs.mount }}":/var/tree \
             -e TREE=/var/tree \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
+            -u 0:0 \
             ${{ inputs.rechunk }} \
             /sources/rechunk/2_create.sh
     - name: Unmount Image
@@ -90,7 +92,7 @@ runs:
       run: |
         OUT_NAME=$(echo ${{ inputs.ref }} | rev | cut -d'/' -f1 | rev | sed 's/:/_/')
         
-        sudo podman run -it --rm \
+        sudo podman run --rm \
             -v "$(pwd):/workspace" \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
@@ -102,6 +104,7 @@ runs:
             -e VERSION \
             -e VERSION_FN="./version.txt"\
             -e OUT_REF="oci:$OUT_NAME" \
+            -u 0:0 \
             ${{ inputs.rechunk }} \
             /sources/rechunk/3_chunk.sh
 
