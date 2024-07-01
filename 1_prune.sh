@@ -207,7 +207,6 @@ echo Touching files with timestamp $TIMESTAMP for reproducibility
 # Also remove user.overlay.impure, which comes from somewhere
 sudo find ./ \
     -exec touch -t $TIMESTAMP -h {} + \
-    -exec setfattr -h --remove user.overlay.impure {} + \
     &> /dev/null || true
 
 # popd
