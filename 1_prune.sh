@@ -15,10 +15,7 @@ TREE=${TREE:=./tree}
 pushd $TREE
 
 # Copy _everything_ including perms
-RSYNC="rsync -aAX"
-
-# # Prevent heavy tears by forcing relative path
-# TREE=./$TREE
+RSYNC="rsync -aAX --numeric-ids"
 
 # Main OSTree dir, is remade in the end
 # If it contains kinoite files that were removed by bazzite,
