@@ -12,27 +12,13 @@ RUN dnf install -y rust cargo libzstd-devel git openssl-devel \
 # Required to unencapsulate OCI to ostree
 # rpm-ostree seems to not have the ability.
 # It is not provided as a package in fedora.
-ARG OSTREE_EXT_TAG="ostree-ext-v0.14.2"
 RUN mkdir -p /sources; \
     cd /sources; \
-    git clone --branch ${OSTREE_EXT_TAG} --depth 1 \
-    https://github.com/ostreedev/ostree-rs-ext ostree-rs-ext;
+    git clone --depth 1 \
+    https://github.com/antheas/ostree-rs-ext ostree-rs-ext;
 
 WORKDIR /sources/ostree-rs-ext
-
 RUN cargo fetch
-RUN cargo build --release
-
-# Apply patches
-RUN mkdir -p /tmp/oext
-COPY builder/ostree-ext/*.patch /tmp/oext
-RUN for patch in /tmp/oext/*.patch; do \
-    echo "Applying patch: $patch"; \
-    patch -Np1 < $patch; \
-    done
-
-# Only run build after fetch to avoid
-# re-downloading dependencies after fail
 RUN cargo build --release
 
 # Remove dependencies
