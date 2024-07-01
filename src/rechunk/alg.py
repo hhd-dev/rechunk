@@ -585,9 +585,11 @@ def main(
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
-    new_labels = get_labels(labels, version, manifest_json, version_fn)
+    new_labels, timestamp = get_labels(labels, version, manifest_json, version_fn)
 
     if contentmeta_fn:
-        dump_ostree_packages(dedi_layers, layers, contentmeta_fn, mapping, new_labels)
+        dump_ostree_packages(
+            dedi_layers, layers, contentmeta_fn, mapping, new_labels, timestamp
+        )
 
     return dedi_layers, layers

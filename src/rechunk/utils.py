@@ -136,7 +136,7 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
 
 def get_labels(
     labels: Sequence[str], version: str | None, prev_manifest, version_fn: str | None
-) -> dict[str, str]:
+) -> tuple[dict[str, str], str]:
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
     now = datetime.now()
@@ -195,4 +195,4 @@ def get_labels(
         log += f" - {key} =\n'{value}'\n"
     logger.info(log)
 
-    return new_labels
+    return new_labels, timestamp
