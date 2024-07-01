@@ -22,6 +22,7 @@ set -e
 OUT_TAG=${OUT_TAG:=master}
 CONTENT_META=${CONTENT_META:="$OUT_NAME.contentmeta.json"}
 REPO=${REPO:=./repo}
+PREV_NAME=${PREV_NAME:=previous}
 PREV_MANIFEST=${PREV_MANIFEST:=./${PREV_NAME}.manifest.json}
 
 if [ -n "$PREV_REF" ]; then
