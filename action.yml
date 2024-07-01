@@ -80,6 +80,7 @@ runs:
             -e TREE=/var/tree \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
+            -e RESET_TIMESTAMP=1 \
             -u 0:0 \
             ${{ inputs.rechunk }} \
             /sources/rechunk/2_create.sh

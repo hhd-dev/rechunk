@@ -33,5 +33,20 @@ ostree --repo=$REPO commit \
     --bootable \
     --selinux-policy=$TREE \
     --selinux-labeling-epoch=1
-        
+
+if [ -n "$RESET_TIMESTAMP" ]; then
+    # Touch files for reproducibility
+    # Should only run as part of the github
+    # action, not locally. If the action
+    # runs the touch on the mount, it 
+    # runs out of space.
+    TIMESTAMP=${TIMESTAMP:=197001010100}
+    echo
+    echo Touching files with timestamp $TIMESTAMP for reproducibility
+    # Also remove user.overlay.impure, which comes from somewhere
+    sudo find $REPO/ \
+        -exec touch -t $TIMESTAMP -h {} + \
+        &> /dev/null || true
+fi
+
 echo Commited ref "$OUT_TAG" to repo "$REPO"

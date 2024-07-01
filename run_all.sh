@@ -55,6 +55,7 @@ podman run -it --rm \
     -v "$VOL_CONTAINER_CACHE":/var/lib/containers \
     -v "$TREE":/var/tree \
     -e TREE=/var/tree \
+    -e RESET_TIMESTAMP=1 \
     -u 0:0 \
     fedora_build \
     bash -c "time ./1_prune.sh"
