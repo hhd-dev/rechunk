@@ -54,7 +54,7 @@ ${RPM_OSTREE} compose \
     ${OUT_REF}
 
 echo Created archive with ref ${OUT_REF}
-echo Writing manifests to $OUT_NAME.manifest.json, $OUT_NAME.manifest.raw.json
+echo Writing manifests to ./$OUT_NAME.manifest.json, ./$OUT_NAME.manifest.raw.json
 skopeo inspect ${OUT_REF} > ${OUT_NAME}.manifest.json
 skopeo inspect --raw ${OUT_REF} > ${OUT_NAME}.manifest.raw.json
 
