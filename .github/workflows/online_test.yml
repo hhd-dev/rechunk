@@ -16,7 +16,7 @@ jobs:
         id: rechunk
         uses: ./.
         with:
-          ref: 'ghcr.io/ublue-os/bazzite:stable'
+          ref: 'ghcr.io/ublue-os/bazzite:40-20240627'
           prev-ref: 'ghcr.io/antheas/bazzite-automated:stable'
           rechunk: 'ghcr.io/antheas/rechunk:latest'
           version: '3.5_<date>'
