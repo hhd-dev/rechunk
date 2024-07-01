@@ -113,7 +113,7 @@ runs:
             /sources/rechunk/3_chunk.sh
 
         echo "version=$(sudo cat ${{ github.workspace }}/version.txt)" >> $GITHUB_OUTPUT
-        echo "ref=oci:$OUT_NAME" >> $GITHUB_OUTPUT
+        echo "ref=oci:${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
         
         # Remove cached volume
         sudo podman volume rm cache_ostree
