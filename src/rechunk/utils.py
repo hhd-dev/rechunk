@@ -162,7 +162,7 @@ def get_labels(
                 major = prev_version[:idx]
                 minor = prev_version[idx + 1 :]
                 new_version = f"{major}.{int(minor) + 1}"
-            except ValueError or AssertionError:
+            except Exception:
                 new_version = f"{prev_version}.2"
         else:
             new_version = f"{prev_version}.2"
