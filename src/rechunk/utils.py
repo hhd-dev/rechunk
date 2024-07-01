@@ -177,18 +177,19 @@ def get_labels(
             with open(version_fn, "w") as f:
                 f.write(new_version)
 
-    for line in labels:
-        if not "=" in line:
-            continue
-        line = line.strip("\n ")
-        idx = line.index("=")
-        key = line[:idx]
-        value = line[idx + 1 :]
-        if "<date>" in value:
-            value = value.replace("<date>", date)
-        if "<timestamp>" in value:
-            value = value.replace("<timestamp>", timestamp)
-        new_labels[key] = value
+    if labels:
+        for line in labels:
+            if not "=" in line:
+                continue
+            line = line.strip("\n ")
+            idx = line.index("=")
+            key = line[:idx]
+            value = line[idx + 1 :]
+            if "<date>" in value:
+                value = value.replace("<date>", date)
+            if "<timestamp>" in value:
+                value = value.replace("<timestamp>", timestamp)
+            new_labels[key] = value
 
     log = "Writing labels:\n"
     for key, value in new_labels.items():
