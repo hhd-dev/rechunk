@@ -38,6 +38,10 @@ inputs:
     description: |
       The rechunker OCI image to use.
     default: 'ghcr.io/hhd-dev/rechunk:latest'
+  keep-ref:
+    description: |
+      Disable discarding the original ref after the Ostree commit is created.
+      May cause storage issues.
 
 outputs:
   ref:
@@ -89,7 +93,9 @@ runs:
         echo Unmounting and removing container
         sudo podman unmount ${{ steps.mount.outputs.container }}
         sudo podman rm ${{ steps.mount.outputs.container }}
-        sudo podman rmi ${{ inputs.ref }}
+        if [ -z "${{ inputs.keep-ref }}" ]; then
+          sudo podman rmi ${{ inputs.ref }}
+        fi
     - name: Rechunk OSTree Commit
       id: rechunk
       shell: bash
