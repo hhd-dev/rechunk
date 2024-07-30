@@ -13,6 +13,10 @@ on:
         description: 'Use previous ref'
         type: boolean
         default: true
+      latest:
+        description: 'Use the tags latest/stable'
+        type: boolean
+        default: true
 jobs:
   online_test_deck:
     permissions:
@@ -51,7 +55,9 @@ jobs:
         id: upload
         shell: bash
         run: |
-          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/bazzite-automated-deck:latest
-          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/bazzite-automated-deck:stable
+          if [[ "${{ github.event.inputs.latest }}" == "true" ]]; then
+            sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/bazzite-automated-deck:latest
+            sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/bazzite-automated-deck:stable
+          fi
           sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/bazzite-automated-deck:${{ steps.rechunk.outputs.version }}
         
