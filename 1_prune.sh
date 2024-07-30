@@ -110,7 +110,7 @@ mv ./etc ./usr/
 # Copy opt
 
 # Copy var/lib to /usr/lib
-if [ -d ./var ]; then
+if [ -d ./var/lib ]; then
     mkdir -p ./usr/lib
     $RSYNC ./var/lib/ ./usr/lib/
     rm -r ./var/lib
