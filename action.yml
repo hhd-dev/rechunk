@@ -37,7 +37,7 @@ inputs:
   rechunk:
     description: |
       The rechunker OCI image to use.
-    default: 'ghcr.io/antheas/rechunk:latest'
+    default: 'ghcr.io/hhd-dev/rechunk:latest'
 
 outputs:
   ref:
