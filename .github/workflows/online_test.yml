@@ -39,7 +39,7 @@ jobs:
         uses: ./.
         with:
           ref: 'ghcr.io/ublue-os/bazzite:${{ github.event.inputs.ref }}'
-          prev-ref: ${{ github.event.inputs.prev == true && 'ghcr.io/hhd-dev/bazzite-automated:stable' }}
+          prev-ref: ${{ github.event.inputs.prev == true && 'ghcr.io/hhd-dev/bazzite-automated:stable' || '' }}
           rechunk: 'ghcr.io/hhd-dev/rechunk:latest'
           version: '${{ github.event.inputs.ref }}'
           keep-ref: 1
