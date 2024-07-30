@@ -9,6 +9,10 @@ on:
       ref:
         description: 'The ref tag to bundle'
         required: true
+      prev:
+        description: 'Use previous ref'
+        type: boolean
+        default: true
 jobs:
   online_test:
     permissions:
@@ -20,12 +24,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@v7
+      - name: Cache Rechunked Image and Rechunk
+        uses: actions/cache@v4
+        with:
+          path: /var/lib/containers
+          key: ${{ runner.os }}-rechunk-bazzite
       - name: Run Rechunker
         id: rechunk
         uses: ./.
         with:
           ref: 'ghcr.io/ublue-os/bazzite:${{ github.event.inputs.ref }}'
-          prev-ref: 'ghcr.io/hhd-dev/bazzite-automated:stable'
+          prev-ref: '${{ github.event.inputs.prev && "ghcr.io/hhd-dev/bazzite-automated:stable" }}'
           rechunk: 'ghcr.io/hhd-dev/rechunk:latest'
           version: '${{ github.event.inputs.ref }}'
           labels: |
