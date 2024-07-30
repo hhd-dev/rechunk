@@ -314,13 +314,22 @@ def process_meta(
 
         if added_files:
             # Only add if it has files to prevent wasting layers
+            dedicated = contents.get("dedicated", True)
+
+            if dedicated and total_size < 5e6:
+                # Some times, a KDE image will include a single gnome package
+                # Which will make rechunk make a dedicated layer for it.
+                # Force disable dedicated layers if the size is too small.
+                logger.warning(f"Meta package '{name}' is too small ({total_size} < 2MB). Disabling dedicated layer.")
+                dedicated = False
+
             npkg = MetaPackage(
                 index=len(new_packages),
                 name=name,
                 nevra=tuple(meta_packages.keys()),
                 size=total_size,
                 updates=tuple(meta_updates),
-                dedicated=contents.get("dedicated", True),
+                dedicated=dedicated,
                 meta=True,
             )
             if npkg.name == "unpackaged":
