@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   deploy_pypi:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: prod
 
     steps:
