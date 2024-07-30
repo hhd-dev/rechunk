@@ -27,9 +27,9 @@ jobs:
         id: upload
         shell: bash
         run: |
-          if [ -n "${{ github.event.inputs.tag }}" ]; then
+          if [[ -n "${{ github.event.inputs.tag }}" ]]; then
             VERSION="${{ github.event.inputs.tag }}"
-          else if [ -n "${{ github.event.release.tag_name }}" ]; then
+          else if [[ -n "${{ github.event.release.tag_name }}" ]]; then
             VERSION="${{ github.event.release.tag_name }}"
           else
             echo "No version tag provided"
