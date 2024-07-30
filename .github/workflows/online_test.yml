@@ -20,7 +20,8 @@ jobs:
 
     runs-on: ubuntu-24.04
     steps:
-      - run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
       - uses: actions/checkout@v4
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@v7
