@@ -27,9 +27,25 @@ will already be there, uploads are faster.
 
 ## Results
 Experimentally, we have seen that on Bazzite, due to extensive changes to Kinoite,
-rechunk lowers the image size by 1GB.
+`rechunk` lowers the image size by 1GB.
 Then, if a user updates weekly, they get around a 40% reduction in download size.
 If they update every 1-2 days, they get a 60-80% reduction in download size.
+
+### Time cost
+`Rechunk` adds around 6-10 minutes of processing time 
+to producing an OCI image.
+Around 2 of those minutes are spent preparing the
+image for commiting, 3 minutes for `ostree` creating
+the commit, and 4 minutes for `ostree-rs-ext` to produce
+the final gziped oci directory.
+
+`rechunk` itself takes around 30 seconds to 
+load information from
+`ostree` and 10 seconds to produce an analysis.
+
+Most of this time is then recouped by skipping uploading
+around half of the layers, which will already exist
+in the registry (due to rechunking).
 
 ## Compared to zstd:chunked
 `rechunk` achieves this gain without using zstd:chunked, which is a feature that aims to achieve a similar goal through only downloading changed files.
@@ -120,4 +136,4 @@ skopeo (single threaded) or imported to podman (takes space and time) and then
 uploaded (multi-threaded).
 This image can also be zstd:chunked, in which case, the action in this repository
 contains an environment variable for skipping ostree-rs-ext's Gzip compression,
-lowering processing time by 3 minutes.
+which lowers processing time by around 3 minutes.
