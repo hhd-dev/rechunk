@@ -16,7 +16,9 @@ permissions:
 jobs:
   deploy_ghcr:
     permissions:
-      contents: write
+      # contents: write
+      packages: write
+
     runs-on: ubuntu-24.04
     environment: prod
 
