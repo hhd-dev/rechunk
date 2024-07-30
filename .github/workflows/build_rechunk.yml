@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'The version to tag the docker image with.'
+        description: 'The version to tag the package with:'
         required: true
     
   release:
