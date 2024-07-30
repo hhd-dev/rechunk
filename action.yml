@@ -68,11 +68,6 @@ runs:
     - name: Create OSTree Commit
       shell: bash
       run: |
-        if [ -n "${{ inputs.prev-ref }}" ]; then
-          echo "TEMPORARY: prev-ref is set"
-          exit 1
-        fi
-
         # Pruning
         echo Pruning
         sudo podman run --rm \
