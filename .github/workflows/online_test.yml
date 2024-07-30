@@ -30,6 +30,10 @@ jobs:
         with:
           path: /var/lib/containers
           key: ${{ runner.os }}-rechunk-bazzite
+      - name: Update images if applicable
+        run: |
+          sudo podman pull ghcr.io/hhd-dev/rechunk:latest
+          sudo podman pull ghcr.io/ublue-os/bazzite:${{ github.event.inputs.ref }}
       - name: Run Rechunker
         id: rechunk
         uses: ./.
