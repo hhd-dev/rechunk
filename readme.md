@@ -32,7 +32,7 @@ Then, if a user updates weekly, they get around a 40% reduction in download size
 If they update every 1-2 days, they get a 60-80% reduction in download size.
 
 ## Compared to zstd:chunked
-Rechunked achieves this without using zstd:chunked, which is a feature that aims to achieve a similar goal through only downloading changed files.
+`rechunk` achieves this gain without using zstd:chunked, which is a feature that aims to achieve a similar goal through only downloading changed files.
 This is good because zstd:chunked is not yet widely supported, and tools such as
 rpm-ostree will probably never support the bandwidth sparing aspect of it.
 
