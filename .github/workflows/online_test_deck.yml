@@ -2,7 +2,7 @@
 # ./builder/prepare.sh
 # export DOCKER_HOST='unix:///var/run/podman/podman.sock'
 # sudo act -P ubuntu-latest=-self-hosted
-name: Rechunk Github Tester
+name: Rechunk Github Tester (Deck)
 on:
   workflow_dispatch:
     inputs:
@@ -14,7 +14,7 @@ on:
         type: boolean
         default: true
 jobs:
-  online_test:
+  online_test_deck:
     permissions:
       packages: write
 
