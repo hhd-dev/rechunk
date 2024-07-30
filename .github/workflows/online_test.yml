@@ -35,7 +35,7 @@ jobs:
           sudo podman pull ghcr.io/ublue-os/bazzite:${{ github.event.inputs.ref }}
       - name: Run Rechunker
         id: rechunk
-        uses: ./.
+        uses: hhd-dev/rechunk
         with:
           ref: 'ghcr.io/ublue-os/bazzite:${{ github.event.inputs.ref }}'
           prev-ref: ${{ github.event.inputs.prev == 'true' && 'ghcr.io/hhd-dev/bazzite-automated:stable' || '' }}
