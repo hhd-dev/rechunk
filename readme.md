@@ -15,7 +15,7 @@ It solves these four key issues:
     - Package groups such as Plasma that update together get their own layers
       and through timestamp clamping have the same hashes.
       If KDE does not update, the user does not have to redownload it.
-  - Improves download speed/update resuming
+  - Improves download speed
     - Instead of downloading "OSTree Custom Layers", users download normal OSTree
       layers, which do not require re-commiting into OSTree through hashing.
   - Better update resuming
