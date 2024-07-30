@@ -51,7 +51,7 @@ jobs:
         id: upload
         shell: bash
         run: |
-          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/antheas/bazzite-automated:latest
-          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/antheas/bazzite-automated:stable
-          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/antheas/bazzite-automated:${{ steps.rechunk.outputs.version }}
+          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/bazzite-automated:latest
+          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/bazzite-automated:stable
+          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/bazzite-automated:${{ steps.rechunk.outputs.version }}
         
