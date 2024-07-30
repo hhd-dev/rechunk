@@ -21,6 +21,8 @@ jobs:
     environment: prod
 
     steps:
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
       - uses: actions/checkout@v3
       - name: Build Image
         run: |
