@@ -39,6 +39,9 @@ meta:
   homebrew:
     files:
       - /usr/share/homebrew.tar.zst
+  steam-bootstrap:
+    files:
+      - /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz
   steam:
     packages:
       - steam
