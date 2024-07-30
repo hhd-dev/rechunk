@@ -3,7 +3,12 @@
 # export DOCKER_HOST='unix:///var/run/podman/podman.sock'
 # sudo act -P ubuntu-latest=-self-hosted
 name: Rechunk Github Tester
-on: [ workflow_dispatch ]
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'The ref tag to bundle'
+        required: true
 jobs:
   online_test:
     runs-on: ubuntu-24.04
@@ -16,10 +21,10 @@ jobs:
         id: rechunk
         uses: ./.
         with:
-          ref: 'ghcr.io/ublue-os/bazzite:40-20240621'
-          prev-ref: 'ghcr.io/antheas/bazzite-automated:stable'
-          rechunk: 'ghcr.io/antheas/rechunk:latest'
-          version: '3.5_<date>'
+          ref: 'ghcr.io/ublue-os/bazzite:${{ github.event.inputs.ref }}'
+          prev-ref: 'ghcr.io/hhd-dev/bazzite-automated:stable'
+          rechunk: 'ghcr.io/hhd-dev/rechunk:latest'
+          version: '${{ github.event.inputs.ref }}'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://bazzite.gg/
