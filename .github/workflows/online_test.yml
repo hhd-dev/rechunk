@@ -27,7 +27,6 @@ jobs:
         uses: ublue-os/remove-unwanted-software@v7
       - name: Download images (optional)
         run: |
-          echo TEMP ${{ github.event.inputs.ref }} ${{ github.event.inputs.prev }}
           sudo podman pull ghcr.io/hhd-dev/rechunk:latest
           sudo podman pull ghcr.io/ublue-os/bazzite:${{ github.event.inputs.ref }}
       - name: Run Rechunker
