@@ -29,7 +29,7 @@ jobs:
         run: |
           if [[ -n "${{ github.event.inputs.tag }}" ]]; then
             VERSION="${{ github.event.inputs.tag }}"
-          else if [[ -n "${{ github.event.release.tag_name }}" ]]; then
+          elif [[ -n "${{ github.event.release.tag_name }}" ]]; then
             VERSION="${{ github.event.release.tag_name }}"
           else
             echo "No version tag provided"
