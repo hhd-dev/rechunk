@@ -1,0 +1,41 @@
+name: Publish rechunk to GHCR
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'The version to tag the docker image with.'
+        required: true
+    
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy_pypi:
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Image
+        run: |
+          sudo podman build --tag 'fedora_build' .
+      - name: Upload Image
+        id: upload
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            VERSION="${{ github.event.inputs.tag }}"
+          else if [ -n "${{ github.event.release.tag_name }}" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          else
+            echo "No version tag provided"
+            exit 1
+          fi
+          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/rechunk:latest
+          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/rechunk:stable
+          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/rechunk:$VERSION
+        
