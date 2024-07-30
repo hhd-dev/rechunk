@@ -145,27 +145,19 @@ def get_labels(
 
     prev_labels = prev_manifest.get("Labels", {}) if prev_manifest else {}
     prev_version = prev_labels.get(VERSION_TAG, None) if prev_labels else None
+    prev_versions = prev_manifest.get("RepoTags", []) if prev_manifest else []
 
     new_labels = {}
     if version:
         version = version.replace("<date>", date)
 
-        if version != prev_version:
+        if version != prev_version and version not in prev_versions:
             new_version = version
-        elif prev_version and "." in prev_version:
-            logger.warning(f"Version is the same as previous: {prev_version}")
-            try:
-                idx = prev_version.rindex(".")
-                assert (
-                    len(prev_version) - idx <= 3
-                ), "Avoid writing version if we start going too far back"
-                major = prev_version[:idx]
-                minor = prev_version[idx + 1 :]
-                new_version = f"{major}.{int(minor) + 1}"
-            except Exception:
-                new_version = f"{prev_version}.2"
         else:
-            new_version = f"{prev_version}.2"
+            for i in range(1, 10):
+                new_version = f"{version}.{i}"
+                if new_version not in prev_versions:
+                    break
 
         logger.info(f"New version: '{new_version}'")
         new_labels[VERSION_TAG] = new_version
