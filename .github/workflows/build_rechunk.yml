@@ -35,7 +35,11 @@ jobs:
             echo "No version tag provided"
             exit 1
           fi
-          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/rechunk:latest
-          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/rechunk:stable
-          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://ghcr.io/hhd-dev/rechunk:$VERSION
+
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:latest
+          sudo podman push ghcr.io/hhd-dev/rechunk:latest
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:stable
+          sudo podman push ghcr.io/hhd-dev/rechunk:stable
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:$VERSION
+          sudo podman push ghcr.io/hhd-dev/rechunk:$VERSION
         
