@@ -27,28 +27,32 @@ will already be there, uploads are faster.
 
 ## Results
 Experimentally, we have seen that on Bazzite, due to extensive changes to Kinoite,
-`rechunk` lowers the image size by 1GB.
-Then, if a user updates weekly, they get around a 40% reduction in download size.
-If they update every 1-2 days, they get a 60-80% reduction in download size.
+`rechunk` lowers the total image size by 1GB.
+Then, if a user updates weekly, they get around a 40% reduction in download size (from 5GB to 3GB).
+If they update every 1-2 days, they get a 60-80% reduction in download size (from 5GB to 1-1.5GB).
+For images built back to back, the download size lowers by over 90% to 100mb-200MB,
+which is the size of the RPM database (~110MB) and change.
 
 ### Time cost
 `Rechunk` adds around 6-10 minutes of processing time 
 to producing an OCI image.
 Around 2 of those minutes are spent preparing the
-image for commiting, 3 minutes for `ostree` creating
-the commit, and 4 minutes for `ostree-rs-ext` to produce
-the final gziped oci directory.
+image for committing, 3 minutes for `ostree` creating
+the commit, and 4 minutes (can be lowered by skipping gzip compression)
+for `ostree-rs-ext` to produce the final gziped oci directory.
 
-`rechunk` itself takes around 30 seconds to 
+`rechunk` itself takes around 20 seconds to 
 load information from
 `ostree` and 10 seconds to produce an analysis.
 
 Most of this time is then recouped by skipping uploading
 around half of the layers, which will already exist
-in the registry (due to rechunking).
+in the registry (due to rechunking) and from the tester having to download a 
+much smaller image.
 
 ## Compared to zstd:chunked
-`rechunk` achieves this gain without using zstd:chunked, which is a feature that aims to achieve a similar goal through only downloading changed files.
+`rechunk` achieves this gain without using zstd:chunked, which is a feature that 
+aims to achieve a similar goal through only downloading changed files.
 This is good because zstd:chunked is not yet widely supported, and tools such as
 rpm-ostree will probably never support the bandwidth sparing aspect of it.
 
@@ -58,12 +62,15 @@ In addition, when zstd-chunked becomes broadly available, we can do further
 optimizations on top of it, such as repositioning new files to the end of each 
 layer, so that they can be downloaded with a smaller number of HTTP range requests.
 
+Therefore, `rechunk` and zstd:chunked are complementary technologies.
+
 ## Algorithm
 ### 1: Preprocessing
 `rechunk` works by first mounting an OCI image through `podman`.
 Then, the OSTree repository that exists in the image is removed, and the image
-is fixed up (permissions wise and through file tweaks) to resemble a version 
-that would be produced by `rpm-ostree compose`.
+is cleaned up (permissions wise and through file tweaks) to resemble a version 
+that would be produced by `rpm-ostree compose` (see [1_prune.sh](./1_prune.sh);
+having issues? PR changes).
 
 ### 2: Commiting
 Then, the podman mount is commited into OSTree as a fresh commit, with OSTree
@@ -106,14 +113,14 @@ Then, in a four-step process we do the following:
   - Bundle small packages (less than 1 MB) in their own layer
   - Bundle medium packages (less than 5 MB) to their own layer
   - For each of the layers that were not dedicated to meta packages:
-    - Grab the largest package that has not been bundled yet
+    - Grab the largest package that has not been bundled yet to form the layer seed
+    - Until the layer reaches a predefined size (e.g., 40%/N of the total image size):
     - Add the package that causes that layer's total bandwidth cost over last year to rise the least
-    - When the layer reaches a predefined size (e.g., 40%/N of the total image size), move to the next layer.
-    - Complexity: N^2
+    - Complexity: N^2 where N is the package number
   - A few packages will remain. For the remaining packages:
     - Loop for each layer and each package and find the layer, package combo that increases yearly bandwidth cost the least
     - Repeat until all packages are placed
-    - Complexity: M*N^2 (very expensive, but N has been reduced considerably)
+    - Complexity: M*N^2 (M is the layer number and N is the package number; very expensive, but N has been reduced considerably)
 
 This whole process takes around 30 seconds and results in an OSTree hash to layer
 mapping.
@@ -123,17 +130,17 @@ In following runs, rechunk begins with the previous image plan (which is bundled
 into the previous image manifest) and only performs the last step.
 
 ### 5: Rechunking
-Finally, this information is placed in a `.yml` file that is provided to a fork of
-`ostree-rs-ext` that has been modified to follow custom rechunking plans with a 
-yaml file as input.
+Finally, this information is placed in a json file that is provided to a fork of
+[`ostree-rs-ext`](https://github.com/hhd-dev/ostree-rs-ext) that has been modified 
+to follow custom rechunking plans with a json file as input.
 `ostree-rs-ext` was also modified to allow for custom labels, which apply
 to both the Docker and OCI conventions, allowing them to be read both from
-github and, e.g., skopeo.
+github and, e.g., skopeo, rpm-ostree.
 
 ### 6: Uploading
 The end result is an OCI directory that can be pushed directly to a registry through 
 skopeo (single threaded) or imported to podman (takes space and time) and then
 uploaded (multi-threaded).
 This image can also be zstd:chunked, in which case, the action in this repository
-contains an environment variable for skipping ostree-rs-ext's Gzip compression,
+contains an environment variable for skipping `ostree-rs-ext`'s Gzip compression,
 which lowers processing time by around 3 minutes.

@@ -15,7 +15,7 @@ RUN dnf install -y rust cargo libzstd-devel git openssl-devel \
 RUN mkdir -p /sources; \
     cd /sources; \
     git clone --depth 1 \
-    https://github.com/antheas/ostree-rs-ext ostree-rs-ext;
+    https://github.com/hhd-dev/ostree-rs-ext ostree-rs-ext;
 
 WORKDIR /sources/ostree-rs-ext
 RUN cargo fetch
