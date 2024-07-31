@@ -154,8 +154,8 @@ def get_labels(
         if version != prev_version and version not in prev_versions:
             new_version = version
         else:
-            if len(version) > 3 and version[-2:] == ".0":
-                # remove .0 suffix if it exists already
+            if len(version) > 3 and version[-2] == ".":
+                # remove .X suffix if it exists already
                 version = version[:-2]
             
             # Add our own suffix
