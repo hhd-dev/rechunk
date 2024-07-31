@@ -153,3 +153,53 @@ uploaded (multi-threaded).
 This image can also be zstd:chunked, in which case, the action in this repository
 contains an environment variable for skipping `ostree-rs-ext`'s Gzip compression,
 which lowers processing time by around 3 minutes.
+
+## Differences between images
+This action receives an OCI OSTree image (with custom layers) and produces a
+mutated version. There might be drift between the two images, with one
+of the images having issues the other one does not.
+I.e., they should not be considered identical.
+
+### Issues in the rechunked image
+The OCI standard is not good at SELinux and permissions. To combat this,
+`rpm-ostree` reuses directory permissions from the original commit when deploying
+an image, which are lost during squashing.
+
+This is important as after being touched in a container certain directories may relax their
+permissions or change owner. 
+For example, certain systemd directories can become accessible, which may cause 
+systemd to fail to start or the polkit directory might stop being owned by polkitd
+(due to it missing from `/etc/group`), causing polkits to not work.
+
+The file [./1_prune.sh](./1_prune.sh) attempts to manually mitigate the permissions issues.
+Without this file, the image will not boot.
+There are certainly other quirks that still need to be added to this file,
+especially in regard to untested DEs such as Cosmic.
+
+### Issues in the original image
+However, this is not to say the original image is perfect.
+
+Programs that were installed in the OCI container add entries to `/etc/passwd` and
+`/etc/group`, which are not moved to `/usr/lib/passwd` and `/usr/lib/group` by 
+`rpm-ostree`.
+This works for clean installs, but if users rebase to a derived image, they
+get user and group issues.
+
+[./1_prune.sh](./1_prune.sh) performs a merge of these files to `/usr/lib/passwd`
+and `/usr/lib/group` which means that images produced by this action do not
+share these issues.
+
+There are other little issues, such as `/var/lib`, additional lock files,
+and modified `/var`, `/boot` directories, which may cause hysteresis in the final image.
+
+Furthermore, `rpm-ostree` uses the policy of the original commit when deploying an image,
+causing new programs (e.g., Waydroid) to be labelled improperly when installed
+through Docker and require workarounds.
+As part of this action, OSTree performs relabelling using the full policy,
+so the output image does not have the SELinux issues the original image had.
+
+
+### TLDR
+For quick testing and iteration locally, using the original image is fine.
+However, before entering production, test, validate, and create workarounds
+for issues in the rechunked image.
