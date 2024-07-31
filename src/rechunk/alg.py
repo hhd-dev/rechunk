@@ -445,6 +445,8 @@ def load_previous_manifest(
         lines = fn
         logger.info(f"Processing previous manifest with {fn} layers.")
 
+    assert lines, "No layers found in previous manifest. Raising."
+
     # Process previous manifest
     todo = dict.fromkeys(packages)
     dedi_layers = []
@@ -571,13 +573,19 @@ def main(
     logger.info("Creating update matrix.")
     upd_matrix = get_update_matrix(new_packages, biweekly)
     logger.info(f"Update matrix shape: {upd_matrix.shape}.")
-
+    
+    found_previous_plan = False
     if previous_manifest:
-        logger.info("Loading existing layer data.")
-        todo, dedi_layers, prefill, manifest_json = load_previous_manifest(
-            previous_manifest, new_packages, max_layers
-        )
-    else:
+        try:
+            logger.info("Loading existing layer data.")
+            todo, dedi_layers, prefill, manifest_json = load_previous_manifest(
+                previous_manifest, new_packages, max_layers
+            )
+            found_previous_plan = True
+        except Exception as e:
+            logger.error(f"Error loading previous manifest:\n{e}")
+
+    if not found_previous_plan:
         manifest_json = None
         logger.warning("No existing layer data. Expect layer shifts")
         todo, dedi_layers, prefill = prefill_layers(
