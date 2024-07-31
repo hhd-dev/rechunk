@@ -27,7 +27,22 @@ PREV_MANIFEST=${PREV_MANIFEST:=./${PREV_NAME}.manifest.json}
 
 if [ -n "$PREV_REF" ]; then
     echo "PREV_REF is set, downloading manifest"
-    skopeo inspect docker://${PREV_REF} > $PREV_MANIFEST
+    for i in $(seq 1 5); do
+        skopeo inspect docker://${PREV_REF} > $PREV_MANIFEST && break
+        echo "Failed to download previous manifest, retrying in 3 seconds"
+        sleep 3
+    done
+
+    if [ ! -f "$PREV_MANIFEST" ]; then
+        echo "############################################"
+        echo "ERROR: Failed to download previous manifest"
+        if [ -n "$PREV_REF_FAIL" ]; then
+            echo "Failing build due to PREV_REF_FAIL being set."
+            exit 1
+        else
+            echo "Continuing build without previous manifest"
+        fi
+    fi
 fi
 
 # Try to use venv if it exists for

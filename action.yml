@@ -14,6 +14,9 @@ inputs:
     description: |
       The previous image reference, if any. Used for versioning
       the current image and to avoid layer shifts (important; may be skipped).
+  prev-ref-fail:
+    description: |
+      If set, fail if the previous image reference is not found.
   max-layers:
     description: |
       The number of layers (chunks) the output image will have.
@@ -119,6 +122,7 @@ runs:
             -e VERSION="${{ inputs.version }}" \
             -e VERSION_FN="/workspace/version.txt" \
             -e OUT_REF="oci:$OUT_NAME" \
+            -e PREV_REF_FAIL="${{ inputs.prev-ref-fail }}" \
             -u 0:0 \
             ${{ inputs.rechunk }} \
             /sources/rechunk/3_chunk.sh
