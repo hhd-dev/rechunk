@@ -201,6 +201,9 @@ fi
 if [ -n "$RESET_TIMESTAMP" ]; then
     TIMESTAMP=${TIMESTAMP:=197001010100}
     # Touch files for reproducibility
+    # If this runs on a podman mount, it will copy up all files and crash
+    # a github action. Therefore we cheat and run it on the OSTree files
+    # after committing them.
     echo
     echo Touching files with timestamp $TIMESTAMP for reproducibility
     # Also remove user.overlay.impure, which comes from somewhere
