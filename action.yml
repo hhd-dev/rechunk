@@ -40,8 +40,9 @@ inputs:
     default: 'ghcr.io/hhd-dev/rechunk:latest'
   keep-ref:
     description: |
-      Disable discarding the original ref after the Ostree commit is created.
-      May cause storage issues.
+      By default, this action will remove the ref image provided in `ref`.
+      This variable will disable discarding it after the OSTree commit is created.
+      May cause the storage overflow.
 
 outputs:
   ref:
@@ -53,6 +54,10 @@ outputs:
     description: |
       The version of the rechunked image to be used as a tag.
     value: ${{ steps.rechunk.outputs.version }}
+  location:
+    description: |
+      The filesystem location of the rechunked image, so that it can be removed.
+    value: ${{ steps.rechunk.outputs.location }}
 
 runs:
   using: 'composite'
@@ -120,12 +125,13 @@ runs:
 
         echo "version=$(sudo cat ${{ github.workspace }}/version.txt)" >> $GITHUB_OUTPUT
         echo "ref=oci:${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
-        echo "output=${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
-        echo "output_fs=${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
-        echo "output-fs=${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
+        echo "location=${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
 
+        # Remove root permissions
+        sudo chmod $(id -u):$(id -g) -R "${{ github.workspace }}/$OUT_NAME"
+
+        # Remove cached OSTree volume
+        sudo podman volume rm cache_ostree
+        
         echo "Github Action output:"
         cat $GITHUB_OUTPUT
-        
-        # Remove cached volume
-        sudo podman volume rm cache_ostree
