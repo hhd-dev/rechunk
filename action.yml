@@ -128,7 +128,7 @@ runs:
         echo "location=${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
 
         # Remove root permissions
-        sudo chmod $(id -u):$(id -g) -R "${{ github.workspace }}/$OUT_NAME"
+        sudo chown $(id -u):$(id -g) -R "${{ github.workspace }}/$OUT_NAME"
 
         # Remove cached OSTree volume
         sudo podman volume rm cache_ostree
