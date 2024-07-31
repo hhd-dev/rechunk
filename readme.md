@@ -131,17 +131,19 @@ Then, in a four-step process we do the following:
     - Repeat until all packages are placed
     - Complexity: M*N^2 (M is the layer number and N is the package number; very expensive, but N has been reduced considerably)
 
-This whole process takes around 30 seconds and results in an OSTree hash to layer
+This process takes around 30 seconds and results in an OSTree hash to layer
 mapping.
 
-This is only performed in the first run. 
+The following process is only performed in the first run. 
 In following runs, rechunk begins with the previous image plan (which is bundled
 into the previous image manifest) and only performs the last step.
+Re-using the previous plan minimizes layer shifts, which lowers layer invalidation
+and the subsequent download size.
 
 ### 5: Rechunking
-Finally, this information is placed in a json file that is provided to a fork of
+Finally, this information is placed in a JSON file that is provided to a fork of
 [`ostree-rs-ext`](https://github.com/hhd-dev/ostree-rs-ext) that has been modified 
-to follow custom rechunking plans with a json file as input.
+to follow custom rechunking plans with a JSON file as input.
 `ostree-rs-ext` was also modified to allow for custom labels, which apply
 to both the Docker and OCI conventions, allowing them to be read both from
 github and, e.g., skopeo, rpm-ostree.
@@ -168,7 +170,7 @@ an image, which are lost during squashing.
 This is important as after being touched in a container certain directories may relax their
 permissions or change owner. 
 For example, certain systemd directories can become accessible, which may cause 
-systemd to fail to start or the polkit directory might stop being owned by polkitd
+systemd to fail to start, or the polkit directory might stop being owned by polkitd
 (due to it missing from `/etc/group`), causing polkits to not work.
 
 The file [./1_prune.sh](./1_prune.sh) attempts to manually mitigate the permissions issues.
@@ -190,14 +192,15 @@ and `/usr/lib/group` which means that images produced by this action do not
 share these issues.
 
 There are other little issues, such as `/var/lib`, additional lock files,
-and modified `/var`, `/boot` directories, which may cause hysteresis in the final image.
+and modified `/var`, `/boot` directories, which may cause hysteresis in the final image
+and are also handled by [./1_prune.sh](./1_prune.sh).
 
 Furthermore, `rpm-ostree` uses the policy of the original commit when deploying an image,
 causing new programs (e.g., Waydroid) to be labelled improperly when installed
 through Docker and require workarounds.
+
 As part of this action, OSTree performs relabelling using the full policy,
 so the output image does not have the SELinux issues the original image had.
-
 
 ### TLDR
 For quick testing and iteration locally, using the original image is fine.
