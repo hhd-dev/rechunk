@@ -25,6 +25,15 @@ It solves these four key issues:
 And of course, when uploading a new image to registry, since a portion of layers
 will already be there, uploads are faster.
 
+> [!IMPORTANT]
+> The action in this repository uses advanced podman features (e.g., mount) and 
+> requires both root access (**not rootless** execution) and the **Ubuntu 24.04** 
+> runner (not **latest** as of this writing).
+> 
+> It is recommended to build your image with buildah or podman using root (e.g.,
+> `sudo podman build`) so that it can be mounted directly by this action
+> and then removed for space savings.
+
 ## Results
 Experimentally, we have seen that on Bazzite, due to extensive changes to Kinoite,
 `rechunk` lowers the total image size by 1GB.
