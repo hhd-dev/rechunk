@@ -122,6 +122,8 @@ runs:
         echo "ref=oci:${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
         echo "output_fs=${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
         echo "output-fs=${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
+
+        echo "Github Action output:\n$(cat $GITHUB_OUTPUT)"
         
         # Remove cached volume
         sudo podman volume rm cache_ostree
