@@ -30,7 +30,7 @@ Experimentally, we have seen that on Bazzite, due to extensive changes to Kinoit
 `rechunk` lowers the total image size by 1GB.
 Then, if a user updates weekly, they get around a 40% reduction in download size (from 5GB to 3GB).
 If they update every 1-2 days, they get a 60-80% reduction in download size (from 5GB to 1-1.5GB).
-For images built back to back, the download size lowers by over 90% to 100mb-200MB,
+For images built back to back, the download size lowers by over 90% to 100MB-300MB,
 which is the size of the RPM database (~110MB) and change.
 
 ### Time cost
