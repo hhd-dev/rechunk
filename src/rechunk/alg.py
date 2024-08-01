@@ -475,8 +475,9 @@ def load_previous_manifest(
             pkg = None
             for p in todo:
                 if p.name == name:
+                    if pkg is not None:
+                        logger.error(f"Duplicate package '{name}' found in previous manifest.")
                     pkg = p
-                    break
 
             if pkg is None:
                 removed.append(name)
