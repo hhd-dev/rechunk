@@ -22,7 +22,7 @@ def get_packages(dir: str):
             "rpm",
             "-qa",
             "--queryformat",
-            ">\n[%{FILESIZES} %{FILENAMES}\n]<%{NAME} %{NEVRA} %{VERSION}-%{RELEASE} %{SIZE}\n",
+            ">\n[%{FILESIZES} %{FILENAMES}\n]<%{NAME} %{NEVRA} %{VERSION} %{RELEASE} %{SIZE}\n",
             "--changes",
             "--dbpath",
             dir,
@@ -36,8 +36,11 @@ def get_packages(dir: str):
             name = data[0]
             nevra = data[1]
             version = data[2]
-            size = int(data[3])
-            package = Package(name, nevra, size, tuple(files), tuple(updates), version)
+            release = data[3]
+            size = int(data[4])
+            package = Package(
+                name, nevra, size, tuple(files), tuple(updates), version, release
+            )
             packages.append(package)
 
             files = []

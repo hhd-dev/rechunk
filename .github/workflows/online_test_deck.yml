@@ -56,8 +56,8 @@ jobs:
             Version: <version> (previous version: <previous>)
 
             Major Components:
-              - Kernel: <version:kernel>
-              - Gamescope: <version:gamescope>
+              - Kernel: <relver:kernel>
+              - Gamescope: <relver:gamescope>
               - KDE: <version:kwayland>
 
             Handheld Daemon:

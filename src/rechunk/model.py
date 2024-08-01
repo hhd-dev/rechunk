@@ -14,6 +14,7 @@ class Package(NamedTuple):
     files: tuple[File, ...] = tuple()
     updates: tuple[datetime, ...] = tuple()
     version: str = ""
+    release: str = ""
 
 class MetaPackage(NamedTuple):
     index: int

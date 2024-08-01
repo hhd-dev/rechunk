@@ -198,7 +198,7 @@ def get_labels(
                 value = value.replace("<pretty>", pretty)
             if "<previous>" in value and prev_version:
                 value = value.replace("<previous>", prev_version)
-            
+
             if base_pkg:
                 for pkg in base_pkg:
                     if not pkg.version:
@@ -206,11 +206,17 @@ def get_labels(
                     vkey = f"<version:{pkg.name}>"
                     if vkey in value:
                         value = value.replace(vkey, pkg.version)
+                    vkey = f"<relver:{pkg.name}>"
+                    if vkey in value:
+                        value = value.replace(
+                            vkey,
+                            (
+                                f"{pkg.version}-{pkg.release}"
+                                if pkg.release
+                                else pkg.version
+                            ),
+                        )
 
-            # OCI spec does not like new lines
-            value = value.replace('\n', '<br>')
-            value = value.replace('\r', '')
-            
             new_labels[key] = value
 
     if new_labels:
