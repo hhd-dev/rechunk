@@ -151,6 +151,7 @@ def get_labels(
     prev_labels = prev_manifest.get("Labels", {}) if prev_manifest else {}
     prev_version = prev_labels.get(VERSION_TAG, None) if prev_labels else None
     prev_versions = prev_manifest.get("RepoTags", []) if prev_manifest else []
+    new_version = None
 
     new_labels = {}
     if version:
@@ -175,7 +176,7 @@ def get_labels(
             logger.info(f"Previous version: '{prev_version}'")
 
         # Write version to file
-        if version_fn:
+        if version_fn and new_version:
             with open(version_fn, "w") as f:
                 f.write(new_version)
 
@@ -205,6 +206,11 @@ def get_labels(
                     vkey = f"<version:{pkg.name}>"
                     if vkey in value:
                         value = value.replace(vkey, pkg.version)
+
+            # OCI spec does not like new lines
+            value = value.replace('\n', '\\n')
+            value = value.replace('\r', '\\r')
+            
             new_labels[key] = value
 
     if new_labels:
