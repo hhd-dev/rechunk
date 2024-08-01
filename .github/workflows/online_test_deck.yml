@@ -56,7 +56,7 @@ jobs:
             Version: <version> (previous version: <previous>)
 
             Major Components:
-              - Kernel: <version:kernel-core>
+              - Kernel: <version:kernel>
               - Gamescope: <version:gamescope>
               - KDE: <version:kwayland>
 
