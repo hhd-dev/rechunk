@@ -205,9 +205,12 @@ def get_labels(
                         value = value.replace(vkey, pkg.version)
             new_labels[key] = value
 
-    log = "Writing labels:\n"
-    for key, value in new_labels.items():
-        log += f" - {key} =\n'{value}'\n"
-    logger.info(log)
+    if new_labels:
+        log = "Writing labels:\n"
+        for key, value in new_labels.items():
+            log += f" - {key} =\n'{value}'\n"
+        logger.info(log)
+    else:
+        logger.warning("No labels found to write.")
 
     return new_labels, timestamp
