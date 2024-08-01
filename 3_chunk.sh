@@ -77,6 +77,9 @@ LABEL_ARR=()
 if [ -n "$LABELS" ]; then
     IFS=$'\n'
     for label in $LABELS; do
+        if [ -z "$label" ]; then
+            continue
+        fi
         LABEL_ARR+=("--label" "$label")
     done
     unset IFS
