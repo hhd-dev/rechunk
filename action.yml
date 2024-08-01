@@ -29,6 +29,11 @@ inputs:
       The labels to apply to the output image, e.g.,
       `org.opencontainers.image.title=My Image`.
       Separate by newline.
+  description:
+    description: |
+      The description of the image. Populates `org.opencontainers.image.description=<description>`.
+      Can be provided as part of labels instead. However you can use this field
+      with the | operator for multiline descriptions.
   version:
     description: |
       The version of the image. Populates `org.opencontainers.image.version=<version>`.
@@ -121,6 +126,7 @@ runs:
             -e LABELS="${{ inputs.labels }}" \
             -e VERSION="${{ inputs.version }}" \
             -e VERSION_FN="/workspace/version.txt" \
+            -e DESCRIPTION="${{ inputs.description }}" \
             -e OUT_REF="oci:$OUT_NAME" \
             -e PREV_REF_FAIL="${{ inputs.prev-ref-fail }}" \
             -u 0:0 \

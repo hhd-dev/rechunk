@@ -78,6 +78,10 @@ if [ -n "$LABELS" ]; then
     done
     unset IFS
 fi
+if [ -n "$DESCRIPTION" ]; then
+    echo "Writing description to 'org.opencontainers.image.description'"
+    LABEL_ARR+=("--label" "org.opencontainers.image.description=$DESCRIPTION")  
+fi
 
 echo $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
 $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
