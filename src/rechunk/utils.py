@@ -8,7 +8,7 @@ from typing import Sequence
 import numpy as np
 from tqdm.auto import tqdm as tqdm_orig
 
-from .model import MetaPackage, Package
+from .model import MetaPackage, Package, export_v1
 
 logger = logging.getLogger(__name__)
 
@@ -180,6 +180,9 @@ def get_labels(
             with open(version_fn, "w") as f:
                 f.write(new_version)
 
+    imginfo = None
+    blacklist = dict()
+
     if labels:
         for line in labels:
             if not "=" in line:
@@ -198,6 +201,11 @@ def get_labels(
                 value = value.replace("<pretty>", pretty)
             if "<previous>" in value and prev_version:
                 value = value.replace("<previous>", prev_version)
+            if "<imginfo>" in value:
+                if not imginfo:
+                    imginfo = export_v1(uniq=new_version, base_pkg=base_pkg)
+                value = value.replace("<imginfo>", imginfo)
+                blacklist[key] = "> IMGINFO V1 INSERTED"
 
             if base_pkg:
                 for pkg in base_pkg:
@@ -222,6 +230,8 @@ def get_labels(
     if new_labels:
         log = "Writing labels:\n"
         for key, value in new_labels.items():
+            if key in blacklist:
+                value = blacklist[key]
             log += f" - {key} =\n'{value}'\n"
         logger.info(log)
     else:
