@@ -140,7 +140,7 @@ def get_labels(
     prev_manifest,
     version_fn: str | None,
     pretty: str | None,
-    base_pkg: dict[str, Package] | None,
+    base_pkg: Sequence[Package] | None,
 ) -> tuple[dict[str, str], str]:
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
@@ -197,7 +197,7 @@ def get_labels(
                 value = value.replace("<previous>", prev_version)
             
             if base_pkg:
-                for pkg in base_pkg.values():
+                for pkg in base_pkg:
                     if not pkg.version:
                         continue
                     vkey = f"<version:{pkg.name}>"
