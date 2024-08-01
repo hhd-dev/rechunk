@@ -52,7 +52,23 @@ jobs:
             org.opencontainers.image.title=bazzite
             org.opencontainers.image.url=https://github.com/ublue-os/bazzite
           description: |
-            Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
+            Bazzite <pretty>
+            Version: <version>
+
+            Major Components:
+            - Kernel: <version:kernel-core>
+            - Gamescope: <version:gamescope>
+            - KDE: <version:kwayland>
+
+            Handheld Daemon:
+            - HHD: <version:hhd>
+            - Adjustor: <version:adjustor>
+            - HHD-UI: <version:hhd-ui>
+
+            Since the previous stable version (<previous>) the following commits were made:
+            TODO
+
+
       - name: Upload Image
         id: upload
         shell: bash

@@ -8,7 +8,7 @@ from typing import Sequence
 import numpy as np
 from tqdm.auto import tqdm as tqdm_orig
 
-from .model import MetaPackage
+from .model import MetaPackage, Package
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +135,12 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
 
 
 def get_labels(
-    labels: Sequence[str], version: str | None, prev_manifest, version_fn: str | None, pretty: str | None
+    labels: Sequence[str],
+    version: str | None,
+    prev_manifest,
+    version_fn: str | None,
+    pretty: str | None,
+    base_pkg: dict[str, Package] | None,
 ) -> tuple[dict[str, str], str]:
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
@@ -157,7 +162,7 @@ def get_labels(
             if len(version) > 3 and version[-2] == ".":
                 # remove .X suffix if it exists already
                 version = version[:-2]
-            
+
             # Add our own suffix
             for i in range(1, 10):
                 new_version = f"{version}.{i}"
@@ -188,6 +193,16 @@ def get_labels(
                 value = value.replace("<timestamp>", timestamp)
             if "<pretty>" in value and pretty:
                 value = value.replace("<pretty>", pretty)
+            if "<previous>" in value and prev_version:
+                value = value.replace("<previous>", prev_version)
+            
+            if base_pkg:
+                for pkg in base_pkg.values():
+                    if not pkg.version:
+                        continue
+                    vkey = f"<version:{pkg.name}>"
+                    if vkey in value:
+                        value = value.replace(vkey, pkg.version)
             new_labels[key] = value
 
     log = "Writing labels:\n"
