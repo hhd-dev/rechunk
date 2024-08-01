@@ -434,7 +434,6 @@ def load_previous_manifest(
         # Since podman/skopeo do not respect layer annotations, use
         # a JSON config key 
         layers = get_layers(raw)
-        logger.error(layers)
 
         # Then as a fallback use the old OSTree format
         if layers:
