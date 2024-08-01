@@ -2,7 +2,7 @@ import fnmatch
 import json
 import logging
 import os
-from typing import Any, cast, Sequence
+from typing import Any, Sequence, cast
 
 import numpy as np
 import yaml
@@ -10,9 +10,9 @@ import yaml
 from rechunk.model import MetaPackage, Package
 
 from .fedora import get_packages
-from .model import Package, get_layers
-from .ostree import dump_ostree_packages, get_ostree_map, run_with_ostree_files
-from .utils import get_default_meta_yaml, get_update_matrix, tqdm, get_labels
+from .model import INFO_KEY, Package, get_layers
+from .ostree import calculate_ostree_layers, dump_ostree_contentmeta, get_ostree_map, run_with_ostree_files
+from .utils import get_default_meta_yaml, get_labels, get_update_matrix, tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -434,9 +434,12 @@ def load_previous_manifest(
         # Since podman/skopeo do not respect layer annotations, use
         # a JSON config key 
         layers = get_layers(raw)
+        logger.error(layers)
 
         # Then as a fallback use the old OSTree format
-        if not layers:
+        if layers:
+            logger.info(f"Processing previous manifest with {len(layers)} layers (loaded from '{INFO_KEY}').")
+        else:
             layers = []
             for data in raw["LayersData"]:
                 if "Annotations" not in data:
@@ -447,13 +450,13 @@ def load_previous_manifest(
                 if "ostree.components" not in annotations:
                     continue
                 layers.append(annotations["ostree.components"].split(","))
-            logger.info(f"Processing previous manifest with {len(raw)} layers.")
+            logger.info(f"Processing previous manifest with {len(raw)} layers (loaded from 'ostree.components').")
     else:
         raw = None
-        lines = fn
-        logger.info(f"Processing previous manifest with {len(fn)} layers.")
+        layers = [l.split(",") for l in fn]
+        logger.info(f"Processing previous manifest with {len(fn)} layers (through cache argument).")
 
-    assert lines, "No layers found in previous manifest. Raising."
+    assert layers, "No layers found in previous manifest. Raising."
 
     # Process previous manifest
     todo = dict.fromkeys(packages)
@@ -611,13 +614,16 @@ def main(
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
+    final_layers, ostree_out = calculate_ostree_layers(
+        dedi_layers, layers, mapping
+    )
     new_labels, timestamp = get_labels(
-        labels, version, manifest_json, version_fn, pretty, packages, layers
+        labels, version, manifest_json, version_fn, pretty, packages, final_layers
     )
 
     if contentmeta_fn:
-        dump_ostree_packages(
-            dedi_layers, layers, contentmeta_fn, mapping, new_labels, timestamp
+        dump_ostree_contentmeta(
+            final_layers, ostree_out, contentmeta_fn, new_labels, timestamp
         )
 
     return dedi_layers, layers

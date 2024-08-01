@@ -141,7 +141,7 @@ def get_labels(
     version_fn: str | None,
     pretty: str | None,
     base_pkg: Sequence[Package] | None,
-    layers: Sequence[Sequence[MetaPackage]],
+    layers: dict[str, Sequence[str]],
 ) -> tuple[dict[str, str], str]:
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
@@ -181,7 +181,7 @@ def get_labels(
             with open(version_fn, "w") as f:
                 f.write(new_version)
 
-    imginfo = export_v2(uniq=new_version, base_pkg=base_pkg, layers=layers)
+    imginfo = export_v2(uniq=new_version, base_pkg=base_pkg, layers=list(layers.values()))
     BLACKLIST_KEY = "> IMGINFO V2 INSERTED"
     new_labels[INFO_KEY] = imginfo
 

@@ -61,6 +61,9 @@ def get_layers(manifest):
 
     if info["version"] < 2:
         return None
+    
+    if not "layers" in info:
+        return None
 
     return info["layers"]
 
@@ -68,7 +71,7 @@ def get_layers(manifest):
 def export_v2(
     uniq: str | None,
     base_pkg: Sequence[Package] | None,
-    layers: Sequence[Sequence[MetaPackage]],
+    layers: Sequence[Sequence[str]],
 ) -> str:
     import json
 
@@ -82,6 +85,6 @@ def export_v2(
             version=2,
             uniq=uniq or "",
             packages=packages,
-            layers=[[p.name for p in l] for l in layers],
+            layers=layers,
         )
     )

@@ -80,16 +80,13 @@ def get_ostree_map(repo: str, ref: str):
     return mapping, hashes
 
 
-def dump_ostree_packages(
+def calculate_ostree_layers(
     dedi_layers: list[list[MetaPackage]],
     layers: list[list[MetaPackage]],
-    out_fn: str,
     mapping: dict[str, str],
-    labels: dict[str, str],
-    timestamp: str,
 ):
     # Create layer meta
-    smeta = {}
+    smeta: dict[str, Sequence[str]] = {}
     pkg_to_layer = {}
 
     def get_pkg_name(pkg: MetaPackage):
@@ -97,32 +94,32 @@ def dump_ostree_packages(
 
     for layer in dedi_layers:
         layer_name = f"dedi:{get_pkg_name(layer[0])}"
-        layer_human = layer_name
+        layer_arr = [layer_name]
 
         unpackaged = len(layer) == 1 and "unpackaged" in layer[0].name
         if unpackaged:
             layer_name = "unpackaged"
-            layer_human = "dedi:meta:unpackaged"
+            layer_arr = ["dedi:meta:unpackaged"]
 
-        smeta[layer_name] = layer_name
+        smeta[layer_name] = [layer_name]
         for pkg in layer:
             pkg_to_layer[pkg.name] = layer_name
 
     for i, layer in enumerate(layers):
         layer_name = f"rechunk_layer{i:03d}"
-        layer_human = ",".join([get_pkg_name(pkg) for pkg in layer])
+        layer_arr = [get_pkg_name(pkg) for pkg in layer]
 
         unpackaged = len(layer) == 1 and "unpackaged" in layer[0].name
         if unpackaged:
             layer_name = "unpackaged"
-        smeta[layer_name] = layer_human
+        smeta[layer_name] = layer_arr
 
         for pkg in layer:
             pkg_to_layer[pkg.name] = layer_name
 
     if "unpackaged" not in smeta:
         logger.info("No unpackaged layer found. Creating it manually.")
-        smeta["unpackaged"] = "dedi:meta:unpackaged"
+        smeta["unpackaged"] = ["dedi:meta:unpackaged"]
 
     # Create mappings for hash -> layer
     ostree_out = {}
@@ -135,12 +132,21 @@ def dump_ostree_packages(
     # Trim layers to avoid empty ones
     final_layers = {k: v for k, v in sorted(smeta.items()) if k in used_layers}
 
+    return final_layers, ostree_out
+
+def dump_ostree_contentmeta(
+    final_layers,
+    ostree_out,
+    out_fn: str,
+    labels: dict[str, str],
+    timestamp: str,
+):
     with open(out_fn, "w") as f:
         json.dump(
             {
                 "created": timestamp,
                 "labels": labels,
-                "layers": final_layers,
+                "layers": {k: ','.join(v) for k, v in final_layers.items()},
                 "mapping": dict(sorted(ostree_out.items())),
             },
             f,
