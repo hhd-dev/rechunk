@@ -8,7 +8,7 @@ from typing import Sequence
 import numpy as np
 from tqdm.auto import tqdm as tqdm_orig
 
-from .model import MetaPackage, Package, export_v1
+from .model import MetaPackage, Package, export_v2, INFO_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +141,7 @@ def get_labels(
     version_fn: str | None,
     pretty: str | None,
     base_pkg: Sequence[Package] | None,
+    layers: Sequence[Sequence[MetaPackage]],
 ) -> tuple[dict[str, str], str]:
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
@@ -180,8 +181,12 @@ def get_labels(
             with open(version_fn, "w") as f:
                 f.write(new_version)
 
-    imginfo = None
+    imginfo = export_v2(uniq=new_version, base_pkg=base_pkg, layers=layers)
+    BLACKLIST_KEY = "> IMGINFO V2 INSERTED"
+    new_labels[INFO_KEY] = imginfo
+
     blacklist = dict()
+    blacklist[INFO_KEY] = BLACKLIST_KEY
 
     if labels:
         for line in labels:
@@ -202,10 +207,8 @@ def get_labels(
             if "<previous>" in value and prev_version:
                 value = value.replace("<previous>", prev_version)
             if "<imginfo>" in value:
-                if not imginfo:
-                    imginfo = export_v1(uniq=new_version, base_pkg=base_pkg)
                 value = value.replace("<imginfo>", imginfo)
-                blacklist[key] = "> IMGINFO V1 INSERTED"
+                blacklist[key] = BLACKLIST_KEY
 
             if base_pkg:
                 for pkg in base_pkg:

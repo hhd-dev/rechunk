@@ -58,8 +58,6 @@ jobs:
             org.universal-blue.pkg.hhd=<version:hhd>
             org.universal-blue.pkg.adjustor=<version:adjustor>
             org.universal-blue.pkg.hhd-ui=<version:hhd-ui>
-
-            org.universal-blue.info=<imginfo>
           description: >
             Bazzite Deck <pretty>
             [Kernel: <relver:kernel>,

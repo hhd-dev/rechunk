@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Literal, NamedTuple, Sequence, TypedDict
 
+INFO_KEY = "dev.hhd.rechunk.info"
+
 
 class File(NamedTuple):
     name: str
@@ -34,9 +36,39 @@ class ExportInfoV1(TypedDict):
     packages: dict[str, str]
 
 
-def export_v1(
+class ExportInfoV2(TypedDict):
+    version: Literal[2]
+
+    uniq: str
+    layers: Sequence[Sequence[str]]
+    packages: dict[str, str]
+
+
+def get_layers(manifest):
+    import json
+
+    if not "Labels" in manifest:
+        return None
+
+    labels = manifest["Labels"]
+    if not INFO_KEY in labels:
+        return None
+
+    try:
+        info = json.loads(labels[INFO_KEY])
+    except json.JSONDecodeError:
+        return None
+
+    if info["version"] < 2:
+        return None
+
+    return info["layers"]
+
+
+def export_v2(
     uniq: str | None,
     base_pkg: Sequence[Package] | None,
+    layers: Sequence[Sequence[MetaPackage]],
 ) -> str:
     import json
 
@@ -45,4 +77,11 @@ def export_v1(
         for p in base_pkg:
             packages[p.name] = f"{p.version}-{p.release}"
 
-    return json.dumps(ExportInfoV1(version=1, uniq=uniq or "", packages=packages))
+    return json.dumps(
+        ExportInfoV2(
+            version=2,
+            uniq=uniq or "",
+            packages=packages,
+            layers=[[p.name for p in l] for l in layers],
+        )
+    )

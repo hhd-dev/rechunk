@@ -10,7 +10,7 @@ import yaml
 from rechunk.model import MetaPackage, Package
 
 from .fedora import get_packages
-from .model import Package
+from .model import Package, get_layers
 from .ostree import dump_ostree_packages, get_ostree_map, run_with_ostree_files
 from .utils import get_default_meta_yaml, get_update_matrix, tqdm, get_labels
 
@@ -320,7 +320,9 @@ def process_meta(
                 # Some times, e.g., a KDE image will include a single gnome package
                 # Which will make rechunk make a dedicated layer for it.
                 # Force disable dedicated layers if the size is too small.
-                logger.warning(f"Meta package '{name}' is too small ({total_size} < 2MB). Disabling dedicated layer.")
+                logger.warning(
+                    f"Meta package '{name}' is too small ({total_size} < 2MB). Disabling dedicated layer."
+                )
                 dedicated = False
 
             npkg = MetaPackage(
@@ -429,21 +431,27 @@ def load_previous_manifest(
         with open(fn, "r") as f:
             raw = json.load(f)
 
-        lines = []
-        for data in raw["LayersData"]:
-            if "Annotations" not in data:
-                continue
-            annotations = data["Annotations"]
-            if not annotations:
-                continue
-            if "ostree.components" not in annotations:
-                continue
-            lines.append(annotations["ostree.components"])
-        logger.info(f"Processing previous manifest with {len(raw)} layers.")
+        # Since podman/skopeo do not respect layer annotations, use
+        # a JSON config key 
+        layers = get_layers(raw)
+
+        # Then as a fallback use the old OSTree format
+        if not layers:
+            layers = []
+            for data in raw["LayersData"]:
+                if "Annotations" not in data:
+                    continue
+                annotations = data["Annotations"]
+                if not annotations:
+                    continue
+                if "ostree.components" not in annotations:
+                    continue
+                layers.append(annotations["ostree.components"].split(","))
+            logger.info(f"Processing previous manifest with {len(raw)} layers.")
     else:
         raw = None
         lines = fn
-        logger.info(f"Processing previous manifest with {fn} layers.")
+        logger.info(f"Processing previous manifest with {len(fn)} layers.")
 
     assert lines, "No layers found in previous manifest. Raising."
 
@@ -452,9 +460,9 @@ def load_previous_manifest(
     dedi_layers = []
     removed = list()
     prefill = []
-    for line in lines:
+    for raw_layer in layers:
         layer = []
-        for name in line.split(","):
+        for name in raw_layer:
             name = name.strip().replace("meta:", "").replace("dedi:", "")
             if name == "null" or not name:
                 continue
@@ -574,7 +582,7 @@ def main(
     logger.info("Creating update matrix.")
     upd_matrix = get_update_matrix(new_packages, biweekly)
     logger.info(f"Update matrix shape: {upd_matrix.shape}.")
-    
+
     found_previous_plan = False
     if previous_manifest:
         try:
@@ -603,7 +611,9 @@ def main(
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
-    new_labels, timestamp = get_labels(labels, version, manifest_json, version_fn, pretty, packages)
+    new_labels, timestamp = get_labels(
+        labels, version, manifest_json, version_fn, pretty, packages, layers
+    )
 
     if contentmeta_fn:
         dump_ostree_packages(
