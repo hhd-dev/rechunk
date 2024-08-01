@@ -325,6 +325,7 @@ meta:
   fluidsynth:
     packages:
       - fluid-soundfont*
+      - fluidsynth
   cmake:
     packages:
       - cmake*

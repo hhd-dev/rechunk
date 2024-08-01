@@ -282,7 +282,10 @@ def process_meta(
         meta_packages = {}
         for file_pat in contents.get("files", []):
             meta_files.extend(fnmatch.filter(ostree_map.keys(), file_pat))
-        for pkg_pat in contents.get("packages", []):
+
+        # packages of the same name should always be part of
+        # the same meta package due to a name collision
+        for pkg_pat in [*contents.get("packages", []), name]:
             for pname in fnmatch.filter(
                 dict.fromkeys([p.name for p in remaining_packages]), pkg_pat
             ):
