@@ -208,8 +208,8 @@ def get_labels(
                         value = value.replace(vkey, pkg.version)
 
             # OCI spec does not like new lines
-            value = value.replace('\n', '\\n')
-            value = value.replace('\r', '\\r')
+            value = value.replace('\n', '<br>')
+            value = value.replace('\r', '')
             
             new_labels[key] = value
 
