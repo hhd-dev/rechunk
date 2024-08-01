@@ -594,7 +594,7 @@ def main(
         )
 
     logger.info(
-        f"Leftover packages: {len(todo)}/{len(packages)} with a size of {sum([p.size for p in todo]) / 1e9:.3f} GB."
+        f"Leftover packages: {len(todo)}/{len(new_packages)} with a size of {sum([p.size for p in todo]) / 1e9:.3f} GB."
     )
     logger.info("Filling layers.")
     # Legacy algorithm simulation
@@ -603,7 +603,7 @@ def main(
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
-    new_labels, timestamp = get_labels(labels, version, manifest_json, version_fn, pretty)
+    new_labels, timestamp = get_labels(labels, version, manifest_json, version_fn, pretty, packages)
 
     if contentmeta_fn:
         dump_ostree_packages(
