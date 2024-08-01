@@ -187,6 +187,8 @@ def get_labels(
             idx = line.index("=")
             key = line[:idx]
             value = line[idx + 1 :]
+            if "<version>" in value and new_version:
+                value = value.replace("<version>", new_version)
             if "<date>" in value:
                 value = value.replace("<date>", date)
             if "<timestamp>" in value:
