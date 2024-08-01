@@ -53,20 +53,17 @@ jobs:
             org.opencontainers.image.url=https://github.com/ublue-os/bazzite
           description: |
             Bazzite Deck <pretty>
-            Version: <version>
+            Version: <version> (last version: <previous>)
 
             Major Components:
-            - Kernel: <version:kernel-core>
-            - Gamescope: <version:gamescope>
-            - KDE: <version:kwayland>
+              - Kernel: <version:kernel-core>
+              - Gamescope: <version:gamescope>
+              - KDE: <version:kwayland>
 
             Handheld Daemon:
-            - HHD: <version:hhd>
-            - Adjustor: <version:adjustor>
-            - HHD-UI: <version:hhd-ui>
-
-            Since the previous stable version (<previous>) the following commits were made:
-            TODO
+              - HHD: <version:hhd>
+              - Adjustor: <version:adjustor>
+              - HHD-UI: <version:hhd-ui>
 
 
       - name: Upload Image
