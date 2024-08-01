@@ -22,7 +22,7 @@ def get_packages(dir: str):
             "rpm",
             "-qa",
             "--queryformat",
-            ">\n[%{FILESIZES} %{FILENAMES}\n]<%{NAME} %{NEVRA} %{VERSION} %{SIZE}\n",
+            ">\n[%{FILESIZES} %{FILENAMES}\n]<%{NAME} %{NEVRA} %{VERSION}-%{RELEASE} %{SIZE}\n",
             "--changes",
             "--dbpath",
             dir,
