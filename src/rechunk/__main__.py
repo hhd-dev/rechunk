@@ -65,6 +65,9 @@ def argparse_func():
         "-l", "--label", help="Add labels to the output image.", action="append"
     )
     parser.add_argument(
+        "--pretty", help="Pretty version string.", default=None
+    )
+    parser.add_argument(
         "--version-fn", help="Output path for version name.", default=None
     )
 
@@ -112,6 +115,7 @@ def argparse_func():
         max_layer_ratio=args.max_layer_ratio,
         labels=args.label,
         version=args.version,
+        pretty=args.pretty,
         version_fn=args.version_fn,
         result_fn=None,
     )

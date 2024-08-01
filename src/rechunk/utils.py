@@ -135,7 +135,7 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
 
 
 def get_labels(
-    labels: Sequence[str], version: str | None, prev_manifest, version_fn: str | None
+    labels: Sequence[str], version: str | None, prev_manifest, version_fn: str | None, pretty: str | None
 ) -> tuple[dict[str, str], str]:
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
@@ -186,6 +186,8 @@ def get_labels(
                 value = value.replace("<date>", date)
             if "<timestamp>" in value:
                 value = value.replace("<timestamp>", timestamp)
+            if "<pretty>" in value and pretty:
+                value = value.replace("<pretty>", pretty)
             new_labels[key] = value
 
     log = "Writing labels:\n"

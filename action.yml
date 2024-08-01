@@ -42,6 +42,10 @@ inputs:
       Use `<date>` for the current date in the format `YYMMDD` (240305).
       Example: `3.1_<date>` becomes `3.1_240305`.
     default: '<date>'
+  pretty:
+    description: |
+      The pretty version of the image. Can be used as the <pretty> variable to
+      make substitutions in the labels.
   rechunk:
     description: |
       The rechunker OCI image to use.
@@ -126,6 +130,7 @@ runs:
             -e LABELS="${{ inputs.labels }}" \
             -e VERSION="${{ inputs.version }}" \
             -e VERSION_FN="/workspace/version.txt" \
+            -e PRETTY="${{ inputs.pretty }}" \
             -e DESCRIPTION="${{ inputs.description }}" \
             -e OUT_REF="oci:$OUT_NAME" \
             -e PREV_REF_FAIL="${{ inputs.prev-ref-fail }}" \

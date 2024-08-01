@@ -53,21 +53,24 @@ else
     RECHUNK=rechunk
 fi
 
-PREV_ARG=""
+PREV_ARG=()
 if [ -f "$PREV_MANIFEST" ]; then
-    PREV_ARG="--previous-manifest $PREV_MANIFEST"
+    PREV_ARG+=("--previous-manifest" "$PREV_MANIFEST")
 fi
 if [ -n "$MAX_LAYERS" ]; then
-    PREV_ARG="$PREV_ARG --max-layers $MAX_LAYERS"
+    PREV_ARG+=("--max-layers" "$MAX_LAYERS")
 fi
 if [ -n "$PREFILL_RATIO" ]; then
-    PREV_ARG="$PREV_ARG --prefill-ratio $PREFILL_RATIO"
+    PREV_ARG+=("--prefill-ratio" "$PREFILL_RATIO")
 fi
 if [ -n "$VERSION" ]; then
-    PREV_ARG="$PREV_ARG --version $VERSION"
+    PREV_ARG+=("--version" "$VERSION")
 fi
 if [ -n "$VERSION_FN" ]; then
-    PREV_ARG="$PREV_ARG --version-fn $VERSION_FN"
+    PREV_ARG+=("--version-fn" "$VERSION_FN")
+fi
+if [ -n "$PRETTY" ]; then
+    PREV_ARG+=("--pretty" "$PRETTY")
 fi
 
 LABEL_ARR=()
@@ -83,8 +86,8 @@ if [ -n "$DESCRIPTION" ]; then
     LABEL_ARR+=("--label" "org.opencontainers.image.description=$DESCRIPTION")  
 fi
 
-echo $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
-$RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" $PREV_ARG "${LABEL_ARR[@]}"
+echo $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" "${PREV_ARG[@]}" "${LABEL_ARR[@]}"
+$RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" "${PREV_ARG[@]}" "${LABEL_ARR[@]}"
 
 PREV_ARG=""
 if [ -n "$SKIP_COMPRESSION" ]; then

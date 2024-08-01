@@ -510,6 +510,7 @@ def main(
     result_fn: str | None = "./results.txt",
     labels: Sequence[str] = [],
     version: str | None = None,
+    pretty: str | None = None,
     version_fn: str | None = None,
     _cache: dict | None = None,
 ):
@@ -602,7 +603,7 @@ def main(
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
-    new_labels, timestamp = get_labels(labels, version, manifest_json, version_fn)
+    new_labels, timestamp = get_labels(labels, version, manifest_json, version_fn, pretty)
 
     if contentmeta_fn:
         dump_ostree_packages(
