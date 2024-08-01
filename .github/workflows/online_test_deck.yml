@@ -53,7 +53,7 @@ jobs:
             org.opencontainers.image.url=https://github.com/ublue-os/bazzite
           description: |
             Bazzite Deck <pretty>
-            Version: <version> (last version: <previous>)
+            Version: <version> (previous version: <previous>)
 
             Major Components:
               - Kernel: <version:kernel-core>
