@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+import subprocess
 import sys
 from datetime import datetime
 from typing import Sequence
@@ -8,13 +9,14 @@ from typing import Sequence
 import numpy as np
 from tqdm.auto import tqdm as tqdm_orig
 
-from .model import MetaPackage, Package, export_v2, INFO_KEY
+from .model import INFO_KEY, ExportInfo, MetaPackage, Package, export_v2
 
 logger = logging.getLogger(__name__)
 
 PBAR_OFFSET = 8
 PBAR_FORMAT = (" " * PBAR_OFFSET) + ">>>>>>>  {l_bar}{bar}{r_bar}"
 VERSION_TAG = "org.opencontainers.image.version"
+REVISION_TAG = "org.opencontainers.image.revision"
 
 
 class tqdm(tqdm_orig):
@@ -134,6 +136,65 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
     return p_upd
 
 
+def get_commits(git_dir: str | None, revision: str | None, prev_rev: str | None):
+    if not git_dir or not revision or not prev_rev:
+        return ""
+
+    out = ""
+    try:
+        cmd = f"git --git-dir='{git_dir}/.git' log --format=\"%t/%s\" --no-merges {prev_rev}..{revision}"
+        for commit in (
+            subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
+            .stdout.decode("utf-8")
+            .splitlines()
+        ):
+            if not "/" in commit:
+                continue
+            idx = commit.index("/")
+            out += f" - **{commit[:idx]}** {commit[idx+1:]}\n"
+    except Exception as e:
+        logger.error(f"Failed to get commits: {e}")
+    return out
+
+def get_package_update_str(base_pkg: Sequence[Package] | None, info: ExportInfo | None):
+    if not base_pkg or not info or not info.get("packages", None):
+        return ""
+
+    previous = info.get("packages", {})
+    seen = set()
+
+    out = ""
+    for p in base_pkg:
+        if p.name in seen:
+            continue
+        seen.add(p.name)
+        
+        if p.name not in previous:
+            out += f" - {p.name}: x → {p.version}\n"
+        else:
+            pv = previous[p.name]
+            # Skip release for package version updates
+            if "-" in pv:
+                prel = pv[pv.rindex("-") + 1 :]
+                pv = pv[:pv.rindex("-")]
+            else:
+                prel = None
+
+            if p.version != pv:
+                out += f" - {p.name}: {pv} → {p.version}\n"
+            elif prel and p.release != prel:
+                out += f" - {p.name}: {pv}-{prel} → {p.version}-{p.release}\n"
+    
+    for p in previous:
+        if p not in seen:
+            pv = previous[p]
+            if "-" in pv:
+                pv = pv[:pv.rindex("-")]
+            out += f" - {p}: {pv} → x\n"
+        seen.add(p)
+
+    return out
+
 def get_labels(
     labels: Sequence[str],
     version: str | None,
@@ -142,12 +203,18 @@ def get_labels(
     pretty: str | None,
     base_pkg: Sequence[Package] | None,
     layers: dict[str, Sequence[str]],
+    revision: str | None,
+    git_dir: str | None,
+    changelog_template: str | None,
+    changelog_fn: str | None,
+    info: ExportInfo | None,
 ) -> tuple[dict[str, str], str]:
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
     now = datetime.now()
     date = now.strftime("%y%m%d")
     timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    pkgupd = get_package_update_str(base_pkg, info)
 
     prev_labels = prev_manifest.get("Labels", {}) if prev_manifest else {}
     prev_version = prev_labels.get(VERSION_TAG, None) if prev_labels else None
@@ -181,12 +248,68 @@ def get_labels(
             with open(version_fn, "w") as f:
                 f.write(new_version)
 
-    imginfo = export_v2(uniq=new_version, base_pkg=base_pkg, layers=list(layers.values()))
+    imginfo = export_v2(
+        uniq=new_version,
+        base_pkg=base_pkg,
+        layers=list(layers.values()),
+        revision=revision,
+    )
     BLACKLIST_KEY = "> IMGINFO V2 INSERTED"
     new_labels[INFO_KEY] = imginfo
+    if revision:
+        new_labels[REVISION_TAG] = revision
 
     blacklist = dict()
     blacklist[INFO_KEY] = BLACKLIST_KEY
+    commit_str = get_commits(
+        git_dir,
+        revision,
+        (info or {}).get("revision", None) or prev_labels.get(REVISION_TAG, None),
+    )
+
+    def process_label(key: str, value: str):
+        if "<changelog>" in value:
+            value = value.replace("<changelog>", changelog_template or "")
+        if "<version>" in value and new_version:
+            value = value.replace("<version>", new_version)
+        if "<date>" in value:
+            value = value.replace("<date>", date)
+        if "<timestamp>" in value:
+            value = value.replace("<timestamp>", timestamp)
+        if "<pretty>" in value and pretty:
+            value = value.replace("<pretty>", pretty)
+        if "<previous>" in value and prev_version:
+            value = value.replace("<previous>", prev_version)
+        if "<imginfo>" in value:
+            value = value.replace("<imginfo>", imginfo)
+            blacklist[key] = BLACKLIST_KEY
+        if "<commits>" in value:
+            value = value.replace("<commits>", commit_str or "-")
+        if "<pkgupd>" in value:
+            value = value.replace("<pkgupd>", pkgupd or "-")
+
+        if base_pkg:
+            for pkg in base_pkg:
+                if not pkg.version:
+                    continue
+                vkey = f"<version:{pkg.name}>"
+                if vkey in value:
+                    value = value.replace(vkey, pkg.version)
+                vkey = f"<relver:{pkg.name}>"
+                if vkey in value:
+                    value = value.replace(
+                        vkey,
+                        (
+                            f"{pkg.version}-{pkg.release}"
+                            if pkg.release
+                            else pkg.version
+                        ),
+                    )
+        return value
+
+    if changelog_fn:
+        with open(changelog_fn, "w") as f:
+            f.write(process_label("", "<changelog>"))
 
     if labels:
         for line in labels:
@@ -196,39 +319,7 @@ def get_labels(
             idx = line.index("=")
             key = line[:idx]
             value = line[idx + 1 :]
-            if "<version>" in value and new_version:
-                value = value.replace("<version>", new_version)
-            if "<date>" in value:
-                value = value.replace("<date>", date)
-            if "<timestamp>" in value:
-                value = value.replace("<timestamp>", timestamp)
-            if "<pretty>" in value and pretty:
-                value = value.replace("<pretty>", pretty)
-            if "<previous>" in value and prev_version:
-                value = value.replace("<previous>", prev_version)
-            if "<imginfo>" in value:
-                value = value.replace("<imginfo>", imginfo)
-                blacklist[key] = BLACKLIST_KEY
-
-            if base_pkg:
-                for pkg in base_pkg:
-                    if not pkg.version:
-                        continue
-                    vkey = f"<version:{pkg.name}>"
-                    if vkey in value:
-                        value = value.replace(vkey, pkg.version)
-                    vkey = f"<relver:{pkg.name}>"
-                    if vkey in value:
-                        value = value.replace(
-                            vkey,
-                            (
-                                f"{pkg.version}-{pkg.release}"
-                                if pkg.release
-                                else pkg.version
-                            ),
-                        )
-
-            new_labels[key] = value
+            new_labels[key] = process_label(key, value)
 
     if new_labels:
         log = "Writing labels:\n"

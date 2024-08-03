@@ -10,8 +10,13 @@ import yaml
 from rechunk.model import MetaPackage, Package
 
 from .fedora import get_packages
-from .model import INFO_KEY, Package, get_layers
-from .ostree import calculate_ostree_layers, dump_ostree_contentmeta, get_ostree_map, run_with_ostree_files
+from .model import INFO_KEY, Package, get_layers, get_info, ExportInfo
+from .ostree import (
+    calculate_ostree_layers,
+    dump_ostree_contentmeta,
+    get_ostree_map,
+    run_with_ostree_files,
+)
 from .utils import get_default_meta_yaml, get_labels, get_update_matrix, tqdm
 
 logger = logging.getLogger(__name__)
@@ -429,18 +434,22 @@ def load_previous_manifest(
     fn: str | list[str], packages: list[MetaPackage], max_layers: int
 ):
     logger.info(f"Loading previous manifest from '{fn}'.")
+    info = None
 
     if isinstance(fn, str):
         with open(fn, "r") as f:
             raw = json.load(f)
 
         # Since podman/skopeo do not respect layer annotations, use
-        # a JSON config key 
-        layers = get_layers(raw)
+        # a JSON config key
+        info = get_info(raw)
+        layers = get_layers(info)
 
         # Then as a fallback use the old OSTree format
         if layers:
-            logger.info(f"Processing previous manifest with {len(layers)} layers (loaded from '{INFO_KEY}').")
+            logger.info(
+                f"Processing previous manifest with {len(layers)} layers (loaded from '{INFO_KEY}')."
+            )
         else:
             layers = []
             for data in raw["LayersData"]:
@@ -452,11 +461,15 @@ def load_previous_manifest(
                 if "ostree.components" not in annotations:
                     continue
                 layers.append(annotations["ostree.components"].split(","))
-            logger.info(f"Processing previous manifest with {len(raw)} layers (loaded from 'ostree.components').")
+            logger.info(
+                f"Processing previous manifest with {len(raw)} layers (loaded from 'ostree.components')."
+            )
     else:
         raw = None
         layers = [l.split(",") for l in fn]
-        logger.info(f"Processing previous manifest with {len(fn)} layers (through cache argument).")
+        logger.info(
+            f"Processing previous manifest with {len(fn)} layers (through cache argument)."
+        )
 
     assert layers, "No layers found in previous manifest. Raising."
 
@@ -476,7 +489,9 @@ def load_previous_manifest(
             for p in todo:
                 if p.name == name:
                     if pkg is not None:
-                        logger.error(f"Duplicate package '{name}' found in previous manifest.")
+                        logger.error(
+                            f"Duplicate package '{name}' found in previous manifest."
+                        )
                     pkg = p
 
             if pkg is None:
@@ -508,7 +523,7 @@ def load_previous_manifest(
     if removed:
         logger.info(f"The following packages were removed:\n{removed}")
 
-    return todo, dedi_layers, prefill, raw
+    return todo, dedi_layers, prefill, raw, info
 
 
 def main(
@@ -527,6 +542,10 @@ def main(
     pretty: str | None = None,
     version_fn: str | None = None,
     _cache: dict | None = None,
+    revision: str | None = None,
+    git_dir: str | None = None,
+    changelog: str | None = None,
+    changelog_fn: str | None = None,
 ):
     if not meta_fn:
         meta_fn = get_default_meta_yaml()
@@ -593,7 +612,7 @@ def main(
     if previous_manifest:
         try:
             logger.info("Loading existing layer data.")
-            todo, dedi_layers, prefill, manifest_json = load_previous_manifest(
+            todo, dedi_layers, prefill, manifest_json, info = load_previous_manifest(
                 previous_manifest, new_packages, max_layers
             )
             found_previous_plan = True
@@ -602,6 +621,7 @@ def main(
 
     if not found_previous_plan:
         manifest_json = None
+        info = None
         logger.warning("No existing layer data. Expect layer shifts")
         todo, dedi_layers, prefill = prefill_layers(
             new_packages, upd_matrix, max_layers, prefill_size
@@ -617,11 +637,20 @@ def main(
     layers = fill_layers(todo, prefill, upd_matrix, max_layer_size=max_layer_size)
     print_results(dedi_layers, prefill, layers, upd_matrix, result_fn)
 
-    final_layers, ostree_out = calculate_ostree_layers(
-        dedi_layers, layers, mapping
-    )
+    final_layers, ostree_out = calculate_ostree_layers(dedi_layers, layers, mapping)
     new_labels, timestamp = get_labels(
-        labels, version, manifest_json, version_fn, pretty, packages, final_layers
+        labels=labels,
+        version=version,
+        prev_manifest=manifest_json,
+        version_fn=version_fn,
+        pretty=pretty,
+        base_pkg=packages,
+        layers=final_layers,
+        revision=revision,
+        git_dir=git_dir,
+        changelog_template=changelog,
+        changelog_fn=changelog_fn,
+        info=info,
     )
 
     if contentmeta_fn:

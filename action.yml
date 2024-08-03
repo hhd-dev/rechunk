@@ -61,6 +61,21 @@ inputs:
       By default, this action will remove the ref image provided in `ref`.
       This variable will disable discarding it after the OSTree commit is created.
       May cause the storage overflow.
+  changelog:
+    description: |
+      The changelog of the image. Can be substituted with the <changelog> variable
+      and will be placed
+  git:
+    description: |
+      The git repository to use for the action. Used for versioning the output.
+      Defaults to the current repository.
+  revision:
+    description: |
+      The revision that will be recorded in the image metadata and in 
+      "org.opencontainers.image.revision". Used for the <commit>
+      tag along with the git path.
+      If <commit> is not used, providing it as part of a "org.opencontainers.image.revision"
+      is the same.
 
 outputs:
   ref:
@@ -76,6 +91,14 @@ outputs:
     description: |
       The filesystem location of the rechunked image, so that it can be removed.
     value: ${{ steps.rechunk.outputs.location }}
+  changelog:
+    description: |
+      The changelog of the image, with the <changelog> variable substituted.
+    value: ${{ steps.rechunk.outputs.changelog }}
+  manifest:
+    description: |
+      The skopeo manifest of the rechunked image. 
+    value: ${{ steps.rechunk.outputs.manifest }}
 
 runs:
   using: 'composite'
@@ -124,9 +147,14 @@ runs:
       shell: bash
       run: |
         OUT_NAME=$(echo ${{ inputs.ref }} | rev | cut -d'/' -f1 | rev | sed 's/:/_/')
-        
+        GIT_PATH="${{ inputs.git }}"
+        if [ -n "$GIT_PATH" ]; then
+          GIT_PATH="${{ github.workspace }}"
+        fi
+
         sudo podman run --rm \
             -v "${{ github.workspace }}:/workspace" \
+            -v "$GIT_PATH:/var/git" \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
             -e MAX_LAYERS="${{ inputs.max-layers }}" \
@@ -138,7 +166,10 @@ runs:
             -e VERSION_FN="/workspace/version.txt" \
             -e PRETTY="${{ inputs.pretty }}" \
             -e DESCRIPTION="${{ inputs.description }}" \
+            -e CHANGELOG="${{ inputs.changelog }}" \
             -e OUT_REF="oci:$OUT_NAME" \
+            -e GIT_DIR="/var/git" \
+            -e REVISION="${{ inputs.revision }}" \
             -e PREV_REF_FAIL="${{ inputs.prev-ref-fail }}" \
             -u 0:0 \
             ${{ inputs.rechunk }} \
@@ -147,6 +178,8 @@ runs:
         echo "version=$(sudo cat ${{ github.workspace }}/version.txt)" >> $GITHUB_OUTPUT
         echo "ref=oci:${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
         echo "location=${{ github.workspace }}/$OUT_NAME" >> $GITHUB_OUTPUT
+        echo "changelog=${{ github.workspace }}/$OUT_NAME.changelog.txt" >> $GITHUB_OUTPUT
+        echo "manifest=${{ github.workspace }}/$OUT_NAME.manifest.json" >> $GITHUB_OUTPUT
 
         # Remove root permissions
         sudo chown $(id -u):$(id -g) -R "${{ github.workspace }}/$OUT_NAME"

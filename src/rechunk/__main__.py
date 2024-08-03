@@ -64,11 +64,23 @@ def argparse_func():
     parser.add_argument(
         "-l", "--label", help="Add labels to the output image.", action="append"
     )
-    parser.add_argument(
-        "--pretty", help="Pretty version string.", default=None
-    )
+    parser.add_argument("--pretty", help="Pretty version string.", default=None)
     parser.add_argument(
         "--version-fn", help="Output path for version name.", default=None
+    )
+    parser.add_argument(
+        "--revision",
+        help="The git hash of the project (placed in 'org.opencontainers.image.revision' and internal metadata for calculating changelogs).",
+        default=None,
+    )
+    parser.add_argument(
+        "--git-dir",
+        help="The checked out git directory for calculating changelogs.",
+        default=None,
+    )
+    parser.add_argument("--changelog", help="Changelog template.", default=None)
+    parser.add_argument(
+        "--changelog-fn", help="Output path for the generated changelog.", default=None
     )
 
     # Hyperparameters
@@ -118,6 +130,10 @@ def argparse_func():
         pretty=args.pretty,
         version_fn=args.version_fn,
         result_fn=None,
+        revision=args.revision,
+        git_dir=args.git_dir,
+        changelog=args.changelog,
+        changelog_fn=args.changelog_fn,
     )
 
 

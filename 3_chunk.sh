@@ -72,6 +72,15 @@ fi
 if [ -n "$PRETTY" ]; then
     PREV_ARG+=("--pretty" "$PRETTY")
 fi
+if [ -n "$CHANGELOG" ]; then
+    PREV_ARG+=("--changelog" "$CHANGELOG")
+fi
+if [ -n "$GIT_DIR" ]; then
+    PREV_ARG+=("--git-dir" "$GIT_DIR")
+fi
+if [ -n "$REFISION" ]; then
+    PREV_ARG+=("--revision" "$REVISION")
+fi
 
 LABEL_ARR=()
 if [ -n "$LABELS" ]; then
@@ -89,8 +98,12 @@ if [ -n "$DESCRIPTION" ]; then
     LABEL_ARR+=("--label" "org.opencontainers.image.description=$DESCRIPTION")  
 fi
 
-echo $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" "${PREV_ARG[@]}" "${LABEL_ARR[@]}"
-$RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" "${PREV_ARG[@]}" "${LABEL_ARR[@]}"
+cmd=$RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" \
+    --changelog-fn "${OUT_NAME}.changelog.txt" \
+    "${PREV_ARG[@]}" "${LABEL_ARR[@]}"
+echo Running "$cmd"
+$cmd
+
 
 PREV_ARG=""
 if [ -n "$SKIP_COMPRESSION" ]; then
@@ -107,10 +120,8 @@ ostree-ext-cli \
 
 echo Created archive with ref ${OUT_REF}
 
-# TODO: Temporarily remove to try newlines
-# echo Writing manifests to ./$OUT_NAME.manifest.json, ./$OUT_NAME.manifest.raw.json
-# skopeo inspect ${OUT_REF} > ${OUT_NAME}.manifest.json
-# skopeo inspect --raw ${OUT_REF} > ${OUT_NAME}.manifest.raw.json
+echo Writing manifest to ./$OUT_NAME.manifest.json
+skopeo inspect ${OUT_REF} > ${OUT_NAME}.manifest.json
 
 # Reset perms to make the files usable
 chmod 666 -R ${OUT_NAME}*

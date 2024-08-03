@@ -42,9 +42,9 @@ class ExportInfoV2(TypedDict):
     uniq: str
     layers: Sequence[Sequence[str]]
     packages: dict[str, str]
+    revision: str | None
 
-
-def get_layers(manifest):
+def get_info(manifest):
     import json
 
     if not "Labels" in manifest:
@@ -55,10 +55,13 @@ def get_layers(manifest):
         return None
 
     try:
-        info = json.loads(labels[INFO_KEY])
+        return json.loads(labels[INFO_KEY])
     except json.JSONDecodeError:
         return None
 
+ExportInfo = ExportInfoV1 | ExportInfoV2
+
+def get_layers(info):
     if info["version"] < 2:
         return None
     
@@ -72,6 +75,7 @@ def export_v2(
     uniq: str | None,
     base_pkg: Sequence[Package] | None,
     layers: Sequence[Sequence[str]],
+    revision: str | None = None,
 ) -> str:
     import json
 
@@ -86,5 +90,6 @@ def export_v2(
             uniq=uniq or "",
             packages=packages,
             layers=layers,
+            revision=revision,
         )
     )
