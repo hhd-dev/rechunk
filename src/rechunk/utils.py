@@ -308,8 +308,11 @@ def get_labels(
         return value
 
     if changelog_fn:
+        chng = process_label("", "<changelog>")
+        if chng:
+            logger.info(f"Changelog:\n{chng}")
         with open(changelog_fn, "w") as f:
-            f.write(process_label("", "<changelog>"))
+            f.write(chng)
 
     if labels:
         for line in labels:
