@@ -48,7 +48,13 @@ inputs:
       make substitutions in the labels.
   rechunk:
     description: |
-      The rechunker OCI image to use.
+      The rechunker OCI image to use. Cannot use a Dockerfile, as building the 
+      image takes around 5 minutes. Always tag it with the action version.
+      FIXME: old versions will expire after 90 days, so you might have to fork
+      this action to your org's page or update every few months.
+      This is temporary, until the changes to `ostree-rs-ext` are merged and
+      the upstream version can be used, after which point the Containerfile
+      will build in seconds.
     default: 'ghcr.io/hhd-dev/rechunk:latest'
   keep-ref:
     description: |
