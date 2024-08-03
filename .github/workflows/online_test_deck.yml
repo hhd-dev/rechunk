@@ -88,6 +88,20 @@ jobs:
             Package Changes:
             <pkgupd>
 
+      - name: Upload Changelog
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog.md
+          path: ${{ steps.rechunk.outputs.changelog }}
+          compression-level: 0
+
+      - name: Upload Skopeo Manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: manifest.json
+          path: ${{ steps.rechunk.outputs.manifest }}
+          compression-level: 0
+
       - name: Upload Image
         id: upload
         shell: bash
