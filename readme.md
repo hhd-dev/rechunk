@@ -134,7 +134,7 @@ Then, in a four-step process we do the following:
 This process takes around 30 seconds and results in an OSTree hash to layer
 mapping.
 
-The following process is only performed in the first run. 
+The process above is only performed in the first run. 
 In following runs, rechunk begins with the previous image plan (which is bundled
 into the previous image manifest) and only performs the last step.
 Re-using the previous plan minimizes layer shifts, which lowers layer invalidation
