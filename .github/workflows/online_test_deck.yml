@@ -26,7 +26,10 @@ jobs:
     steps:
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
-      - uses: actions/checkout@v4
+      - name: Checkout last 300 commits (for <commits> to work)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 300
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@v7
       - name: Download images (optional)
