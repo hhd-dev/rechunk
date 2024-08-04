@@ -136,7 +136,7 @@ def argparse_func():
 
     # Parse formatters
     formatters = {}
-    for line in args.formatter:
+    for line in args.formatter or []:
         if "=" not in line:
             continue
         idx = line.index("=")
