@@ -157,7 +157,7 @@ def get_commits(
 
     out = ""
     try:
-        cmd = f"git --git-dir='{git_dir}/.git' log --format=\"%t/%T/%s\" --no-merges {prev_rev}..{revision}"
+        cmd = f"git --git-dir='{git_dir}/.git' log --format=\"%h/%H/%s\" --no-merges {prev_rev}..{revision}"
         for commit in (
             subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
             .stdout.decode("utf-8")
