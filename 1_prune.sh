@@ -165,6 +165,7 @@ $RSYNC \
 
 # Fix perms. Unsure why these break
 # FIXME: Find out why and remove
+echo Fixing up directory permissions
 chmod 750 ./usr/etc/audit
 chmod 750 ./usr/etc/audit/rules.d
 chmod 755 ./usr/etc/bluetooth
@@ -185,6 +186,18 @@ chmod 700 ./usr/lib/ostree-boot/efi/EFI/fedora
 chmod 700 ./usr/lib/ostree-boot/grub2
 chmod 700 ./usr/lib/ostree-boot/grub2/fonts
 chmod 750 ./usr/libexec/initscripts/legacy-actions/auditd
+
+# Restore expected file capabilities
+# PR your own until we figure out the source
+# Of the misconfiguration (probably OSTree)
+echo Fixing up executable capabilities
+setcap cap_dac_override,cap_net_admin,cap_net_raw=eip ./usr/bin/dumpcap
+setcap cap_sys_nice=ep ./usr/bin/kwin_wayland
+setcap cap_setgid=ep ./usr/bin/newgidmap
+setcap cap_setuid=ep ./usr/bin/newuidmap
+setcap cap_net_bind_service=ep ./usr/bin/rcp
+setcap cap_net_bind_service=ep ./usr/bin/rlogin
+setcap cap_net_bind_service=ep ./usr/bin/rsh
 
 # Fix polkid group
 POLKIT_ID=$(cat ./usr/lib/group | grep polkitd | cut -d: -f3)
