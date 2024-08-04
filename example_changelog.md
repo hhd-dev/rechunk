@@ -1,5 +1,5 @@
-Bazzite Deck Rechunked (from 40-20240728)
-Version: rc40-20240728.1
+# Bazzite Deck Rechunked (from 40-20240728)
+## Version: rc40-20240728.1
 
 Major Components:
   - Kernel: 6.9.9-206.fsync.fc40

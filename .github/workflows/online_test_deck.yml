@@ -73,8 +73,8 @@ jobs:
             HHD-UI: <version:hhd-ui>]
           
           changelog: |
-            Bazzite Deck <pretty>
-            Version: <version>
+            # Bazzite Deck <pretty>
+            ## Version: <version>
 
             Major Components:
               - Kernel: <relver:kernel>
