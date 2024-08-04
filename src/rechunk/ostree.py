@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def get_ostree_map(repo: str, ref: str):
     # Prefix has a fixed length
     # unless filesize is larger than what fits
-    prefix = len("d00555 0 0")
+    prefix = len("d00555 ")
     hash_len = 64
 
     proc = None
@@ -47,10 +47,20 @@ def get_ostree_map(repo: str, ref: str):
                 continue
 
             ofs = prefix - 1
-            # Link count
+            # UID
             while line[ofs] != " ":
                 ofs += 1
             # Space after
+            while line[ofs] == " ":
+                ofs += 1
+            # GID
+            while line[ofs] != " ":
+                ofs += 1
+            while line[ofs] == " ":
+                ofs += 1
+            # Link count
+            while line[ofs] != " ":
+                ofs += 1
             while line[ofs] == " ":
                 ofs += 1
             # Size
