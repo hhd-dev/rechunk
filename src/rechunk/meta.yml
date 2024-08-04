@@ -72,10 +72,25 @@ meta:
   wine:
     packages:
       - wine*
-    # files:
+  cups:
+    packages:
+      - cups*
+    dedicated: False
+  samba:
+    packages:
+      - samba*
+      - libwbclient
+      - libsmbclient
+      - libnetapi # FIXME: does this belong here?
+    dedicated: False
+      # files:
     #   # Bazzite dirty writes to /lib/firmware for the Steam Deck
     #   - /usr/lib/firmware/*
   # Analyzed by finding packages having a shared version
+  # Cosmic
+  cosmic:
+    packages:
+      - cosmic*
 
   #
   # Plasma
@@ -353,13 +368,19 @@ meta:
   google-fonts:
     packages:
       - google-noto-*
+  ghostscript:
+    packages:
+      - ghostscript*
   mariadb:
     packages:
       - mariadb*
-  cldr:
+  cldr-emoji:
     packages:
       - cldr-emoji-annotation*
     dedicated: False
+  cldr:
+    packages:
+      - cldr
   python3:
     packages:
       - python3
@@ -369,7 +390,47 @@ meta:
   python3-botocore:
     packages:
       - python3-botocore*
-
+  boost:
+    packages:
+      - boost-*
+      - boost
+    dedicated: False
+  flatpak:
+    packages:
+      - flatpak
+      - flatpak-session-helper
+      - flatpak-selinux
+      - flatpak-libs
+    dedicated: False
+  libtracker:
+    packages:
+      - libtracker-sparql
+      - tracker
+      - tracker-miners
+    dedicated: False
+  ibus-anthy:
+    packages:
+      - ibus-anthy
+      - ibus-anthy-python
+    dedicated: False
+  perl:
+    packages:
+      - perl-libs
+      - perl-interpreter
+    dedicated: False
+  coreutils:
+    packages:
+      - coreutils*
+    dedicated: False
+  git:
+    packages:
+      - git*
+  containerd.io:
+    packages:
+      - containerd.io
+  docker-ce:
+    packages:
+      - docker-ce*
   #
   # Nvidia
   #
@@ -379,6 +440,10 @@ meta:
       - nvidia-persistenced
       - nvidia-settings
       - xorg-x11-drv*
+  gvisor:
+    packages:
+      - gvisor*
+    dedicated: False
 
   #
   # Apps
@@ -624,6 +689,10 @@ meta:
     packages:
       - liberation-*
     dedicated: False
+  mozilla-fira:
+    packages:
+      - mozilla-fira-*
+    dedicated: False
   sqlite:
     packages:
       - sqlite*
@@ -675,4 +744,22 @@ meta:
   zed:
     files:
       - /usr/lib/zed.app/*
-    dedicated: True
+  argyllcms:
+    packages:
+      - argyllcms*
+  geolite2:
+    packages:
+      - geolite2*
+    dedicated: False
+  rclone:
+    packages:
+      - rclone*
+  code:
+    packages:
+      - code*
+  docker-compose-plugin:
+    packages:
+      - docker-compose-plugin*
+  emacs:
+    packages:
+      - emacs*

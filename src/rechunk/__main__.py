@@ -82,6 +82,11 @@ def argparse_func():
     parser.add_argument(
         "--changelog-fn", help="Output path for the generated changelog.", default=None
     )
+    parser.add_argument(
+        "--result-fn",
+        help="A debug file with the file packaging results.",
+        default=None,
+    )
 
     # Hyperparameters
     group = parser.add_argument_group("Hyperparameters")
@@ -129,7 +134,7 @@ def argparse_func():
         version=args.version,
         pretty=args.pretty,
         version_fn=args.version_fn,
-        result_fn=None,
+        result_fn=args.result_fn,
         revision=args.revision,
         git_dir=args.git_dir,
         changelog=args.changelog,
