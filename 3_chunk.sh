@@ -78,7 +78,7 @@ fi
 if [ -n "$GIT_DIR" ]; then
     PREV_ARG+=("--git-dir" "$GIT_DIR")
 fi
-if [ -n "$REFISION" ]; then
+if [ -n "$REVISION" ]; then
     PREV_ARG+=("--revision" "$REVISION")
 fi
 
