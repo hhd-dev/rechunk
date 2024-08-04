@@ -87,6 +87,11 @@ def argparse_func():
         help="A debug file with the file packaging results.",
         default=None,
     )
+    parser.add_argument(
+        "--clear-plan",
+        help="Use a fresh plan, regardless of previous ref.",
+        action="store_true",
+    )
 
     # Hyperparameters
     group = parser.add_argument_group("Hyperparameters")
@@ -139,6 +144,7 @@ def argparse_func():
         git_dir=args.git_dir,
         changelog=args.changelog,
         changelog_fn=args.changelog_fn,
+        clear_plan=args.clear_plan,
     )
 
 

@@ -81,6 +81,9 @@ fi
 if [ -n "$REVISION" ]; then
     PREV_ARG+=("--revision" "$REVISION")
 fi
+if [ -n "$CLEAR_PLAN" ]; then
+    PREV_ARG+=("--clear-plan")
+fi
 
 LABEL_ARR=()
 if [ -n "$LABELS" ]; then

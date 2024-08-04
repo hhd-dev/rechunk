@@ -546,6 +546,7 @@ def main(
     git_dir: str | None = None,
     changelog: str | None = None,
     changelog_fn: str | None = None,
+    clear_plan: bool = False,
 ):
     if not meta_fn:
         meta_fn = get_default_meta_yaml()
@@ -609,6 +610,8 @@ def main(
     logger.info(f"Update matrix shape: {upd_matrix.shape}.")
 
     found_previous_plan = False
+    manifest_json = None
+    info = None
     if previous_manifest:
         try:
             logger.info("Loading existing layer data.")
@@ -619,10 +622,11 @@ def main(
         except Exception as e:
             logger.error(f"Error loading previous manifest:\n{e}")
 
-    if not found_previous_plan:
-        manifest_json = None
-        info = None
-        logger.warning("No existing layer data. Expect layer shifts")
+    if not found_previous_plan or clear_plan:
+        if clear_plan:
+            logger.warning("Creating a fresh plan due to --clear-plan.")
+        else:
+            logger.warning("No existing layer data. Expect layer shifts")
         todo, dedi_layers, prefill = prefill_layers(
             new_packages, upd_matrix, max_layers, prefill_size
         )

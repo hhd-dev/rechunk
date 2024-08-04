@@ -14,6 +14,9 @@ inputs:
     description: |
       The previous image reference, if any. Used for versioning
       the current image and to avoid layer shifts (important; may be skipped).
+  clear-plan:
+    description: |
+      If set, a new plan will be recreated.
   prev-ref-fail:
     description: |
       If set, fail if the previous image reference is not found.
@@ -169,6 +172,7 @@ runs:
             -e CHANGELOG="${{ inputs.changelog }}" \
             -e OUT_REF="oci:$OUT_NAME" \
             -e GIT_DIR="/var/git" \
+            -e CLEAR_PLAN="${{ inputs.clear-plan }}" \
             -e REVISION="${{ inputs.revision }}" \
             -e PREV_REF_FAIL="${{ inputs.prev-ref-fail }}" \
             -u 0:0 \
