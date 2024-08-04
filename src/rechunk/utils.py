@@ -193,14 +193,15 @@ def get_package_update_str(
     previous = info.get("packages", {})
     seen = set()
 
-    out = ""
+    added = ""
+    updated = ""
     for p in base_pkg:
         if p.name in seen:
             continue
         seen.add(p.name)
 
         if p.name not in previous:
-            out += (
+            added += (
                 formatters["pkgupd.add"]
                 .replace("<new>", p.version)
                 .replace("<package>", p.name)
@@ -223,13 +224,14 @@ def get_package_update_str(
             else:
                 continue
 
-            out += (
+            updated += (
                 formatters["pkgupd.update"]
                 .replace("<old>", prev)
                 .replace("<new>", newv)
                 .replace("<package>", p.name)
             )
 
+    out = added + updated
     for p in previous:
         if p not in seen:
             pv = previous[p]
