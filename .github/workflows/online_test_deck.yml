@@ -42,7 +42,7 @@ jobs:
         with:
           ref: 'ghcr.io/ublue-os/bazzite-deck:${{ github.event.inputs.ref }}'
           prev-ref: ghcr.io/hhd-dev/bazzite-automated-deck:stable
-          clear-plan: ${{ github.event.inputs.prev == 'true' && '' || '1' }}
+          clear-plan: ${{ github.event.inputs.prev == 'false' && '1' || '' }}
           rechunk: 'ghcr.io/hhd-dev/rechunk:latest' # IMPORTANT: Use the same tag e.g., :0.6.4
           version: 'rc${{ github.event.inputs.ref }}'
           revision: ${{ github.sha }}
