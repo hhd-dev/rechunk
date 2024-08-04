@@ -86,7 +86,7 @@ jobs:
               - Adjustor: <version:adjustor>
               - HHD-UI: <version:hhd-ui>
 
-            Changes since version <previous>:
+            Changes since last version (<previous>):
             <commits>
 
             Package Changes:
