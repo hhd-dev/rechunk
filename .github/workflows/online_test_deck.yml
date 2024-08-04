@@ -86,9 +86,10 @@ jobs:
               - Adjustor: <version:adjustor>
               - HHD-UI: <version:hhd-ui>
 
-            Changes since last version (<previous>):
+            ## Changes since last version (<previous>):
+            ### Commits
             <commits>
-            Package Changes:
+            ### Package Changes:
             <pkgupd>
 
           formatters: |

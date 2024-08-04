@@ -11,7 +11,8 @@ Handheld Daemon:
   - Adjustor: 3.4.2
   - HHD-UI: 3.2.0
 
-Changes since last version (rc40-20240726.5):
+## Changes since last version (rc40-20240726.5):
+### Commits:
 - **[d94536e](https://github.com/hhd-dev/rechunk/commit/d94536e2acb0ca5bb6f7c5cacd35a21c0a25bb82)** switch from tree hashes to commit hashes
 - **[92afe86](https://github.com/hhd-dev/rechunk/commit/92afe86aed4d627a15d46e1e9788ae4c80240f8f)** switch unescape method
 - **[3b8e892](https://github.com/hhd-dev/rechunk/commit/3b8e8927eb2558ea36e0eadd6e3c3cadca4c094b)** put added packages first
@@ -26,7 +27,7 @@ Changes since last version (rc40-20240726.5):
 - **[abda1e0](https://github.com/hhd-dev/rechunk/commit/abda1e0ba70d66c858bbf74fadf64a4e84abdf6e)** add clear plan parameter
 - **[7bcb8a4](https://github.com/hhd-dev/rechunk/commit/7bcb8a45b31717b89b171c1bee7a0aa6e8151ae5)** fix typo
 
-Package Changes:
+### Package Changes:
 - **python3-typer** Added at 0.9.0
 - **python3-gbulb** Added at 0.6.4
 - **python3-ujson** Added at 5.9.0
