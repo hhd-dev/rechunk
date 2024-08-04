@@ -5,6 +5,8 @@ if [ $(id -u) -ne 0 ]; then
     exit 1
 fi
 
+set -e
+
 # this script creates the ostree from ./tree
 TREE=${TREE:=./tree}
 REPO=${REPO:=./repo}
