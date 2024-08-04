@@ -672,3 +672,7 @@ meta:
     packages:
       - libqmi*
     dedicated: False
+  zed:
+    files:
+      - /usr/lib/zed.app/*
+    dedicated: True
