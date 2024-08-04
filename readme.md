@@ -25,6 +25,13 @@ It solves these four key issues:
 And of course, when uploading a new image to registry, since a portion of layers
 will already be there, uploads are faster.
 
+## Changelogs and Labelling
+As part of analyzing the image, `rechunk` also records the package versions and
+metadata of the image, and allows embedding them to output tags.
+Furthermore, it provides a simple markup language to generate beautiful changelogs
+([see an example here](./example_changelog.md)) and tags automatically.
+Making this action a one-stop shop for finalizing an image for distribution.
+
 > [!IMPORTANT]
 > The action in this repository uses advanced podman features (e.g., mount) and 
 > requires both root access (**not rootless** execution) and the **Ubuntu 24.04** 
