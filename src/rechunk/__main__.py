@@ -62,7 +62,15 @@ def argparse_func():
         default=None,
     )
     parser.add_argument(
-        "-l", "--label", help="Add labels to the output image.", action="append"
+        "-l",
+        "--label",
+        help="Add labels to the output image (`label=var`).",
+        action="append",
+    )
+    parser.add_argument(
+        "--formatter",
+        help="Override string formatters for tags for i18n (`formatter=var`).",
+        action="append",
     )
     parser.add_argument("--pretty", help="Pretty version string.", default=None)
     parser.add_argument(
@@ -126,6 +134,15 @@ def argparse_func():
     )
 
     args = parser.parse_args()
+
+    # Parse formatters
+    formatters = {}
+    for line in args.formatter:
+        if "=" not in line:
+            continue
+        idx = line.index("=")
+        formatters[line[:idx]] = line[idx + 1 :]
+
     alg_main(
         repo=args.repo,
         ref=args.ref,
@@ -145,6 +162,7 @@ def argparse_func():
         changelog=args.changelog,
         changelog_fn=args.changelog_fn,
         clear_plan=args.clear_plan,
+        formatters=formatters,
     )
 
 

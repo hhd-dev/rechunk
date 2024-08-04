@@ -79,6 +79,19 @@ inputs:
       tag along with the git path.
       If <commit> is not used, providing it as part of a "org.opencontainers.image.revision"
       is the same.
+  formatters:
+    description: |
+      The formatters to use for the changelog. The format is as follows:
+      ```
+      formatter=<format>
+      ```
+      Formatter is a string up to the first = and defines the formatter name. 
+      After that and until the end of the line is the format. 
+      Use \n for newlines. Different formatters use different
+      substitutions (e.g., <name>), refer to the examples for specifics.
+
+      You can use the characters `<`, `>`, `=` freely. Substitution is only
+      performed on exact tag matches.
 
 outputs:
   ref:
@@ -165,6 +178,7 @@ runs:
             -e PREV_REF="${{ inputs.prev-ref }}" \
             -e OUT_NAME="$OUT_NAME" \
             -e LABELS="${{ inputs.labels }}" \
+            -e FORMATTERS="${{ inputs.formatters }}" \
             -e VERSION="${{ inputs.version }}" \
             -e VERSION_FN="/workspace/version.txt" \
             -e PRETTY="${{ inputs.pretty }}" \

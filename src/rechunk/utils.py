@@ -18,6 +18,15 @@ PBAR_FORMAT = (" " * PBAR_OFFSET) + ">>>>>>>  {l_bar}{bar}{r_bar}"
 VERSION_TAG = "org.opencontainers.image.version"
 REVISION_TAG = "org.opencontainers.image.revision"
 
+DEFAULT_FORMATTERS = {
+    "commits.none": "-\n",
+    "commits.commit": "- **<short>** <subject>\n",
+    "pkgupd.none": "-\n",
+    "pkgupd.update": " - **<package>**: <old> → <new>\n",
+    "pkgupd.add": " - **<package>**: x → <new>\n",
+    "pkgupd.remove": " - **<package>**: <old> → x\n",
+}
+
 
 class tqdm(tqdm_orig):
     def __init__(self, *args, **kwargs):
@@ -136,14 +145,19 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
     return p_upd
 
 
-def get_commits(git_dir: str | None, revision: str | None, prev_rev: str | None):
+def get_commits(
+    git_dir: str | None,
+    revision: str | None,
+    prev_rev: str | None,
+    formatters: dict[str, str],
+):
     logger.info(f"Getting commits from '{prev_rev}' to '{revision}' in '{git_dir}'")
     if not git_dir or not revision or not prev_rev:
         return ""
 
     out = ""
     try:
-        cmd = f"git --git-dir='{git_dir}/.git' log --format=\"%t/%s\" --no-merges {prev_rev}..{revision}"
+        cmd = f"git --git-dir='{git_dir}/.git' log --format=\"%t/%T/%s\" --no-merges {prev_rev}..{revision}"
         for commit in (
             subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
             .stdout.decode("utf-8")
@@ -152,12 +166,27 @@ def get_commits(git_dir: str | None, revision: str | None, prev_rev: str | None)
             if not "/" in commit:
                 continue
             idx = commit.index("/")
-            out += f" - **{commit[:idx]}** {commit[idx+1:]}\n"
+            short = commit[:idx]
+            rest = commit[idx + 1 :]
+            idx = rest.index("/")
+            hash = rest[:idx]
+            commit = rest[idx + 1 :]
+            out += (
+                formatters["commits.commit"]
+                .replace("<short>", short)
+                .replace("<subject>", commit)
+                .replace("<hash>", hash)
+            )
     except Exception as e:
         logger.error(f"Failed to get commits: {e}")
     return out
 
-def get_package_update_str(base_pkg: Sequence[Package] | None, info: ExportInfo | None):
+
+def get_package_update_str(
+    base_pkg: Sequence[Package] | None,
+    info: ExportInfo | None,
+    formatters: dict[str, str],
+):
     if not base_pkg or not info or not info.get("packages", None):
         return ""
 
@@ -169,32 +198,50 @@ def get_package_update_str(base_pkg: Sequence[Package] | None, info: ExportInfo 
         if p.name in seen:
             continue
         seen.add(p.name)
-        
+
         if p.name not in previous:
-            out += f" - {p.name}: x → {p.version}\n"
+            out += (
+                formatters["pkgupd.add"]
+                .replace("<new>", p.version)
+                .replace("<package>", p.name)
+            )
         else:
             pv = previous[p.name]
             # Skip release for package version updates
             if "-" in pv:
                 prel = pv[pv.rindex("-") + 1 :]
-                pv = pv[:pv.rindex("-")]
+                pv = pv[: pv.rindex("-")]
             else:
                 prel = None
 
             if p.version != pv:
-                out += f" - {p.name}: {pv} → {p.version}\n"
+                prev = pv
+                newv = p.version
             elif prel and p.release != prel:
-                out += f" - {p.name}: {pv}-{prel} → {p.version}-{p.release}\n"
-    
+                prev = f"{pv}-{prel}"
+                newv = f"{p.version}-{p.release}"
+            else:
+                continue
+
+            out += (
+                formatters["pkgupd.update"]
+                .replace("<old>", prev)
+                .replace("<new>", newv)
+                .replace("<package>", p.name)
+            )
+
     for p in previous:
         if p not in seen:
             pv = previous[p]
             if "-" in pv:
-                pv = pv[:pv.rindex("-")]
-            out += f" - {p}: {pv} → x\n"
+                pv = pv[: pv.rindex("-")]
+            out += (
+                formatters["pkgupd.remove"].replace("<old>", pv).replace("<package>", p)
+            )
         seen.add(p)
 
     return out
+
 
 def get_labels(
     labels: Sequence[str],
@@ -209,13 +256,16 @@ def get_labels(
     changelog_template: str | None,
     changelog_fn: str | None,
     info: ExportInfo | None,
+    formatters: dict[str, str] = {},
 ) -> tuple[dict[str, str], str]:
+    formatters = {**DEFAULT_FORMATTERS, **formatters}
+
     # Date format is YYMMDD
     # Timestamp format is YYYY-MM-DDTHH:MM:SSZ
     now = datetime.now()
     date = now.strftime("%y%m%d")
     timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-    pkgupd = get_package_update_str(base_pkg, info)
+    pkgupd = get_package_update_str(base_pkg, info, formatters)
 
     prev_labels = prev_manifest.get("Labels", {}) if prev_manifest else {}
     prev_version = prev_labels.get(VERSION_TAG, None) if prev_labels else None
@@ -266,6 +316,7 @@ def get_labels(
         git_dir,
         revision,
         (info or {}).get("revision", None) or prev_labels.get(REVISION_TAG, None),
+        formatters=formatters,
     )
 
     def process_label(key: str, value: str):
@@ -285,9 +336,9 @@ def get_labels(
             value = value.replace("<imginfo>", imginfo)
             blacklist[key] = BLACKLIST_KEY
         if "<commits>" in value:
-            value = value.replace("<commits>", commit_str or "-")
+            value = value.replace("<commits>", commit_str or formatters["commits.none"])
         if "<pkgupd>" in value:
-            value = value.replace("<pkgupd>", pkgupd or "-")
+            value = value.replace("<pkgupd>", pkgupd or formatters["pkgupd.none"])
 
         if base_pkg:
             for pkg in base_pkg:

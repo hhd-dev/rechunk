@@ -85,30 +85,41 @@ if [ -n "$CLEAR_PLAN" ]; then
     PREV_ARG+=("--clear-plan")
 fi
 
-LABEL_ARR=()
+ARG_ARR=()
 if [ -n "$LABELS" ]; then
     IFS=$'\n'
     for label in $LABELS; do
         if [ -z "$label" ]; then
             continue
         fi
-        LABEL_ARR+=("--label" "$label")
+        ARG_ARR+=("--label" "$label")
     done
     unset IFS
 fi
+if [ -n "$FORMATTERS" ]; then
+    IFS=$'\n'
+    for form in $FORMATTERS; do
+        if [ -z "$form" ]; then
+            continue
+        fi
+        ARG_ARR+=("--formatter" "$(echo $form)")
+    done
+    unset IFS
+fi
+
 if [ -n "$DESCRIPTION" ]; then
     echo "Writing description to 'org.opencontainers.image.description'"
-    LABEL_ARR+=("--label" "org.opencontainers.image.description=$DESCRIPTION")  
+    ARG_ARR+=("--label" "org.opencontainers.image.description=$DESCRIPTION")  
 fi
 
 echo Executing command:
 echo $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" \
     --changelog-fn "${OUT_NAME}.changelog.txt" \
-    "${PREV_ARG[@]}" "${LABEL_ARR[@]}"
+    "${PREV_ARG[@]}" "${ARG_ARR[@]}"
 
 $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" \
     --changelog-fn "${OUT_NAME}.changelog.txt" \
-    "${PREV_ARG[@]}" "${LABEL_ARR[@]}"
+    "${PREV_ARG[@]}" "${ARG_ARR[@]}"
 
 
 PREV_ARG=""

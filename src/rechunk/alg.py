@@ -547,6 +547,7 @@ def main(
     changelog: str | None = None,
     changelog_fn: str | None = None,
     clear_plan: bool = False,
+    formatters: dict[str, str] = {},
 ):
     if not meta_fn:
         meta_fn = get_default_meta_yaml()
@@ -655,6 +656,7 @@ def main(
         changelog_template=changelog,
         changelog_fn=changelog_fn,
         info=info,
+        formatters=formatters,
     )
 
     if contentmeta_fn:

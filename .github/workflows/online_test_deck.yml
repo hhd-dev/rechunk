@@ -38,7 +38,7 @@ jobs:
           sudo podman pull ghcr.io/ublue-os/bazzite-deck:${{ github.event.inputs.ref }}
       - name: Run Rechunker
         id: rechunk
-        uses: ./. # IMPORTANT: Use a tag, e.g.: "hhd-dev/rechunk@v0.6.2"
+        uses: ./. # IMPORTANT: Use a tag, e.g.: "hhd-dev/rechunk@v0.6.4"
         with:
           ref: 'ghcr.io/ublue-os/bazzite-deck:${{ github.event.inputs.ref }}'
           prev-ref: ghcr.io/hhd-dev/bazzite-automated-deck:stable
@@ -91,6 +91,14 @@ jobs:
 
             Package Changes:
             <pkgupd>
+
+          formatters: |
+            commits.none=No changes\n
+            commits.commit=- **[<short>](https://github.com/hhd-dev/rechunk/commit/<hash>)** <subject>\n
+            pkgupd.none=No package updates\n
+            pkgupd.add=- **<package>** Added at <new>\n
+            pkgupd.update=- **<package>** <old> → <new>\n
+            pkgupd.remove=- **<package>** <old> → Removed\n
 
       - name: Upload Changelog
         uses: actions/upload-artifact@v4
