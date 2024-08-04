@@ -38,12 +38,12 @@ jobs:
           sudo podman pull ghcr.io/ublue-os/bazzite-deck:${{ github.event.inputs.ref }}
       - name: Run Rechunker
         id: rechunk
-        uses: ./.
+        uses: ./. # IMPORTANT: Use a tag, e.g.: "hhd-dev/rechunk@v0.6.2"
         with:
           ref: 'ghcr.io/ublue-os/bazzite-deck:${{ github.event.inputs.ref }}'
           prev-ref: ghcr.io/hhd-dev/bazzite-automated-deck:stable
           clear-plan: ${{ github.event.inputs.prev == 'true' && '' || '1' }}
-          rechunk: 'ghcr.io/hhd-dev/rechunk:latest'
+          rechunk: 'ghcr.io/hhd-dev/rechunk:latest' # IMPORTANT: Use the same tag e.g., :0.6.4
           version: 'rc${{ github.event.inputs.ref }}'
           revision: ${{ github.sha }}
           pretty: 'Rechunked (from ${{ github.event.inputs.ref }})'
