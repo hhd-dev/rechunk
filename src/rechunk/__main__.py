@@ -2,7 +2,6 @@ import logging
 from rich.logging import RichHandler, get_console
 from rich.traceback import install
 from .utils import tqdm
-
 from .alg import main as alg_main
 import argparse
 
@@ -141,7 +140,8 @@ def argparse_func():
         if "=" not in line:
             continue
         idx = line.index("=")
-        formatters[line[:idx]] = line[idx + 1 :]
+        # FIXME: dirty hack to undo escapes
+        formatters[line[:idx]] = line[idx + 1 :].encode('utf-8').decode('unicode_escape')
 
     alg_main(
         repo=args.repo,

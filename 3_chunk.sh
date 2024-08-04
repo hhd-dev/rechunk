@@ -102,7 +102,7 @@ if [ -n "$FORMATTERS" ]; then
         if [ -z "$form" ]; then
             continue
         fi
-        ARG_ARR+=("--formatter" "$(echo $form)")
+        ARG_ARR+=("--formatter" "$form")
     done
     unset IFS
 fi
