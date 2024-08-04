@@ -98,6 +98,11 @@ if [ -n "$DESCRIPTION" ]; then
     LABEL_ARR+=("--label" "org.opencontainers.image.description=$DESCRIPTION")  
 fi
 
+echo Executing command:
+echo $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" \
+    --changelog-fn "${OUT_NAME}.changelog.txt" \
+    "${PREV_ARG[@]}" "${LABEL_ARR[@]}"
+
 $RECHUNK -r "$REPO" -b "$OUT_TAG" -c "$CONTENT_META" \
     --changelog-fn "${OUT_NAME}.changelog.txt" \
     "${PREV_ARG[@]}" "${LABEL_ARR[@]}"

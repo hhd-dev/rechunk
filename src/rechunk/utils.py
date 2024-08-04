@@ -137,6 +137,7 @@ def get_update_matrix(packages: list[MetaPackage], biweekly: bool = True):
 
 
 def get_commits(git_dir: str | None, revision: str | None, prev_rev: str | None):
+    logger.info(f"Getting commits from '{prev_rev}' to '{revision}' in '{git_dir}'")
     if not git_dir or not revision or not prev_rev:
         return ""
 
