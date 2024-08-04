@@ -148,7 +148,7 @@ runs:
       run: |
         OUT_NAME=$(echo ${{ inputs.ref }} | rev | cut -d'/' -f1 | rev | sed 's/:/_/')
         GIT_PATH="${{ inputs.git }}"
-        if [ -n "$GIT_PATH" ]; then
+        if [ -z "$GIT_PATH" ]; then
           GIT_PATH="${{ github.workspace }}"
         fi
 
