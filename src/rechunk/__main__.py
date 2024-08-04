@@ -141,7 +141,12 @@ def argparse_func():
             continue
         idx = line.index("=")
         # FIXME: dirty hack to undo escapes
-        formatters[line[:idx]] = line[idx + 1 :].encode('utf-8').decode('unicode_escape')
+        formatters[line[:idx]] = (
+            line[idx + 1 :]
+            .replace("\\n", "\n")
+            .replace("\\t", "\t")
+            .replace("\\r", "\r")
+        )
 
     alg_main(
         repo=args.repo,
