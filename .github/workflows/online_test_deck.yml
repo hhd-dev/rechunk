@@ -94,7 +94,7 @@ jobs:
 
           formatters: |
             commits.none=No changes\n
-            commits.commit=- **[`<short>`](https://github.com/hhd-dev/rechunk/commit/<hash>)** <subject>\n
+            commits.commit=- **[<short>](https://github.com/hhd-dev/rechunk/commit/<hash>)** <subject>\n
             pkgupd.none=No package updates\n
             pkgupd.add=- **<package>** Added at <new>\n
             pkgupd.update=- **<package>** <old> → <new>\n
