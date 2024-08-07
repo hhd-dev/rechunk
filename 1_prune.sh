@@ -17,7 +17,7 @@ pushd $TREE
 # Copy _everything_ including perms
 # Ignore existing helps with maintaining dir permissions
 # FIXME: This may not preserve all changes
-RSYNC="rsync -aAX --numeric-ids --ignore-existing"
+RSYNC="rsync -aAX --numeric-ids --checksum --links"
 
 # Main OSTree dir, is remade in the end
 # If it contains kinoite files that were removed by bazzite,
