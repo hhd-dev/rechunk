@@ -25,7 +25,7 @@ RUN cargo build --release
 FROM quay.io/fedora/fedora:40
 
 # Install niceties
-RUN dnf install -y python3 python3-pip python3-devel rsync git \
+RUN dnf install -y python3 python3-pip python3-devel rsync git tree \
     libzstd openssl glib2 ghc-gio ostree skopeo selinux-policy-targeted
 
 # Copy the built binary after installing deps

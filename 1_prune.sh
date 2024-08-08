@@ -86,11 +86,13 @@ rm -rf \
 # OSTree will error out if both dirs exist
 # And rpm-ostree will be confused and use only one of them
 if [ -d ./usr/etc ]; then
+    echo
     echo WARNING: FOUND /usr/etc. MERGING TO ETC FOR COMPATIBILITY
     echo EXPECT PERMISSIONS ISSUES ON THE MERGED PATHS
     echo The following files from /usr/etc will be merged to /etc:
     tree ./usr/etc
 
+    echo
     $RSYNC ./usr/etc/ ./etc
     rm -rf ./usr/etc
 fi
