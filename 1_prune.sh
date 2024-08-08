@@ -86,16 +86,11 @@ rm -rf \
 # OSTree will error out if both dirs exist
 # And rpm-ostree will be confused and use only one of them
 if [ -d ./usr/etc ]; then
-    # # Fix dir perms
-    # # These may prevent the system from booting
-    # # Systemd expects certain dirs to be readable only by root
-    # echo Fixing /usr/etc dir perms
-    # pushd ./usr/etc
-    # find . -type d -exec chown -v --reference='{}' ../../etc/'{}' \; | grep changed
-    # find . -type d -exec chmod -v --reference='{}' ../../etc/'{}' \; | grep changed
-    # popd
-    # Sync
-    echo Merging /usr/etc to /etc
+    echo WARNING: FOUND /usr/etc. MERGING TO ETC FOR COMPATIBILITY
+    echo EXPECT PERMISSIONS ISSUES ON THE MERGED PATHS
+    echo The following files from /usr/etc will be merged to /etc:
+    tree ./usr/etc
+
     $RSYNC ./usr/etc/ ./etc
     rm -rf ./usr/etc
 fi
