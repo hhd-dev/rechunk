@@ -77,7 +77,7 @@ def prefill_layers(
     curr = []
     l_upd = np.zeros(n_segments, dtype=np.bool)
     l_size = 0
-    while todo:
+    while True:
         # We will fill layers in two steps:
         # If the layer is emptly, we will insert the largest package
         # in todo.
@@ -87,23 +87,26 @@ def prefill_layers(
         # There will be packages left over in the end, which will be handled
         # differently.
 
-        if not curr:
-            p = max(todo, key=lambda p: p.size)
-            todo.pop(p)
-            curr.append(p)
-            l_upd |= upd_matrix[p.index]
-            l_size += p.size
-        elif l_size > fill_size:
-            layers.append(curr)
-            logger.info(
-                f"Layer {dedi+len(layers):2d}: {l_size / 1e9:.3f} GB with {len(curr):3d} packages."
-            )
-            if len(layers) >= max_layers:
+        if l_size > fill_size or not todo:
+            if curr:
+                # Since this also gets hit with not todo
+                # curr might be empty, avoid creating a layer
+                layers.append(curr)
+                logger.info(
+                    f"Layer {dedi+len(layers):2d}: {l_size / 1e9:.3f} GB with {len(curr):3d} packages."
+                )
+            if len(layers) >= max_layers or not todo:
                 break
             curr = []
             l_upd = np.zeros(n_segments, dtype=np.bool)
             l_size = 0
             pbar.update(1)
+        elif not curr:
+            p = max(todo, key=lambda p: p.size)
+            todo.pop(p)
+            curr.append(p)
+            l_upd |= upd_matrix[p.index]
+            l_size += p.size
         else:
             # Calculate the bandwidth increase for each package
             # and select the one with the smallest increase
