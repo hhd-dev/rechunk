@@ -431,6 +431,14 @@ meta:
   docker-ce:
     packages:
       - docker-ce*
+  docker-compose:
+    files:
+      - /usr/libexec/docker/cli-plugins/docker-compose
+    dedicated: False
+  docker-buildx:
+    files:
+      - /usr/libexec/docker/cli-plugins/docker-buildx
+    dedicated: False
   #
   # Nvidia
   #
