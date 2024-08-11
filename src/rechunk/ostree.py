@@ -135,6 +135,10 @@ def calculate_ostree_layers(
     ostree_out = {}
     used_layers = set()
     for ohash, pkg in mapping.items():
+        if pkg not in pkg_to_layer:
+            logger.error(f"Package '{pkg}' not found in layers. Using 'unpackaged'.")
+            pkg = "unpackaged"
+
         layer = pkg_to_layer[pkg]
         ostree_out[ohash] = layer
         used_layers.add(layer)
