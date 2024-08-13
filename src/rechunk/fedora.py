@@ -7,6 +7,10 @@ from .model import File, Package
 
 logger = logging.getLogger(__name__)
 
+# Generated with a password manager to avoid
+# issues with them being in changelogs.
+STARTSEP = "M2Dqm7H6"
+ENDSEP = "7mhjAuF8"
 
 def get_packages(dir: str):
     packages = []
@@ -22,7 +26,7 @@ def get_packages(dir: str):
             "rpm",
             "-qa",
             "--queryformat",
-            ">\n[%{FILESIZES} %{FILENAMES}\n]<%{NAME} %{NEVRA} %{VERSION} %{RELEASE} %{SIZE}\n",
+            f"{STARTSEP}\n[%{FILESIZES} %{FILENAMES}\n]{ENDSEP}%{NAME} %{NEVRA} %{VERSION} %{RELEASE} %{SIZE}\n",
             "--changes",
             "--dbpath",
             dir,
@@ -31,8 +35,8 @@ def get_packages(dir: str):
     ).stdout.splitlines():
         line = eline.decode("utf-8")
 
-        if line.startswith("<"):
-            data = line[1:].split(" ")
+        if line.startswith(ENDSEP):
+            data = line[len(ENDSEP):].split(" ")
             name = data[0]
             nevra = data[1]
             version = data[2]
@@ -47,7 +51,7 @@ def get_packages(dir: str):
             updates = []
             i += 1
             mode = "changelog"
-        elif line.startswith(">"):
+        elif line.startswith(STARTSEP):
             mode = "file"
         else:
             if mode == "changelog" and line.startswith("* "):
