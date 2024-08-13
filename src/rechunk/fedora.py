@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 STARTSEP = "M2Dqm7H6"
 ENDSEP = "7mhjAuF8"
 
+
 def get_packages(dir: str):
     packages = []
 
@@ -26,7 +27,10 @@ def get_packages(dir: str):
             "rpm",
             "-qa",
             "--queryformat",
-            f"{STARTSEP}\n[%{FILESIZES} %{FILENAMES}\n]{ENDSEP}%{NAME} %{NEVRA} %{VERSION} %{RELEASE} %{SIZE}\n",
+            STARTSEP
+            + "\n[%{FILESIZES} %{FILENAMES}\n]"
+            + ENDSEP
+            + "%{NAME} %{NEVRA} %{VERSION} %{RELEASE} %{SIZE}\n",
             "--changes",
             "--dbpath",
             dir,
@@ -36,7 +40,7 @@ def get_packages(dir: str):
         line = eline.decode("utf-8")
 
         if line.startswith(ENDSEP):
-            data = line[len(ENDSEP):].split(" ")
+            data = line[len(ENDSEP) :].split(" ")
             name = data[0]
             nevra = data[1]
             version = data[2]
