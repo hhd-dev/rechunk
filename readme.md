@@ -41,15 +41,6 @@ Making this action a one-stop shop for finalizing an image for distribution.
 > `sudo podman build`) so that it can be mounted directly by this action
 > and then removed for space savings.
 
-> [!WARNING]
-> Podman was found to change certain layer hashes when pulling and pushing, 
-> causing higher update sizes. When you implement this action, it is recommended 
-> to use skopeo afterwards to upload the image. 
-> You may reference the [test action](./.github/workflows/online_test_deck.yml) 
-> in this repository for an example.
->
-> Consumers who extend your image will still face this small issue.
-
 ## Results
 Experimentally, we have seen that on Bazzite, due to extensive changes to Kinoite,
 `rechunk` lowers the total image size by 1GB.
