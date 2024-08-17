@@ -90,9 +90,21 @@ oci_diff() {
         exit 1
     fi
 
-    sudo rsync --stats -n -i -rlHAX --links \
+    sudo rsync --stats -n -i -rlHAX --links -c \
         --no-t --delete --exclude sysroot \
         $2/extracted/ $1/extracted/ | grep -v ">f..T......"
+}
+
+dir_diff() {
+    # Compare 2 oci images
+    if [[ -z $1 || -z $2 ]]; then
+        echo "Missing arguments. Usage: oci_compare <prev> <next>"
+        exit 1
+    fi
+
+    sudo rsync --stats -n -i -rlHAX --links -c \
+        --no-t --delete --exclude sysroot \
+        $2 $1 | grep -v ">f..T......"
 }
 
 compl() {
