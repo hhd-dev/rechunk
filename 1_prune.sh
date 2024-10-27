@@ -195,6 +195,7 @@ setcap cap_setuid=ep ./usr/bin/newuidmap
 setcap cap_net_bind_service=ep ./usr/bin/rcp
 setcap cap_net_bind_service=ep ./usr/bin/rlogin
 setcap cap_net_bind_service=ep ./usr/bin/rsh
+setcap cap_sys_admin=p $(realpath ./usr/bin/sunshine)
 
 # Fix polkid group
 POLKIT_ID=$(cat ./usr/lib/group | grep polkitd | cut -d: -f3)
