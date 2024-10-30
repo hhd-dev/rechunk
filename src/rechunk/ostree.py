@@ -158,6 +158,7 @@ def dump_ostree_contentmeta(
     with open(out_fn, "w") as f:
         json.dump(
             {
+                "version": 1,
                 "created": timestamp,
                 "labels": labels,
                 "layers": {k: ','.join(v) for k, v in final_layers.items()},

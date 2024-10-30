@@ -196,6 +196,11 @@ setcap cap_net_bind_service=ep ./usr/bin/rcp
 setcap cap_net_bind_service=ep ./usr/bin/rlogin
 setcap cap_net_bind_service=ep ./usr/bin/rsh
 setcap cap_sys_admin=p $(realpath ./usr/bin/sunshine)
+# SSSD
+setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/krb5_child
+setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/ldap_child
+setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/selinux_child
+setcap cap_dac_read_search=p ./usr/libexec/sssd/sssd_pam
 
 # Fix polkid group
 POLKIT_ID=$(cat ./usr/lib/group | grep polkitd | cut -d: -f3)
