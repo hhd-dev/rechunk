@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora:40 as build
+FROM quay.io/fedora/fedora:41 as build
 
 #
 # Build dependencies
@@ -14,15 +14,15 @@ RUN dnf install -y rust cargo libzstd-devel git openssl-devel \
 # It is not provided as a package in fedora.
 RUN mkdir -p /sources; \
     cd /sources; \
-    git clone --depth 1 \
-    https://github.com/hhd-dev/ostree-rs-ext ostree-rs-ext;
+    git clone --depth 1 -b ostree-ext-v0.15.2 \
+    https://github.com/ostreedev/ostree-rs-ext ostree-rs-ext;
 
 WORKDIR /sources/ostree-rs-ext
 RUN cargo fetch
 RUN cargo build --release
 
 # Remove dependencies
-FROM quay.io/fedora/fedora:40
+FROM quay.io/fedora/fedora:41
 
 # Install niceties
 RUN dnf install -y python3 python3-pip python3-devel rsync git tree \
