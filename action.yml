@@ -92,6 +92,9 @@ inputs:
 
       You can use the characters `<`, `>`, `=` freely. Substitution is only
       performed on exact tag matches.
+  meta:
+    description: |
+      The metadata file to use for the image. Specified as a path.
 
 outputs:
   ref:
@@ -166,6 +169,11 @@ runs:
         GIT_PATH="${{ inputs.git }}"
         if [ -z "$GIT_PATH" ]; then
           GIT_PATH="${{ github.workspace }}"
+        fi
+
+        META_FN="${{ inputs.meta }}"
+        if [ -n "$META_FN" ]; then
+          cp "$META_FN" "${{ github.workspace }}/_meta_in.yml"
         fi
 
         sudo podman run --rm \

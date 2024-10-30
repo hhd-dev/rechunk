@@ -84,6 +84,9 @@ fi
 if [ -n "$CLEAR_PLAN" ]; then
     PREV_ARG+=("--clear-plan")
 fi
+if [ -f "/workspace/_meta_in.yml" ]; then
+    PREV_ARG+=("--meta" "/workspace/_meta_in.yml")
+fi
 
 ARG_ARR=()
 if [ -n "$LABELS" ]; then
