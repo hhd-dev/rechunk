@@ -8,15 +8,15 @@ markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-numpy==2.0.0
+numpy==2.1.2
     # via rechunk
 pygments==2.18.0
     # via rich
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via rechunk
 # rechunk @ ...
 #     # via -r requirements.in
-rich==13.7.1
+rich==13.9.3
     # via rechunk
-tqdm==4.66.4
+tqdm==4.66.6
     # via rechunk
