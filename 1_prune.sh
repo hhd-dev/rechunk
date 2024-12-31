@@ -214,6 +214,10 @@ else
     chgrp $POLKIT_ID ./usr/etc/polkit-1/rules.d
 fi
 
+# Fix polkit /usr permissions. Without this, some ostree bug makes it so polkit has the wrong permissions and unprivileged users cannot use it (pkexec breaks and everything that uses it)
+chmod 755 ./usr/lib/polkit-1
+chown root:root ./usr/lib/polkit-1
+
 if [ -n "$RESET_TIMESTAMP" ]; then
     TIMESTAMP=${TIMESTAMP:=197001010100}
     # Touch files for reproducibility
