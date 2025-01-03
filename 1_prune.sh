@@ -2,7 +2,7 @@
 # Prune files in tree that are extraneous
 
 get_fedora_version() {
-    cat /etc/os-release | grep --word-regexp VERSION_ID | cut --delimiter='=' --fields=2
+    cat ${TREE}/etc/os-release | grep --word-regexp VERSION_ID | cut --delimiter='=' --fields=2
 }
 
 if [ $(id -u) -ne 0 ]; then
