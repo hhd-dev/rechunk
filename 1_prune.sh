@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Prune files in tree that are extraneous
 
+get_fedora_version() {
+    cat /etc/os-release | grep --word-regexp VERSION_ID | cut --delimiter='=' --fields=2
+}
+
 if [ $(id -u) -ne 0 ]; then
     echo "Run as superuser"
     exit 1
@@ -197,10 +201,44 @@ setcap cap_net_bind_service=ep ./usr/bin/rlogin
 setcap cap_net_bind_service=ep ./usr/bin/rsh
 setcap cap_sys_admin=p $(realpath ./usr/bin/sunshine)
 # SSSD
-setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/krb5_child
-setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/ldap_child
-setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/selinux_child
-setcap cap_dac_read_search=p ./usr/libexec/sssd/sssd_pam
+fedora_version="$(get_fedora_version)"
+set_sssd_caps='false' # defaulting to false for safety
+echo "Detected Fedora version: $fedora_version"
+case $fedora_version in
+    40)
+	echo 'Not setting capabilities on sssd binaries.'
+	set_sssd_caps='false'
+	;;
+    41)
+        # sssd version is 2.10.1+
+        sssd_krb5_child_caps='cap_dac_read_search,cap_setgid,cap_setuid=p'
+        sssd_ldap_child_caps='cap_dac_read_search=p'
+        sssd_selinux_child_caps='cap_setgid,cap_setuid=p'
+        sssd_pam_caps='cap_dac_read_search=p'
+	set_sssd_caps='true'
+        ;;
+    *)
+	# treat this as a default which "should" work in the future assuming the capabilities of Fedora 41's sssd binaries if the version is 41+
+	if [ $fedora_version -ge 41 ]; then
+	    echo "[WARNING] Unknown Fedora version: ${fedora_version}. Assuming capabilities."
+	    echo "[WARNING] Please confirm capabilities and add a case for this Fedora version in ${0}."
+            sssd_krb5_child_caps='cap_dac_read_search,cap_setgid,cap_setuid=p'
+            sssd_ldap_child_caps='cap_dac_read_search=p'
+            sssd_selinux_child_caps='cap_setgid,cap_setuid=p'
+            sssd_pam_caps='cap_dac_read_search=p'
+            set_sssd_caps='true'
+	else
+	    set_sssd_caps='false'
+	fi
+	;;
+esac
+
+if [ "$set_sssd_caps" == 'true' ]; then
+    setcap $sssd_krb5_child_caps ./usr/libexec/sssd/krb5_child
+    setcap $sssd_ldap_child_caps ./usr/libexec/sssd/ldap_child
+    setcap $sssd_selinux_child_caps ./usr/libexec/sssd/selinux_child
+    setcap $sssd_pam_caps ./usr/libexec/sssd/sssd_pam
+fi
 
 # Fix polkid group
 POLKIT_ID=$(cat ./usr/lib/group | grep polkitd | cut -d: -f3)
