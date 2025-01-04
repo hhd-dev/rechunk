@@ -196,11 +196,18 @@ setcap cap_net_bind_service=ep ./usr/bin/rcp
 setcap cap_net_bind_service=ep ./usr/bin/rlogin
 setcap cap_net_bind_service=ep ./usr/bin/rsh
 setcap cap_sys_admin=p $(realpath ./usr/bin/sunshine)
+
 # SSSD
-setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/krb5_child
-setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/ldap_child
-setcap cap_chown,cap_dac_override,cap_setgid,cap_setuid=ep ./usr/libexec/sssd/selinux_child
-setcap cap_dac_read_search=p ./usr/libexec/sssd/sssd_pam
+if  [ -f ${TREE}/etc/os-release ] &&
+    [ $(cat ${TREE}/etc/os-release | grep VERSION_ID | grep 40) ]; then
+    echo "Detected Fedora version: 40"
+    echo "Not setting capabilities on sssd binaries for Fedora 40."
+else
+    setcap cap_dac_read_search,cap_setgid,cap_setuid=p ./usr/libexec/sssd/krb5_child
+    setcap cap_dac_read_search=p ./usr/libexec/sssd/ldap_child
+    setcap cap_setgid,cap_setuid=p ./usr/libexec/sssd/selinux_child
+    setcap cap_dac_read_search=p ./usr/libexec/sssd/sssd_pam
+fi
 
 # Fix polkid group
 POLKIT_ID=$(cat ./usr/lib/group | grep polkitd | cut -d: -f3)
