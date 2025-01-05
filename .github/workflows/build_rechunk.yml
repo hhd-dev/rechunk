@@ -9,8 +9,8 @@ on:
 
       x86:
         description: 'Build only for x86_64'
-        required: false
-        default: 'false'
+        type: boolean
+        default: false
     
   release:
     types: [published]
