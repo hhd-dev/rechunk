@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'The version to tag the package with:'
+        description: "The version to tag the package with:"
         required: true
-    
+
   release:
     types: [published]
 
@@ -14,21 +14,28 @@ permissions:
   contents: read
 
 jobs:
-  deploy_ghcr:
+  build_amd64:
     permissions:
       # contents: write
       packages: write
-
     runs-on: ubuntu-24.04
     environment: prod
-
+    outputs:
+      digest: ${{ steps.upload.outputs.digest }}
+    env:
+      PLATFORM: amd64
     steps:
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
-      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v4
+
       - name: Build Image
         run: |
-          sudo podman build --tag 'fedora_build' .
+          sudo podman build \
+            --tag 'fedora_build' \
+            .
+
       - name: Upload Image
         id: upload
         shell: bash
@@ -42,10 +49,89 @@ jobs:
             exit 1
           fi
 
-          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:latest
-          sudo podman push ghcr.io/hhd-dev/rechunk:latest
-          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:stable
-          sudo podman push ghcr.io/hhd-dev/rechunk:stable
-          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:$VERSION
-          sudo podman push ghcr.io/hhd-dev/rechunk:$VERSION
-        
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:latest-$PLATFORM
+          sudo podman push --digestfile=/tmp/digestfile ghcr.io/hhd-dev/rechunk:latest-$PLATFORM
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:stable-$PLATFORM
+          sudo podman push ghcr.io/hhd-dev/rechunk:stable-$PLATFORM
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:$VERSION-$PLATFORM
+          sudo podman push ghcr.io/hhd-dev/rechunk:$VERSION-$PLATFORM
+
+          echo "digest=$(sudo cat /tmp/digestfile)" >> $GITHUB_OUTPUT
+
+  build_arm64:
+    permissions:
+      # contents: write
+      packages: write
+    runs-on: <<CUSTOM_ARM64_RUNNER>>
+    environment: prod
+    outputs:
+      digest: ${{ steps.upload.outputs.digest }}
+    env:
+      PLATFORM: arm64
+    steps:
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - uses: actions/checkout@v4
+
+      - name: Build Image
+        run: |
+          sudo podman build \
+            --tag 'fedora_build' \
+            .
+
+      - name: Upload Image
+        id: upload
+        shell: bash
+        run: |
+          if [[ -n "${{ github.event.inputs.tag }}" ]]; then
+            VERSION="${{ github.event.inputs.tag }}"
+          elif [[ -n "${{ github.event.release.tag_name }}" ]]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          else
+            echo "No version tag provided"
+            exit 1
+          fi
+
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:latest-$PLATFORM
+          sudo podman push --digestfile=/tmp/digestfile ghcr.io/hhd-dev/rechunk:latest-$PLATFORM
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:stable-$PLATFORM
+          sudo podman push ghcr.io/hhd-dev/rechunk:stable-$PLATFORM
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:$VERSION-$PLATFORM
+          sudo podman push ghcr.io/hhd-dev/rechunk:$VERSION-$PLATFORM
+
+          echo "digest=$(sudo cat /tmp/digestfile)" >> $GITHUB_OUTPUT
+
+  manifest:
+    runs-on: ubuntu-24.04
+    needs: [build_amd64, build_arm64]
+    permissions:
+      packages: write
+    steps:
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Create Manifest
+        env:
+          DIGEST_AMD64: ${{ needs.build_amd64.outputs.digest }}
+          DIGEST_ARM64: ${{ needs.build_arm64.outputs.digest }}
+        run: |
+          podman manifest create rechunk
+
+          podman manifest add rechunk ghcr.io/hhd-dev/rechunk@${DIGEST_AMD64} --arch linux/amd64
+          podman manifest add rechunk ghcr.io/hhd-dev/rechunk@${DIGEST_ARM64} --arch linux/arm64
+
+      - name: Push Manifest
+        run: |
+          if [[ -n "${{ github.event.inputs.tag }}" ]]; then
+            VERSION="${{ github.event.inputs.tag }}"
+          elif [[ -n "${{ github.event.release.tag_name }}" ]]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          else
+            echo "No version tag provided"
+            exit 1
+          fi
+
+          podman manifest push --all=false rechunk ghcr.io/hhd-dev/rechunk:latest
+          podman manifest push --all=false rechunk ghcr.io/hhd-dev/rechunk:stable
+          podman manifest push --all=false rechunk ghcr.io/hhd-dev/rechunk:$VERSION
