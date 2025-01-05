@@ -77,10 +77,10 @@ jobs:
 
           sudo podman manifest create rechunk
           
-          SHA=$(skopeo inspect docker://ghcr.io/hhd-dev/rechunk:$VERSION-x86_64 | jq ".Digest")
+          SHA=$(skopeo inspect docker://ghcr.io/hhd-dev/rechunk:$VERSION-x86_64 | jq --raw-output ".Digest")
           sudo podman manifest add rechunk ghcr.io/hhd-dev/rechunk@$SHA --arch linux/amd64
           if [[ ${{ github.event.inputs.x86 }} != "true" ]]; then
-            SHA=$(skopeo inspect docker://ghcr.io/hhd-dev/rechunk:$VERSION-aarch64 | jq ".Digest")
+            SHA=$(skopeo inspect docker://ghcr.io/hhd-dev/rechunk:$VERSION-aarch64 | jq --raw-output ".Digest")
             sudo podman manifest add rechunk ghcr.io/hhd-dev/rechunk@$SHA --arch linux/arm64
           fi
 
