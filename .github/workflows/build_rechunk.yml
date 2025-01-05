@@ -1,6 +1,10 @@
 name: Publish rechunk to GHCR
 
 on:
+  pull_request:
+    paths:
+      - "./Dockerfile"
+      - "./.github/workflows/build_rechunk.yml"
   workflow_dispatch:
     inputs:
       tag:
@@ -24,14 +28,13 @@ jobs:
 
     steps:
       - name: Login to GHCR
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'release'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - uses: actions/checkout@v4
 
-      - name: Setup QEMU
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-user-static
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Build Image
         run: |
@@ -41,6 +44,7 @@ jobs:
             .
 
       - name: Upload Image
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'release'
         id: upload
         shell: bash
         run: |
