@@ -46,7 +46,7 @@ if [ -n "$RESET_TIMESTAMP" ]; then
     echo
     echo Touching files with timestamp $TIMESTAMP for reproducibility
     # Also remove user.overlay.impure, which comes from somewhere
-    sudo find $REPO/ \
+    find $REPO/ \
         -exec touch -t $TIMESTAMP -h {} + \
         &> /dev/null || true
 fi
