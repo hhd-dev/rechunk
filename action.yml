@@ -171,6 +171,9 @@ runs:
           GIT_PATH="${{ github.workspace }}"
         fi
 
+        # Self hosted runners do not have this
+        mkdir -p "${{ github.workspace }}"
+
         META_FN="${{ inputs.meta }}"
         if [ -n "$META_FN" ]; then
           cp "$META_FN" "${{ github.workspace }}/_meta_in.yml"
