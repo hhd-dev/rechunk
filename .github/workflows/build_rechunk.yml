@@ -6,6 +6,11 @@ on:
       tag:
         description: 'The version to tag the package with:'
         required: true
+
+      x86:
+        description: 'Build only for x86_64'
+        required: false
+        default: 'false'
     
   release:
     types: [published]
@@ -19,8 +24,13 @@ jobs:
       # contents: write
       packages: write
 
-    runs-on: ubuntu-24.04
     environment: prod
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ github.event.inputs.x86 == 'true' && fromJSON('["x86_64"]') || fromJSON('["aarch64", "x86_64"]') }}
+        fedora_version: [41]
+    runs-on: ${{ matrix.arch == 'aarch64' && 'ARM64' || 'ubuntu-24.04' }}
 
     steps:
       - name: Login to GHCR
@@ -42,10 +52,38 @@ jobs:
             exit 1
           fi
 
-          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:latest
-          sudo podman push ghcr.io/hhd-dev/rechunk:latest
-          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:stable
-          sudo podman push ghcr.io/hhd-dev/rechunk:stable
-          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:$VERSION
-          sudo podman push ghcr.io/hhd-dev/rechunk:$VERSION
-        
+          sudo podman tag fedora_build ghcr.io/hhd-dev/rechunk:$VERSION-${{ matrix.arch }}
+          sudo podman push ghcr.io/hhd-dev/rechunk:$VERSION-${{ matrix.arch }}
+  
+  deploy_combined_ghcr:
+    runs-on: ubuntu-24.04
+    needs: [deploy_ghcr]
+    permissions:
+      packages: write
+    steps:
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+      - name: Push Manifest
+        run: |
+          if [[ -n "${{ github.event.inputs.tag }}" ]]; then
+            VERSION="${{ github.event.inputs.tag }}"
+          elif [[ -n "${{ github.event.release.tag_name }}" ]]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          else
+            echo "No version tag provided"
+            exit 1
+          fi
+
+          sudo podman manifest create rechunk
+          
+          SHA=$(skopeo inspect ghcr.io/hhd-dev/rechunk:$VERSION-x86_64 | jq ".Digest")
+          sudo podman manifest add rechunk ghcr.io/hhd-dev/rechunk@$SHA --arch linux/amd64
+          if [[ ${{ github.event.inputs.x86 }} != "true" ]]; then
+            SHA=$(skopeo inspect ghcr.io/hhd-dev/rechunk:$VERSION-aarch64 | jq ".Digest")
+            sudo podman manifest add rechunk ghcr.io/hhd-dev/rechunk@$SHA --arch linux/arm64
+          fi
+
+          sudo podman manifest push --all=false rechunk ghcr.io/hhd-dev/rechunk:latest
+          sudo podman manifest push --all=false rechunk ghcr.io/hhd-dev/rechunk:stable
+          sudo podman manifest push --all=false rechunk ghcr.io/hhd-dev/rechunk:$VERSION
