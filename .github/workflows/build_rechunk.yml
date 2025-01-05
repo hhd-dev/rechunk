@@ -62,7 +62,7 @@ jobs:
     permissions:
       # contents: write
       packages: write
-    runs-on: <<CUSTOM_ARM64_RUNNER>>
+    runs-on: ARM64
     environment: prod
     outputs:
       digest: ${{ steps.upload.outputs.digest }}
