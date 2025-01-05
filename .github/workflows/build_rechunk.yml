@@ -79,7 +79,7 @@ jobs:
           
           SHA=$(sudo skopeo inspect docker://ghcr.io/hhd-dev/rechunk:$VERSION-x86_64 | jq --raw-output ".Digest")
           sudo podman manifest add rechunk ghcr.io/hhd-dev/rechunk@$SHA --arch amd64
-          if [[ ${{ github.event.inputs.x86 }} != "true" ]]; then
+          if [[ "${{ github.event.inputs.x86 }}" != "true" ]]; then
             SHA=$(sudo skopeo inspect docker://ghcr.io/hhd-dev/rechunk:$VERSION-aarch64 | jq --raw-output ".Digest")
             sudo podman manifest add rechunk ghcr.io/hhd-dev/rechunk@$SHA --arch arm64
           fi
