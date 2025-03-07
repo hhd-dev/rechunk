@@ -12,12 +12,9 @@ RUN dnf install -y rust cargo libzstd-devel git openssl-devel \
 # Required to unencapsulate OCI to ostree
 # rpm-ostree seems to not have the ability.
 # It is not provided as a package in fedora.
-RUN mkdir -p /sources; \
-    cd /sources; \
-    git clone --depth 1 \
-        https://github.com/hhd-dev/ostree-ext-cli ostree-rs-ext;
+COPY ./ostree-ext-cli /sources/ostree-ext-cli
 
-WORKDIR /sources/ostree-rs-ext
+WORKDIR /sources/ostree-ext-cli
 RUN cargo fetch
 RUN cargo build --release
 
@@ -29,7 +26,7 @@ RUN dnf install -y python3 python3-pip python3-devel rsync git tree \
     libzstd openssl glib2 ghc-gio ostree skopeo selinux-policy-targeted
 
 # Copy the built binary after installing deps
-COPY --from=build /sources/ostree-rs-ext/target/release/ostree-ext-cli \
+COPY --from=build /sources/ostree-ext-cli/target/release/ostree-ext-cli \
     /usr/bin/ostree-ext-cli
 
 # Install rechunk
