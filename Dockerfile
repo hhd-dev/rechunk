@@ -14,8 +14,8 @@ RUN dnf install -y rust cargo libzstd-devel git openssl-devel \
 # It is not provided as a package in fedora.
 RUN mkdir -p /sources; \
     cd /sources; \
-    git clone --depth 1 -b ostree-ext-v0.15.3 \
-    https://github.com/ostreedev/ostree-rs-ext ostree-rs-ext;
+    git clone --depth 1 \
+        https://github.com/hhd-dev/ostree-ext-cli ostree-rs-ext;
 
 WORKDIR /sources/ostree-rs-ext
 RUN cargo fetch
