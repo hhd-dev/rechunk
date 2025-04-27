@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora:41 as build
+FROM quay.io/fedora/fedora:42 as build
 
 #
 # Build dependencies
@@ -19,7 +19,7 @@ RUN cargo fetch
 RUN cargo build --release
 
 # Remove dependencies
-FROM quay.io/fedora/fedora:41
+FROM quay.io/fedora/fedora:42
 
 # Install niceties
 RUN dnf install -y python3 python3-pip python3-devel rsync git tree \

@@ -8,7 +8,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-ostree-ext = { git = "https://github.com/bootc-dev/bootc/", tag = "v1.1.6", package = "ostree-ext" }
+ostree-ext = { git = "https://github.com/bootc-dev/bootc/", tag = "v1.1.7", package = "ostree-ext" }
 clap = "4.2"
 libc = "0.2.92"
 tokio = { version = "1", features = ["macros"] }
