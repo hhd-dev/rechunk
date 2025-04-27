@@ -29,7 +29,6 @@ jobs:
       fail-fast: false
       matrix:
         arch: ${{ github.event.inputs.x86 == 'true' && fromJSON('["x86_64"]') || fromJSON('["aarch64", "x86_64"]') }}
-        fedora_version: [41]
     runs-on: ${{ matrix.arch == 'aarch64' && 'ARM64' || 'ubuntu-24.04' }}
 
     steps:
