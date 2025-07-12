@@ -82,6 +82,11 @@ def export_v2(
     packages = {}
     if base_pkg:
         for p in base_pkg:
+            # When we list the diff of packages, we list the first package
+            # with a version. Here, the way this is done, the last is kept
+            # So skip if one has been seen to match the logic.
+            if p.name in packages:
+                continue
             packages[p.name] = f"{p.version}-{p.release}"
 
     return json.dumps(
