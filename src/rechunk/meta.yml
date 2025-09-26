@@ -245,7 +245,7 @@ meta:
       - sddm-breeze*
       - libkworkspace*
       - sddm-wayland*
-  
+
   #
   # Gnome
   #
@@ -771,3 +771,6 @@ meta:
   emacs:
     packages:
       - emacs*
+  1password:
+    packages:
+      - 1password*
