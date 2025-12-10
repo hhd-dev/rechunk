@@ -26,7 +26,7 @@ inputs:
   registry_auth_file:
     description:
       The REGISTRY_AUTH_FILE for pulling images including support for private registries.
-    default: $HOME/.config/containers/auth.json
+    default: ""
   skip_compression:
     description: |
       Skip compression of the output image. Use only if you are
@@ -183,12 +183,16 @@ runs:
           cp "$META_FN" "${{ github.workspace }}/_meta_in.yml"
         fi
 
-        mkdir -p "$(dirname "${{ inputs.registry_auth_file }}")"
+
+        REGISTRY_AUTH_FILE_ARGS=()
+        if [ -e "inputs.registry_auth_file }}" ]; then
+            echo "Using registry credentials from inputs.registry_auth_file }}"
+            REGISTRY_AUTH_FILE_ARGS+=( "-v \"${{ inputs.registry_auth_file }}:/auth/auth.json:ro\" -e REGISTRY_AUTH_FILE=/auth/auth.json \" )
+        fi
 
         sudo podman run --rm \
             -v "${{ github.workspace }}:/workspace" \
-            -v "${{ inputs.registry_auth_file }}:/auth/auth.json:ro" \
-            -e REGISTRY_AUTH_FILE=/auth/auth.json \
+            "${REGISTRY_AUTH_FILE_ARGS[@]}"
             -v "$GIT_PATH:/var/git" \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
