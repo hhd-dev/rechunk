@@ -185,8 +185,8 @@ runs:
 
 
         REGISTRY_AUTH_FILE_ARGS=()
-        if [ -e "inputs.registry_auth_file }}" ]; then
-            echo "Using registry credentials from inputs.registry_auth_file }}"
+        if [ -e "${{ inputs.registry_auth_file }}" ]; then
+            echo "Using registry credentials from ${{ inputs.registry_auth_file }}"
             REGISTRY_AUTH_FILE_ARGS+=( "-v \"${{ inputs.registry_auth_file }}:/auth/auth.json:ro\" -e REGISTRY_AUTH_FILE=/auth/auth.json" )
         fi
 
