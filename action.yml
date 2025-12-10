@@ -23,6 +23,10 @@ inputs:
   max-layers:
     description: |
       The number of layers (chunks) the output image will have.
+  registry_auth_file:
+    description:
+      The REGISTRY_AUTH_FILE for pulling images including for private registries
+    default: $HOME/.config/containers/auth.json  
   skip_compression:
     description: |
       Skip compression of the output image. Use only if you are
@@ -181,14 +185,14 @@ runs:
 
         sudo podman run --rm \
             -v "${{ github.workspace }}:/workspace" \
+            -v "$HOME/.config/containers/auth.json:/auth/auth.json:ro" \
+            -e REGISTRY_AUTH_FILE=${{ inputs.registry_auth_file }} \
             -v "$GIT_PATH:/var/git" \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
             -e MAX_LAYERS="${{ inputs.max-layers }}" \
             -e SKIP_COMPRESSION="${{ inputs.skip_compression }}" \
             -e PREV_REF="${{ inputs.prev-ref }}" \
-            -e REGISTRY_AUTH_USERNAME=${{ github.actor }} \
-            -e REGISTRY_AUTH_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
             -e OUT_NAME="$OUT_NAME" \
             -e LABELS="${{ inputs.labels }}" \
             -e FORMATTERS="${{ inputs.formatters }}" \
