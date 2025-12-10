@@ -27,8 +27,15 @@ PREV_MANIFEST=${PREV_MANIFEST:=./${PREV_NAME}.manifest.json}
 
 if [ -n "$PREV_REF" ]; then
     echo "PREV_REF is set, downloading manifest"
+
+    SKOPEO_AUTH_ARGS=()
+    if [ -n "$REGISTRY_AUTH_USERNAME" ] && [ -n "$REGISTRY_AUTH_PASSWORD" ]; then
+        echo "Using registry credentials from environment variables"
+        SKOPEO_AUTH_ARGS+=( "--creds=${REGISTRY_AUTH_USERNAME}:${REGISTRY_AUTH_PASSWORD}" )
+    fi
+
     for i in $(seq 1 5); do
-        skopeo inspect docker://${PREV_REF} > $PREV_MANIFEST && break
+        skopeo inspect "${SKOPEO_AUTH_ARGS[@]}" docker://${PREV_REF} > $PREV_MANIFEST && break
         echo "Failed to download previous manifest, retrying in 3 seconds"
         sleep 3
     done

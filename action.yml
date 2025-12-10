@@ -187,6 +187,8 @@ runs:
             -e MAX_LAYERS="${{ inputs.max-layers }}" \
             -e SKIP_COMPRESSION="${{ inputs.skip_compression }}" \
             -e PREV_REF="${{ inputs.prev-ref }}" \
+            -e REGISTRY_AUTH_USERNAME=${{ github.actor }} \
+            -e REGISTRY_AUTH_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
             -e OUT_NAME="$OUT_NAME" \
             -e LABELS="${{ inputs.labels }}" \
             -e FORMATTERS="${{ inputs.formatters }}" \
