@@ -184,7 +184,7 @@ runs:
         fi
 
 
-        REGISTRY_AUTH_FILE={{ inputs.registry_auth_file }}
+        REGISTRY_AUTH_FILE=${{ inputs.registry_auth_file }}
         REGISTRY_AUTH_FILE_ARGS=""
         if [ -e "$REGISTRY_AUTH_FILE" ]; then
             echo "Using registry credentials from $REGISTRY_AUTH_FILE"
