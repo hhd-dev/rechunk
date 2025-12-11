@@ -185,15 +185,16 @@ runs:
 
 
         REGISTRY_AUTH_FILE=${{ inputs.registry_auth_file }}
-        REGISTRY_AUTH_FILE_ARGS=""
+        REGISTRY_AUTH_FILE_ARGS=()
         if [ -e "$REGISTRY_AUTH_FILE" ]; then
-            echo "Using registry credentials from ${REGISTRY_AUTH_FILE}"
-            REGISTRY_AUTH_FILE_ARGS="-v ${REGISTRY_AUTH_FILE}:/auth/auth.json:ro -e REGISTRY_AUTH_FILE=/auth/auth.json"
+          echo "Using registry credentials from ${REGISTRY_AUTH_FILE}"
+          REGISTRY_AUTH_FILE_ARGS+=(-v "${REGISTRY_AUTH_FILE}:/auth/auth.json:ro")
+          REGISTRY_AUTH_FILE_ARGS+=(-e REGISTRY_AUTH_FILE=/auth/auth.json)
         fi
 
         sudo podman run --rm \
             -v "${{ github.workspace }}:/workspace" \
-            "${REGISTRY_AUTH_FILE_ARGS}" \
+            "${REGISTRY_AUTH_FILE_ARGS[@]}" \
             -v "$GIT_PATH:/var/git" \
             -v "cache_ostree:/var/ostree" \
             -e REPO=/var/ostree/repo \
