@@ -1,4 +1,14 @@
 # Rechunk
+
+> [!WARNING]
+> **Rechunk is deprecated and has reached EOL.** It now lives in [Ludos](https://github.com/anatase-org/ludos) which is an End-to-End image builder for Anatase that rechunks your image at the end, supports live ISO creation and custom package management / flatpak creation.
+>
+> Ludos is better designed than rechunk. It requires no additional image (only shallow cloning of this repository), it rechunks images 4x faster, and the images themselves deploy faster. It is also fully rootless for the image creation, package building, flatpak building, and ISOs themselves. It can virtualize an image registry over S3, so you can use a CDN backed S3 provider such as Cloudflare R2 and skip quay/GHCR, which are slow and unreliable.
+>
+> However, Ludos is not currently a replacement for rechunk. It is only meant to rechunk images built with it deriving from Anatase (as quirk handling is split between it and the base image and quirks are not repeated). You can still use rechunk as you use it today. But it will no longer receive updates.
+> 
+> **Otherwise, you can migrate to the upstream recommended solution [chunkah](https://github.com/coreos/chunkah)**. Keep in mind that chunkah is slower, results in larger updates, requires manual linting of directories for placement, and is not optimized for bootc w/ ostree so update deployment with it will take longer (selinux validation and hashing of files happens on the client, where in rechunk the client deploys an embedded ostree commit that has all this validation already and with patches in Anatase even skips the merge step).
+
 **Rechunk** is a library for reprocessing an OSTree OCI image prior to distribution
 (e.g., right after making it).
 It flattens the file system tree, thereby removing files that were replaced in
